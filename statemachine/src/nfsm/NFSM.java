@@ -1,3 +1,5 @@
+package nfsm;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +23,7 @@ public class NFSM {
 
     public void onEvent(String eventName, ProcessingData data) {
         if (currentState == null) {
-            throw new IllegalStateException("State machine not started.");
+            throw new IllegalStateException("nfsm.State machine not started.");
         }
         State state = states.get(currentState);
         String nextState = state.getNextState(eventName);

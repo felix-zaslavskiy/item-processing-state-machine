@@ -1,3 +1,10 @@
+package demo;
+
+import nfsm.NFSM;
+import nfsm.ProcessingData;
+import nfsm.ProcessingStep;
+import nfsm.State;
+
 class Step1 extends ProcessingStep {
     @Override
     protected void process(ProcessingData data) {
@@ -55,7 +62,7 @@ public class NFSMDemo {
         step2State.addTransition("proceed", "end");
         step3State.addTransition("auto", "end");
 
-        // Create NFSM and add states
+        // Create nfsm.NFSM and add states
         NFSM nfsm = new NFSM();
         nfsm.addState(startState);
         nfsm.addState(step2State);
@@ -71,6 +78,6 @@ public class NFSMDemo {
         nfsm.onEvent("proceed", data);
 
         // Output final result
-        System.out.println("Final re sult: " + data.get("value"));
+        System.out.println("Final result: " + data.get("value"));
     }
 }
