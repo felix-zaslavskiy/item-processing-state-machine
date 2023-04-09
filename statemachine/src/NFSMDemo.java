@@ -4,6 +4,13 @@ class Step1 extends ProcessingStep {
         System.out.println("Processing Step 1");
         Integer value = (Integer) data.get("value");
         data.set("value", value + 1);
+
+        // Select the next state based on the value
+        if (value % 2 == 0) {
+            nextState(data, "step2");
+        } else {
+            nextState(data, "step3");
+        }
     }
 }
 
@@ -43,8 +50,9 @@ public class NFSMDemo {
         State endState = new State("end", new Step4(), false);
 
         // Define transitions
-        startState.addTransition("auto", "step2");
-        step2State.addTransition("proceed", "step3");
+        startState.addTransition("step2", "step2");
+        startState.addTransition("step3", "step3");
+        step2State.addTransition("proceed", "end");
         step3State.addTransition("auto", "end");
 
         // Create NFSM and add states
@@ -63,6 +71,6 @@ public class NFSMDemo {
         nfsm.onEvent("proceed", data);
 
         // Output final result
-        System.out.println("Final result: " + data.get("value"));
+        System.out.println("Final re sult: " + data.get("value"));
     }
 }

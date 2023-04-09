@@ -2,10 +2,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class State {
-    private String name;
-    private Map<String, String> transitions;
-    private ProcessingStep processingStep;
-    private boolean waitForEvent;
+    private final String name;
+    final Map<String, String> transitions;
+    private final ProcessingStep processingStep;
+    private final boolean waitForEvent;
 
     public State(String name, ProcessingStep processingStep, boolean waitForEvent) {
         this.name = name;
@@ -13,6 +13,8 @@ public class State {
         this.transitions = new HashMap<>();
         this.waitForEvent = waitForEvent;
     }
+
+
 
     public void addTransition(String eventName, String nextState) {
         transitions.put(eventName, nextState);

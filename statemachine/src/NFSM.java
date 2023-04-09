@@ -1,8 +1,9 @@
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 public class NFSM {
-    private Map<String, State> states;
+    private final Map<String, State> states;
     private String currentState;
 
     public NFSM() {
@@ -33,8 +34,23 @@ public class NFSM {
     private void process(ProcessingData data) {
         State state = states.get(currentState);
         while (state != null && !state.shouldWaitForEvent()) {
+            data.setNextState(null); // Reset the nextState before executing the step
             state.execute(data);
-            String nextState = state.getNextState("auto");
+
+            String nextState = data.getNextState();
+            if (nextState == null) {
+                nextState = state.getNextState("auto");
+            }
+
+            if (nextState == null) {
+                Collection<String> possibleTransitions = state.transitions.values();
+                if (possibleTransitions.size() == 1) {
+                    nextState = possibleTransitions.iterator().next();
+                } else if (possibleTransitions.size() > 1) {
+                    throw new IllegalStateException("Next state is ambiguous. Please specify the next state in the processing step.");
+                }
+            }
+
             state = nextState != null ? states.get(nextState) : null;
             currentState = nextState;
         }
