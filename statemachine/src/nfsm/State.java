@@ -16,14 +16,18 @@ public class State {
         this.waitForEvent = waitForEvent;
     }
 
-
-
     public void addTransition(String eventName, String nextState) {
         transitions.put(eventName, nextState);
     }
 
     public String getNextState(String eventName) {
         return transitions.get(eventName);
+    }
+
+    public void execute(ProcessingData data, Trace trace) {
+        trace.add("Before processing: " + processingStep.getClassName());
+        processingStep.process(data);
+        trace.add("After processing: " + processingStep.getClassName());
     }
 
     public void execute(ProcessingData data) {

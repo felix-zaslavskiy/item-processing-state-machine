@@ -7,4 +7,8 @@ public abstract class ProcessingStep {
     protected void nextState(ProcessingData data, String nextState) {
         data.setNextState(nextState);
     }
+
+    protected  String getClassName(){
+        return  this.getClass().getSimpleName();
+    }
 }

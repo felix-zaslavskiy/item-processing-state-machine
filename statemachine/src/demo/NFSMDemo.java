@@ -59,6 +59,7 @@ public class NFSMDemo {
         // Define transitions
         startState.addTransition("step2", "step2");
         startState.addTransition("step3", "step3");
+
         step2State.addTransition("proceed", "end");
         step3State.addTransition("auto", "end");
 
@@ -68,16 +69,44 @@ public class NFSMDemo {
         nfsm.addState(step2State);
         nfsm.addState(step3State);
         nfsm.addState(endState);
+        nfsm.setTraceMode(true);
 
         // Start processing with initial data
+        // Will go Start -> Step3 -> End
         ProcessingData data = new ProcessingData();
         data.set("value", 5);
         nfsm.start("start", data);
 
-        // Trigger external event
-        nfsm.onEvent("proceed", data);
+        nfsm.getTrace().print();
+
+        System.out.println("State machine is active: " + nfsm.isActive());
 
         // Output final result
         System.out.println("Final result: " + data.get("value"));
+
+        // Second example
+        nfsm = new NFSM();
+        nfsm.addState(startState);
+        nfsm.addState(step2State);
+        nfsm.addState(step3State);
+        nfsm.addState(endState);
+        nfsm.setTraceMode(true);
+
+        // Start processing with initial data
+        // Will go Start -> Step2 -> Wait -> Proceed -> End
+        ProcessingData data2 = new ProcessingData();
+        data2.set("value", 4);
+        nfsm.start("start", data2);
+
+        // Trigger external event
+        nfsm.onEvent("proceed", data2);
+
+        nfsm.getTrace().print();
+
+        System.out.println("State machine is active: " + nfsm.isActive());
+
+
+        // Output final result
+        System.out.println("Final result: " + data2.get("value"));
     }
 }
