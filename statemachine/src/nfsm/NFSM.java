@@ -24,6 +24,10 @@ public class NFSM {
         states.put(state.getName(), state);
     }
 
+    public State getState(String name){
+        return states.get(name);
+    }
+
     public void start(String startingState, ProcessingData data) {
         currentState = startingState;
         process(data);
