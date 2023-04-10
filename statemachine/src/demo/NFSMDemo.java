@@ -72,7 +72,7 @@ public class NFSMDemo {
         // Start processing with initial data
         ProcessingData data = new ProcessingData();
         data.set("value", 5);
-        nfsm.start(data);
+        nfsm.start("start", data);
 
         // Trigger external event
         nfsm.onEvent("proceed", data);

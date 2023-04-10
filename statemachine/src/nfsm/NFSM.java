@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class NFSM {
-    private final Map<String, State> states;
+    private Map<String, State> states;
     private String currentState;
 
     public NFSM() {
@@ -16,14 +16,14 @@ public class NFSM {
         states.put(state.getName(), state);
     }
 
-    public void start(ProcessingData data) {
-        currentState = "start";
+    public void start(String startingState, ProcessingData data) {
+        currentState = startingState;
         process(data);
     }
 
     public void onEvent(String eventName, ProcessingData data) {
         if (currentState == null) {
-            throw new IllegalStateException("nfsm.State machine not started.");
+            throw new IllegalStateException("State machine not started.");
         }
         State state = states.get(currentState);
         String nextState = state.getNextState(eventName);
