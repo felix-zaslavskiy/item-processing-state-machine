@@ -50,6 +50,31 @@ class Step4 extends ProcessingStep {
 
 public class NFSMDemo {
     public static void main(String[] args) {
+        //nonBuilder();
+        builderWay();
+    }
+
+    private static void builderWay() {
+        NFSM nfsm = new NFSM.Builder()
+                .state("start", new Step1())
+                    .transition("step2", "step2")
+                    .transition("step3", "step3")
+                .and()
+                .state("step2", new Step2(), true)
+                    .transition("proceed", "end")
+                .and()
+                .state("step3", new Step3())
+                    .autoTransition("end")
+                .and()
+                .state("end", new Step4())
+                .build();
+
+        ProcessingData data = new ProcessingData();
+        data.set("value", 5);
+        nfsm.start("start", data); // Optional event parameter
+    }
+
+    private static void nonBuilder() {
         // Create states with processing steps
         State startState = new State("start", new Step1(), false);
         State step2State = new State("step2", new Step2(), true);

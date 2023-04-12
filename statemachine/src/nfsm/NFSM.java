@@ -24,7 +24,7 @@ public class NFSM {
         states.put(state.getName(), state);
     }
 
-    public State getState(String name){
+    public State getState(String name) {
         return states.get(name);
     }
 
@@ -95,5 +95,44 @@ public class NFSM {
 
     public Trace getTrace() {
         return trace;
+    }
+
+    public static class Builder {
+        private NFSM nfsm;
+        private String lastCreatedStateName;
+
+        public Builder() {
+            nfsm = new NFSM();
+        }
+
+        public Builder state(String name, ProcessingStep processingStep) {
+            return state(name, processingStep, false);
+        }
+
+        public Builder state(String name, ProcessingStep processingStep, boolean waitForEvent) {
+            nfsm.states.put(name, new State(name, processingStep, waitForEvent));
+            lastCreatedStateName = name;
+            return this;
+        }
+
+        public Builder transition(String eventName, String nextState) {
+            nfsm.states.get(lastCreatedStateName).addTransition(eventName, nextState);
+            return this;
+        }
+
+        public Builder autoTransition(String nextState) {
+            return transition("auto", nextState);
+        }
+
+        public Builder and() {
+            return this;
+        }
+
+        public NFSM build() {
+            if (nfsm.states.isEmpty()) {
+                throw new IllegalStateException("At least one state must be defined.");
+            }
+            return nfsm;
+        }
     }
 }
