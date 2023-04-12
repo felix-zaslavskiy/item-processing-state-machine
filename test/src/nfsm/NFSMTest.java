@@ -24,9 +24,9 @@ public class NFSMTest {
         ProcessingData data = new ProcessingData();
         data.set("value", 5);
 
-        assertFalse(nfsm.isActive());
+        assertFalse(nfsm.isRunning());
         nfsm.start("start", data);
-        assertFalse(nfsm.isActive());
+        assertFalse(nfsm.isRunning());
     }
 
     @Test
@@ -50,7 +50,7 @@ public class NFSMTest {
 
         nfsm.onEvent("proceed", data);
 
-        assertEquals(false, nfsm.isActive());
+        assertEquals(false, nfsm.isRunning());
         assertEquals(4, data.get("value"));
     }
 

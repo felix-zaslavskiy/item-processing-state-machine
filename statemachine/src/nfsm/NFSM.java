@@ -48,7 +48,7 @@ public class NFSM {
         }
     }
 
-    public boolean isActive(){
+    public boolean isRunning(){
         return currentState != null;
     }
 
