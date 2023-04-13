@@ -76,6 +76,6 @@ public class NFSMTest {
 
         nfsm.onEvent("proceed", data);
         Trace trace = nfsm.getTrace();
-        assertNotNull(trace);
+        Assertions.assertNotNull(trace);
     }
 }
