@@ -69,7 +69,7 @@ public class NFSM {
 
             String nextState = data.getNextState();
             if (nextState == null) {
-                nextState = state.getNextState("auto");
+                nextState = state.getNextState(TransitionEvent.AUTO);
             }
 
             if (nextState == null) {
@@ -136,13 +136,22 @@ public class NFSM {
             return this;
         }
 
-        public Builder transition(String eventName, String nextState) {
-            nfsm.states.get(lastCreatedStateName).addTransition(eventName, nextState);
-            return this;
+        public Builder transition(String nextState) {
+            String eventName = lastCreatedStateName + "_to_" + nextState;
+            return transition(eventName, nextState);
         }
 
         public Builder autoTransition(String nextState) {
-            return transition("auto", nextState);
+            return transition(TransitionEvent.AUTO, nextState);
+        }
+
+        public Builder transition(TransitionEvent event, String nextState) {
+            return transition(event.name().toLowerCase(), nextState);
+        }
+
+        public Builder transition(String eventName, String nextState) {
+            nfsm.states.get(lastCreatedStateName).addTransition(eventName, nextState);
+            return this;
         }
 
         public Builder and() {

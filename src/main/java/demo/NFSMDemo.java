@@ -62,8 +62,8 @@ public class NFSMDemo {
     private static void builderWay() {
         NFSM nfsm = new NFSM.Builder()
                 .state("start", new Step1())
-                    .transition("step2", "step2")
-                    .transition("step3", "step3")
+                    .transition("step2") // Generates event name: start_to_step2
+                    .transition("step3") // Generates event name: start_to_step3
                 .and()
                 .state("step2", new Step2(), true)
                     .transition("proceed", "end")
@@ -73,6 +73,7 @@ public class NFSMDemo {
                 .and()
                 .state("end", new Step4())
                 .build();
+
 
         String graphvizDot = nfsm.toGraphviz();
         renderGraph(graphvizDot, "state_machine.png");

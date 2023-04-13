@@ -20,8 +20,12 @@ public class State {
         transitions.put(eventName, nextState);
     }
 
-    public String getNextState(String eventName) {
-        return transitions.get(eventName);
+    public String getNextState(TransitionEvent event) {
+        return transitions.get(event.name().toLowerCase());
+    }
+
+    public String getNextState(String event) {
+        return transitions.get(event);
     }
 
     public void execute(ProcessingData data, Trace trace) {
