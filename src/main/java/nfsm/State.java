@@ -7,13 +7,13 @@ public class State {
     private final String name;
     final Map<String, String> transitions;
     private final ProcessingStep processingStep;
-    private final boolean waitForEvent;
+    private final boolean waitForEventBeforeTransition;
 
-    public State(String name, ProcessingStep processingStep, boolean waitForEvent) {
+    public State(String name, ProcessingStep processingStep, boolean waitForEventBeforeTransition) {
         this.name = name;
         this.processingStep = processingStep;
         this.transitions = new HashMap<>();
-        this.waitForEvent = waitForEvent;
+        this.waitForEventBeforeTransition = waitForEventBeforeTransition;
     }
 
     public void addTransition(String eventName, String nextState) {
@@ -34,8 +34,8 @@ public class State {
         processingStep.process(data);
     }
 
-    public boolean shouldWaitForEvent() {
-        return waitForEvent;
+    public boolean shouldWaitForEventBeforeTransition() {
+        return waitForEventBeforeTransition;
     }
 
     public String getName() {

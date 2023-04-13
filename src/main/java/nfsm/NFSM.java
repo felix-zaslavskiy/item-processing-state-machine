@@ -54,7 +54,7 @@ public class NFSM {
 
     private void process(ProcessingData data) {
         State state = states.get(currentState);
-        while (state != null && !state.shouldWaitForEvent()) {
+        while (state != null && !state.shouldWaitForEventBeforeTransition()) {
 
             if (traceMode) {
                 trace.add("Entering state: " + state.getName());
@@ -86,7 +86,7 @@ public class NFSM {
             }
 
             state = nextState != null ? states.get(nextState) : null;
-            if(traceMode && state != null && state.shouldWaitForEvent()){
+            if(traceMode && state != null && state.shouldWaitForEventBeforeTransition()){
                 trace.add("Pausing because " + state.getName() + " requires a wait after completion");
             }
             currentState = nextState;
@@ -130,8 +130,8 @@ public class NFSM {
             return state(name, processingStep, false);
         }
 
-        public Builder state(String name, ProcessingStep processingStep, boolean waitForEvent) {
-            nfsm.states.put(name, new State(name, processingStep, waitForEvent));
+        public Builder state(String name, ProcessingStep processingStep, boolean waitForEventBeforeTransition) {
+            nfsm.states.put(name, new State(name, processingStep, waitForEventBeforeTransition));
             lastCreatedStateName = name;
             return this;
         }

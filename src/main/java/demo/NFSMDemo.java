@@ -1,9 +1,15 @@
 package demo;
 
+import guru.nidi.graphviz.engine.Format;
+import guru.nidi.graphviz.engine.Graphviz;
+import guru.nidi.graphviz.model.MutableGraph;
+import guru.nidi.graphviz.parse.Parser;
 import nfsm.NFSM;
 import nfsm.ProcessingData;
 import nfsm.ProcessingStep;
-import nfsm.State;
+
+import java.io.File;
+import java.io.IOException;
 
 class Step1 extends ProcessingStep {
     @Override
@@ -50,7 +56,6 @@ class Step4 extends ProcessingStep {
 
 public class NFSMDemo {
     public static void main(String[] args) {
-        //nonBuilder();
         builderWay();
     }
 
@@ -69,69 +74,22 @@ public class NFSMDemo {
                 .state("end", new Step4())
                 .build();
 
+        String graphvizDot = nfsm.toGraphviz();
+        renderGraph(graphvizDot, "state_machine.png");
+
         ProcessingData data = new ProcessingData();
         data.set("value", 5);
         nfsm.start("start", data); // Optional event parameter
     }
 
-    private static void nonBuilder() {
-        // Create states with processing steps
-        State startState = new State("start", new Step1(), false);
-        State step2State = new State("step2", new Step2(), true);
-        State step3State = new State("step3", new Step3(), false);
-        State endState = new State("end", new Step4(), false);
-
-        // Define transitions
-        startState.addTransition("step2", "step2");
-        startState.addTransition("step3", "step3");
-
-        step2State.addTransition("proceed", "end");
-        step3State.addTransition("auto", "end");
-
-        // Create nfsm.NFSM and add states
-        NFSM nfsm = new NFSM();
-        nfsm.addState(startState);
-        nfsm.addState(step2State);
-        nfsm.addState(step3State);
-        nfsm.addState(endState);
-        nfsm.setTraceMode(true);
-
-        // Start processing with initial data
-        // Will go Start -> Step3 -> End
-        ProcessingData data = new ProcessingData();
-        data.set("value", 5);
-        nfsm.start("start", data);
-
-        nfsm.getTrace().print();
-
-        System.out.println("State machine is active: " + nfsm.isRunning());
-
-        // Output final result
-        System.out.println("Final result: " + data.get("value"));
-
-        // Second example
-        nfsm = new NFSM();
-        nfsm.addState(startState);
-        nfsm.addState(step2State);
-        nfsm.addState(step3State);
-        nfsm.addState(endState);
-        nfsm.setTraceMode(true);
-
-        // Start processing with initial data
-        // Will go Start -> Step2 -> Wait -> Proceed -> End
-        ProcessingData data2 = new ProcessingData();
-        data2.set("value", 4);
-        nfsm.start("start", data2);
-
-        // Trigger external event
-        nfsm.onEvent("proceed", data2);
-
-        nfsm.getTrace().print();
-
-        System.out.println("State machine is active: " + nfsm.isRunning());
-
-
-        // Output final result
-        System.out.println("Final result: " + data2.get("value"));
+    public static void renderGraph(String dot, String outputPath) {
+        try {
+            MutableGraph g = new Parser().read(dot);
+            Graphviz.fromGraph(g).width(800).render(Format.PNG).toFile(new File(outputPath));
+            System.out.println("Graph saved to " + outputPath);
+        } catch (IOException e) {
+            System.err.println("Error rendering Graphviz graph: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }
