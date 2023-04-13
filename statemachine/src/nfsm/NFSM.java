@@ -97,6 +97,27 @@ public class NFSM {
         return trace;
     }
 
+    public String toGraphviz() {
+        StringBuilder dot = new StringBuilder("digraph G {\n");
+
+        for (Map.Entry<String, State> entry : states.entrySet()) {
+            String stateName = entry.getKey();
+            State state = entry.getValue();
+            dot.append("\t").append(stateName).append("[label=\"").append(stateName).append("\"];\n");
+            for (Map.Entry<String, String> transition : state.transitions.entrySet()) {
+                String eventName = transition.getKey();
+                String targetState = transition.getValue();
+
+                dot.append("\t").append(stateName).append(" -> ").append(targetState)
+                        .append("[label=\"").append(eventName).append("\"];\n");
+
+            }
+        }
+
+        dot.append("}");
+        return dot.toString();
+    }
+
     public static class Builder {
         private NFSM nfsm;
         private String lastCreatedStateName;
