@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class NFSM {
-    private Map<String, State> states;
+    private final Map<String, State> states;
     private String currentState;
     private boolean traceMode;
-    private Trace trace;
+    private final Trace trace;
 
     public NFSM() {
         states = new HashMap<>();
@@ -33,19 +33,26 @@ public class NFSM {
         process(data);
     }
 
-    public void onEvent(String eventName, ProcessingData data) {
+    public void triggerEvent(Event event, ProcessingData data) {
+        String eventName = event.getName();
+        triggerEvent(eventName, data);
+    }
+
+    public void triggerEvent(String eventName, ProcessingData data) {
         if (currentState == null) {
             throw new IllegalStateException("State machine not started.");
         }
         State state = states.get(currentState);
         String nextState = state.getNextState(eventName);
-        if (nextState != null) {
-            if(traceMode){
-                trace.add("onEvent, continuing to state: " + nextState);
-            }
-            currentState = nextState;
-            process(data);
+        if (nextState == null) {
+            throw new IllegalStateException("No transition found for event '" + eventName + "' in the current state '" + currentState + "'.");
         }
+
+        if (traceMode) {
+            trace.add("onEvent, continuing to state: " + nextState);
+        }
+        currentState = nextState;
+        process(data);
     }
 
     public boolean isRunning(){
@@ -69,11 +76,11 @@ public class NFSM {
 
             String nextState = data.getNextState();
             if (nextState == null) {
-                nextState = state.getNextState(TransitionEvent.AUTO);
+                nextState = state.getNextState(TransitionAutoEvent.AUTO);
             }
 
             if (nextState == null) {
-                Collection<String> possibleTransitions = state.transitions.values();
+                Collection<String> possibleTransitions = state.getTransitions();
                 if (possibleTransitions.size() == 1) {
                     nextState = possibleTransitions.iterator().next();
                 } else if (possibleTransitions.size() > 1) {
@@ -104,7 +111,7 @@ public class NFSM {
             String stateName = entry.getKey();
             State state = entry.getValue();
             dot.append("\t").append(stateName).append("[label=\"").append(stateName).append("\"];\n");
-            for (Map.Entry<String, String> transition : state.transitions.entrySet()) {
+            for (Map.Entry<String, String> transition : state.getTransitionEntries()) {
                 String eventName = transition.getKey();
                 String targetState = transition.getValue();
 
@@ -131,6 +138,7 @@ public class NFSM {
         }
 
         public Builder state(String name, ProcessingStep processingStep, boolean waitForEventBeforeTransition) {
+            validateStateName(name);
             nfsm.states.put(name, new State(name, processingStep, waitForEventBeforeTransition));
             lastCreatedStateName = name;
             return this;
@@ -142,11 +150,11 @@ public class NFSM {
         }
 
         public Builder autoTransition(String nextState) {
-            return transition(TransitionEvent.AUTO, nextState);
+            return transition(new TransitionAutoEvent(), nextState);
         }
 
-        public Builder transition(TransitionEvent event, String nextState) {
-            return transition(event.name().toLowerCase(), nextState);
+        public Builder transition(Event event, String nextState) {
+            return transition(event.getName(), nextState);
         }
 
         public Builder transition(String eventName, String nextState) {
@@ -163,6 +171,12 @@ public class NFSM {
                 throw new IllegalStateException("At least one state must be defined.");
             }
             return nfsm;
+        }
+
+        private void validateStateName(String name) {
+            if (nfsm.states.containsKey(name)) {
+                throw new IllegalArgumentException("A state with the name '" + name + "' already exists.");
+            }
         }
     }
 }

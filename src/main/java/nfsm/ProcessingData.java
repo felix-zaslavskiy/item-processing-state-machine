@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ProcessingData {
-    private Map<String, Object> dataMap;
+    private final Map<String, Object> dataMap;
     private String nextState;
 
     public ProcessingData() {

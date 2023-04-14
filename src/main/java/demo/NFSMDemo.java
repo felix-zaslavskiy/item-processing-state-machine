@@ -4,6 +4,7 @@ import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.parse.Parser;
+import nfsm.Event;
 import nfsm.NFSM;
 import nfsm.ProcessingData;
 import nfsm.ProcessingStep;
@@ -81,6 +82,10 @@ public class NFSMDemo {
         ProcessingData data = new ProcessingData();
         data.set("value", 5);
         nfsm.start("start", data); // Optional event parameter
+
+        Event myCustomEvent = new MyCustomEvent("proceed");
+        if(nfsm.isRunning())
+            nfsm.triggerEvent(myCustomEvent, data);
     }
 
     public static void renderGraph(String dot, String outputPath) {

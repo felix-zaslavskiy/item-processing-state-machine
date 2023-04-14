@@ -1,11 +1,13 @@
 package nfsm;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class State {
     private final String name;
-    final Map<String, String> transitions;
+    private final Map<String, String> transitions;
     private final ProcessingStep processingStep;
     private final boolean waitForEventBeforeTransition;
 
@@ -17,12 +19,23 @@ public class State {
     }
 
     public void addTransition(String eventName, String nextState) {
+        if (transitions.containsKey(eventName)) {
+            throw new IllegalArgumentException("A transition with the event name '" + eventName + "' already exists in the state '" + name + "'.");
+        }
         transitions.put(eventName, nextState);
     }
 
-    public String getNextState(TransitionEvent event) {
-        return transitions.get(event.name().toLowerCase());
+    public Collection<String> getTransitions() {
+        return transitions.values();
     }
+    public Set<Map.Entry<String, String>> getTransitionEntries() {
+        return transitions.entrySet();
+    }
+
+    public String getNextState(Event event) {
+        return transitions.get(event.getName());
+    }
+
 
     public String getNextState(String event) {
         return transitions.get(event);
@@ -45,4 +58,6 @@ public class State {
     public String getName() {
         return name;
     }
+
+
 }

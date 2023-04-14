@@ -49,7 +49,7 @@ public class NFSMTest {
         data.set("value", 4);
         nfsm.start("start", data);
 
-        nfsm.onEvent("proceed", data);
+        nfsm.triggerEvent("proceed", data);
 
         assertEquals(false, nfsm.isRunning());
         assertEquals(4, data.get("value"));
@@ -75,7 +75,7 @@ public class NFSMTest {
         data.set("value", 4);
         nfsm.start("start", data);
 
-        nfsm.onEvent("proceed", data);
+        nfsm.triggerEvent("proceed", data);
         Trace trace = nfsm.getTrace();
         Assertions.assertNotNull(trace);
     }

@@ -62,7 +62,7 @@ public class NSFMDemoOld {
         nfsm.start("start", data2);
 
         // Trigger external event
-        nfsm.onEvent("proceed", data2);
+        nfsm.triggerEvent("proceed", data2);
 
         nfsm.getTrace().print();
 
