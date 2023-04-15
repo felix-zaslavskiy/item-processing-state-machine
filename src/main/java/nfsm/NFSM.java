@@ -9,11 +9,13 @@ public class NFSM {
     private String currentState;
     private boolean traceMode;
     private final Trace trace;
+    private boolean started;
 
     public NFSM() {
         states = new HashMap<>();
         traceMode = false;
         trace = new Trace();
+        started = false;
     }
 
     public void setTraceMode(boolean traceMode) {
@@ -30,6 +32,7 @@ public class NFSM {
 
     public void start(String startingState, ProcessingData data) {
         currentState = startingState;
+        started = true;
         process(data);
     }
 
@@ -39,7 +42,7 @@ public class NFSM {
     }
 
     public void triggerEvent(String eventName, ProcessingData data) {
-        if (currentState == null) {
+        if (!started) {
             throw new IllegalStateException("State machine not started.");
         }
         State state = states.get(currentState);
@@ -56,7 +59,19 @@ public class NFSM {
     }
 
     public boolean isRunning(){
-        return currentState != null;
+        return currentState != null && started;
+    }
+
+    public boolean isPaused() {
+        if (!started) {
+            return false;
+        }
+        State state = states.get(currentState);
+        return state != null && state.shouldWaitForEventBeforeTransition();
+    }
+
+    public boolean isStarted() {
+        return started;
     }
 
     private void process(ProcessingData data) {
@@ -124,7 +139,7 @@ public class NFSM {
         dot.append("}");
         return dot.toString();
     }
-
+/*
     public static class Builder {
         private NFSM nfsm;
         private String lastCreatedStateName;
@@ -177,6 +192,102 @@ public class NFSM {
             if (nfsm.states.containsKey(name)) {
                 throw new IllegalArgumentException("A state with the name '" + name + "' already exists.");
             }
+        }
+    }
+
+ */
+    public static class Builder {
+        private NFSM nfsm;
+        private String lastCreatedStateName;
+
+        public Builder() {
+            nfsm = new NFSM();
+        }
+
+        public StateBuilder state(String name, ProcessingStep processingStep) {
+            return state(name, processingStep, false);
+        }
+
+        public StateBuilder state(String name, ProcessingStep processingStep, boolean waitForEventBeforeTransition) {
+            validateStateName(name);
+            nfsm.states.put(name, new State(name, processingStep, waitForEventBeforeTransition));
+            lastCreatedStateName = name;
+            return new StateBuilder(name, processingStep, waitForEventBeforeTransition, this);
+        }
+
+        public NFSM build() {
+            if (nfsm.states.isEmpty()) {
+                throw new IllegalStateException("At least one state must be defined.");
+            }
+            return nfsm;
+        }
+
+        private void validateStateName(String name) {
+            if (nfsm.states.containsKey(name)) {
+                throw new IllegalArgumentException("A state with the name '" + name + "' already exists.");
+            }
+        }
+    }
+
+    public static class StateBuilder {
+        private String name;
+        private ProcessingStep processingStep;
+        private boolean waitForEventBeforeTransition;
+        private Builder nfsmBuilder;
+
+        public StateBuilder(String name, ProcessingStep processingStep, boolean waitForEventBeforeTransition, Builder nfsmBuilder) {
+            this.name = name;
+            this.processingStep = processingStep;
+            this.waitForEventBeforeTransition = waitForEventBeforeTransition;
+            this.nfsmBuilder = nfsmBuilder;
+        }
+
+        public TransitionBuilder on(String eventName) {
+            return new TransitionBuilder(eventName, this);
+        }
+
+        public TransitionBuilder on(Event event){
+            return new TransitionBuilder(event.getName(), this);
+        }
+
+        public TransitionBuilder onAuto() {
+            return on(TransitionAutoEvent.AUTO);
+        }
+
+        public TransitionBuilder onConditional() {
+            String nextState = name + "_to_";
+            return new TransitionBuilder(nextState, this, true);
+        }
+
+        public Builder and() {
+            return nfsmBuilder;
+        }
+        public Builder end() {
+            return nfsmBuilder;
+        }
+    }
+
+    public static class TransitionBuilder {
+        private String eventName;
+        private StateBuilder stateBuilder;
+        private boolean isConditional;
+
+        public TransitionBuilder(String eventName, StateBuilder stateBuilder) {
+            this(eventName, stateBuilder, false);
+        }
+
+        public TransitionBuilder(String eventName, StateBuilder stateBuilder, boolean isConditional) {
+            this.eventName = eventName;
+            this.stateBuilder = stateBuilder;
+            this.isConditional = isConditional;
+        }
+
+        public StateBuilder goTo(String nextState) {
+            if (isConditional) {
+                eventName += nextState;
+            }
+            stateBuilder.nfsmBuilder.nfsm.states.get(stateBuilder.name).addTransition(eventName, nextState);
+            return stateBuilder;
         }
     }
 }

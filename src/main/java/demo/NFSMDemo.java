@@ -61,18 +61,22 @@ public class NFSMDemo {
     }
 
     private static void builderWay() {
+        Event myCustomEvent = new MyCustomEvent("proceed");
+
         NFSM nfsm = new NFSM.Builder()
                 .state("start", new Step1())
-                    .transition("step2") // Generates event name: start_to_step2
-                    .transition("step3") // Generates event name: start_to_step3
+                    .onConditional().goTo("step2") // Generates event name: start_to_step2
+                    .onConditional().goTo("step3") // Generates event name: start_to_step3
                 .and()
                 .state("step2", new Step2(), true)
-                    .transition("proceed", "end")
+                    .on(myCustomEvent).goTo("end")
+                    .on("alt_proceed").goTo("step3")
                 .and()
                 .state("step3", new Step3())
-                    .autoTransition("end")
+                    .onAuto().goTo("end")
                 .and()
                 .state("end", new Step4())
+                .end()
                 .build();
 
 
@@ -83,7 +87,6 @@ public class NFSMDemo {
         data.set("value", 5);
         nfsm.start("start", data); // Optional event parameter
 
-        Event myCustomEvent = new MyCustomEvent("proceed");
         if(nfsm.isRunning())
             nfsm.triggerEvent(myCustomEvent, data);
     }
