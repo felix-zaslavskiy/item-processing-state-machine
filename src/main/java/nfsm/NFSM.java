@@ -1,14 +1,17 @@
 package nfsm;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+import java.util.*;
 
 public class NFSM {
     private final Map<String, State> states;
     private String currentState;
+    private Set<String> finalStates;
     private boolean traceMode;
-    private final Trace trace;
+    private Trace trace;
     private boolean started;
 
     public NFSM() {
@@ -16,6 +19,7 @@ public class NFSM {
         traceMode = false;
         trace = new Trace();
         started = false;
+        finalStates = new HashSet<>();
     }
 
     public void setTraceMode(boolean traceMode) {
@@ -72,6 +76,14 @@ public class NFSM {
 
     public boolean isStarted() {
         return started;
+    }
+
+    public void addFinalState(String finalState) {
+        this.finalStates.add(finalState);
+    }
+
+    public boolean isFinished() {
+        return started && !finalStates.isEmpty() && finalStates.contains(currentState);
     }
 
     private void process(ProcessingData data) {
@@ -140,6 +152,35 @@ public class NFSM {
         return dot.toString();
     }
 
+    public String exportState() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        FSMState fsmState = new FSMState();
+        fsmState.setCurrentState(currentState);
+        fsmState.setTraceMode(traceMode);
+        fsmState.setTrace(trace);
+        fsmState.setStarted(started);
+        try {
+            return objectMapper.writeValueAsString(fsmState);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void importState(String json)  {
+        ObjectMapper objectMapper = new ObjectMapper();
+        FSMState fsmState = null;
+        try {
+            fsmState = objectMapper.readValue(json, FSMState.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        currentState = fsmState.getCurrentState();
+        traceMode = fsmState.isTraceMode();
+        trace = fsmState.getTrace();
+        started = fsmState.isStarted();
+    }
+
+
     public static class Builder {
         private NFSM nfsm;
         private String lastCreatedStateName;
@@ -157,6 +198,12 @@ public class NFSM {
             nfsm.states.put(name, new State(name, processingStep, waitForEventBeforeTransition));
             lastCreatedStateName = name;
             return new StateBuilder(name, processingStep, waitForEventBeforeTransition, this);
+        }
+
+        public Builder finalState(String name, ProcessingStep processingStep) {
+            state(name, processingStep, false);
+            nfsm.addFinalState(name);
+            return this;
         }
 
         public NFSM build() {

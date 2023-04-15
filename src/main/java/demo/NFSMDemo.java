@@ -75,10 +75,8 @@ public class NFSMDemo {
                 .state("step3", new Step3())
                     .onAuto().goTo("end")
                 .and()
-                .state("end", new Step4())
-                .end()
+                .finalState("end", new Step4())
                 .build();
-
 
         String graphvizDot = nfsm.toGraphviz();
         renderGraph(graphvizDot, "state_machine.png");
@@ -86,6 +84,9 @@ public class NFSMDemo {
         ProcessingData data = new ProcessingData();
         data.set("value", 5);
         nfsm.start("start", data); // Optional event parameter
+
+        String export = nfsm.exportState();
+        nfsm.importState(export);
 
         if(nfsm.isRunning())
             nfsm.triggerEvent(myCustomEvent, data);
