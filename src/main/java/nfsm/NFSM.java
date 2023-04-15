@@ -139,63 +139,7 @@ public class NFSM {
         dot.append("}");
         return dot.toString();
     }
-/*
-    public static class Builder {
-        private NFSM nfsm;
-        private String lastCreatedStateName;
 
-        public Builder() {
-            nfsm = new NFSM();
-        }
-
-        public Builder state(String name, ProcessingStep processingStep) {
-            return state(name, processingStep, false);
-        }
-
-        public Builder state(String name, ProcessingStep processingStep, boolean waitForEventBeforeTransition) {
-            validateStateName(name);
-            nfsm.states.put(name, new State(name, processingStep, waitForEventBeforeTransition));
-            lastCreatedStateName = name;
-            return this;
-        }
-
-        public Builder transition(String nextState) {
-            String eventName = lastCreatedStateName + "_to_" + nextState;
-            return transition(eventName, nextState);
-        }
-
-        public Builder autoTransition(String nextState) {
-            return transition(new TransitionAutoEvent(), nextState);
-        }
-
-        public Builder transition(Event event, String nextState) {
-            return transition(event.getName(), nextState);
-        }
-
-        public Builder transition(String eventName, String nextState) {
-            nfsm.states.get(lastCreatedStateName).addTransition(eventName, nextState);
-            return this;
-        }
-
-        public Builder and() {
-            return this;
-        }
-
-        public NFSM build() {
-            if (nfsm.states.isEmpty()) {
-                throw new IllegalStateException("At least one state must be defined.");
-            }
-            return nfsm;
-        }
-
-        private void validateStateName(String name) {
-            if (nfsm.states.containsKey(name)) {
-                throw new IllegalArgumentException("A state with the name '" + name + "' already exists.");
-            }
-        }
-    }
-
- */
     public static class Builder {
         private NFSM nfsm;
         private String lastCreatedStateName;
