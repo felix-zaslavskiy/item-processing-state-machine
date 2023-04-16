@@ -42,7 +42,7 @@ public class NSFMDemoOld {
 
         nfsm.getTrace().print();
 
-        System.out.println("State machine is active: " + nfsm.isRunning());
+        System.out.println("State machine is active: " + nfsm.isStarted());
 
         // Output final result
         System.out.println("Final result: " + data.get("value"));
@@ -66,7 +66,7 @@ public class NSFMDemoOld {
 
         nfsm.getTrace().print();
 
-        System.out.println("State machine is active: " + nfsm.isRunning());
+        System.out.println("State machine is active: " + nfsm.isPaused());
 
 
         // Output final result

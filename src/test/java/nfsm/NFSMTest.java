@@ -25,9 +25,9 @@ public class NFSMTest {
         ProcessingData data = new ProcessingData();
         data.set("value", 5);
 
-        assertFalse(nfsm.isRunning());
+        assertFalse(nfsm.isStarted());
         nfsm.start("start", data);
-        assertFalse(nfsm.isRunning());
+        assertTrue(nfsm.isStarted());
     }
 
     @Test
@@ -37,6 +37,7 @@ public class NFSMTest {
         nfsm.addState(new State("step2", new Step2(), true));
         nfsm.addState(new State("step3", new Step3(), false));
         nfsm.addState(new State("end", new Step4(), false));
+        nfsm.addFinalState("end");
 
         // Define transitions
         nfsm.getState("start").addTransition("step2", "step2");
@@ -51,7 +52,7 @@ public class NFSMTest {
 
         nfsm.triggerEvent("proceed", data);
 
-        assertEquals(false, nfsm.isRunning());
+        assertFalse(nfsm.isFinished());
         assertEquals(4, data.get("value"));
     }
 

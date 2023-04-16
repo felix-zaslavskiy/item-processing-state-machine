@@ -3,7 +3,6 @@ package nfsm;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
 import java.util.*;
 
 public class NFSM {
@@ -62,10 +61,9 @@ public class NFSM {
         process(data);
     }
 
-    public boolean isRunning(){
-        return currentState != null && started;
-    }
-
+    /**
+     * Paused means FSM is waiting on an event
+     */
     public boolean isPaused() {
         if (!started) {
             return false;
@@ -74,17 +72,24 @@ public class NFSM {
         return state != null && state.shouldWaitForEventBeforeTransition();
     }
 
+    /**
+     * FSM is has been started.
+     */
     public boolean isStarted() {
         return started;
+    }
+
+    /**
+     * FSM has finished processing one of the finalStates.
+     */
+    public boolean isFinished() {
+        return started && !finalStates.isEmpty() && finalStates.contains(currentState);
     }
 
     public void addFinalState(String finalState) {
         this.finalStates.add(finalState);
     }
 
-    public boolean isFinished() {
-        return started && !finalStates.isEmpty() && finalStates.contains(currentState);
-    }
 
     private void process(ProcessingData data) {
         State state = states.get(currentState);

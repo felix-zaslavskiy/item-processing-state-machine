@@ -88,7 +88,7 @@ public class NFSMDemo {
         String export = nfsm.exportState();
         nfsm.importState(export);
 
-        if(nfsm.isRunning())
+        if(nfsm.isPaused())
             nfsm.triggerEvent(myCustomEvent, data);
     }
 

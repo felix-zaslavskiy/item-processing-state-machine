@@ -1,7 +1,6 @@
 package nfsm;
 
 import demo.MyCustomEvent;
-import nfsm.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,17 +16,17 @@ public class NFSMTest2 {
     public void setup() {
         nfsm = new NFSM.Builder()
                 .state("start", new Step1())
-                .onConditional().goTo("step2")
-                .onConditional().goTo("step3")
+                    .onConditional().goTo("step2")
+                    .onConditional().goTo("step3")
                 .and()
                 .state("step2", new Step2(), true)
-                .on(proceedEvent).goTo("end")
-                .on("alt_proceed").goTo("step3")
+                    .on(proceedEvent).goTo("end")
+                    .on("alt_proceed").goTo("step3")
                 .and()
-                .state("step3", new Step3())
-                .onAuto().goTo("end")
+                    .state("step3", new Step3())
+                    .onAuto().goTo("end")
                 .and()
-                .finalState("end", new Step4())
+                    .finalState("end", new Step4())
                 .build();
 
         data = new ProcessingData();
@@ -50,8 +49,12 @@ public class NFSMTest2 {
 
     @Test
     public void testAlternateTransition() {
+        data.set("value", 4); // will go step 2 and wait for
         nfsm.start("start", data);
-        nfsm.triggerEvent("alt_proceed", data);
+
+        // At step 2 waiting
+        assertTrue(nfsm.isPaused());
+        nfsm.triggerEvent("alt_proceed", data); // trigger alt_proceed event, will go to step 3
         assertEquals("step3", nfsm.getState("step3").getName());
     }
 
