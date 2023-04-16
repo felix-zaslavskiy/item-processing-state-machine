@@ -51,7 +51,6 @@ public class NFSMTest2 {
     public void testAlternateTransition() {
         data.set("value", 4); // will go step 2 and wait for
         nfsm.start("start", data);
-
         // At step 2 waiting
         assertTrue(nfsm.isPaused());
         nfsm.triggerEvent("alt_proceed", data); // trigger alt_proceed event, will go to step 3
@@ -68,11 +67,12 @@ public class NFSMTest2 {
 
     @Test
     public void testStep2Processing() {
+        data.set("value", 4); // will go step 2 and wait for
         nfsm.start("start", data);
         nfsm.triggerEvent(proceedEvent, data);
-        nfsm.triggerEvent(proceedEvent, data);
+        // Will end
         Integer value = (Integer) data.get("value");
-        assertEquals(Integer.valueOf(1), value);
+        assertEquals(Integer.valueOf(8), value);
     }
 
     @Test
