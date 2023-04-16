@@ -31,8 +31,9 @@ public class NFSMTest {
     }
 
     @Test
-    public void testOnEvent() {
+    public void testTriggerEvent() {
         NFSM nfsm = new NFSM();
+        nfsm.setTraceMode(true);
         nfsm.addState(new State("start", new Step1(), false));
         nfsm.addState(new State("step2", new Step2(), true));
         nfsm.addState(new State("step3", new Step3(), false));
@@ -52,8 +53,9 @@ public class NFSMTest {
 
         nfsm.triggerEvent("proceed", data);
 
-        assertFalse(nfsm.isFinished());
-        assertEquals(4, data.get("value"));
+        nfsm.getTrace().print();
+        assertTrue(nfsm.isFinished());
+        assertEquals(8, data.get("value"));
     }
 
     @Test
