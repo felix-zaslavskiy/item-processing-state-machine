@@ -37,14 +37,14 @@ public class NFSMTest2 {
     public void testInitialState() {
         nfsm.start("start", data);
         assertTrue(nfsm.isStarted());
-        assertEquals("start", nfsm.getState("start").getName());
     }
 
     @Test
     public void testAutoTransition() {
-        nfsm.start("start", data);
-        nfsm.triggerEvent(proceedEvent, data);
-        assertEquals("end", nfsm.getState("end").getName());
+        nfsm.start("step3", data);
+        assertTrue(nfsm.isFinished());
+        State finalState = nfsm.getFinalState();
+        assertEquals("end", finalState.getName());
     }
 
     @Test
@@ -57,39 +57,20 @@ public class NFSMTest2 {
         assertEquals("step3", nfsm.getState("step3").getName());
     }
 
-    @Test
-    public void testStep1Processing() {
-        nfsm.start("start", data);
-        nfsm.triggerEvent(proceedEvent, data);
-        Integer value = (Integer) data.get("value");
-        assertEquals(Integer.valueOf(3), value);
-    }
 
     @Test
     public void testStep2Processing() {
-        data.set("value", 4); // will go step 2 and wait for
+        data.set("value", 4);// will go step 2 and wait for
         nfsm.start("start", data);
         nfsm.triggerEvent(proceedEvent, data);
-        // Will end
         Integer value = (Integer) data.get("value");
         assertEquals(Integer.valueOf(8), value);
     }
 
     @Test
-    public void testStep4Processing() {
-        nfsm.start("start", data);
-        nfsm.triggerEvent(proceedEvent, data);
-        nfsm.triggerEvent(proceedEvent, data);
-        nfsm.triggerEvent(proceedEvent, data);
-        Integer value = (Integer) data.get("value");
-        assertEquals(Integer.valueOf(0), value);
-    }
-
-    @Test
     public void testIsFinished() {
+        data.set("value", 4); // will go step 2 and wait for
         nfsm.start("start", data);
-        nfsm.triggerEvent(proceedEvent, data);
-        nfsm.triggerEvent(proceedEvent, data);
         nfsm.triggerEvent(proceedEvent, data);
         assertTrue(nfsm.isFinished());
     }

@@ -55,7 +55,7 @@ public class NFSM {
         }
 
         if (traceMode) {
-            trace.add("onEvent, continuing to state: " + nextState);
+            trace.add("triggerEvent, continuing to state: " + nextState);
         }
         currentState = nextState;
         process(data);
@@ -93,7 +93,7 @@ public class NFSM {
 
     private void process(ProcessingData data) {
         State state = states.get(currentState);
-        while (state != null && !state.shouldWaitForEventBeforeTransition()) {
+        while (state != null) {
 
             if (traceMode) {
                 trace.add("Entering state: " + state.getName());
@@ -104,6 +104,12 @@ public class NFSM {
                 state.execute(data, trace);
             } else {
                 state.execute(data);
+            }
+            if(state.shouldWaitForEventBeforeTransition()){
+                if (traceMode) {
+                    trace.add("Processed state " + state.getName() + ". Pausing because " + state.getName() + " requires a wait after completion");
+                }
+                break;
             }
 
             String nextState = data.getNextState();
@@ -124,11 +130,14 @@ public class NFSM {
                 trace.add("Exiting state: " + state.getName() + ", transitioning to: " + (nextState == null ? "terminated" : nextState));
             }
 
-            state = nextState != null ? states.get(nextState) : null;
-            if(traceMode && state != null && state.shouldWaitForEventBeforeTransition()){
-                trace.add("Pausing because " + state.getName() + " requires a wait after completion");
+            if(nextState != null){
+                state = states.get(nextState);
+                currentState = nextState;
+            }else {
+                state = null;
+                // Either in finalState or no other transition available.
             }
-            currentState = nextState;
+
         }
     }
 
@@ -183,6 +192,12 @@ public class NFSM {
         traceMode = fsmState.isTraceMode();
         trace = fsmState.getTrace();
         started = fsmState.isStarted();
+    }
+
+    public State getFinalState() {
+        if(!isFinished())
+            throw new IllegalStateException("State machine must finish to have final state");
+        return states.get(currentState);
     }
 
 
