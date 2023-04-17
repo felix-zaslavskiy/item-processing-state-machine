@@ -1,5 +1,5 @@
 package nfsm;
 
-public interface Event {
+public interface NamedEntity {
     String getName();
 }

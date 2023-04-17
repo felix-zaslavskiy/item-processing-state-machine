@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class NFSMTest2 {
     private NFSM nfsm;
     private ProcessingData data;
-    private final Event proceedEvent = new MyCustomEvent("proceed");
+    private final NamedEntity proceedEvent = new MyCustomEvent("proceed");
 
     @BeforeEach
     public void setup() {

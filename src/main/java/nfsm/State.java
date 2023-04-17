@@ -32,7 +32,7 @@ public class State {
         return transitions.entrySet();
     }
 
-    public String getNextState(Event event) {
+    public String getNextState(NamedEntity event) {
         return transitions.get(event.getName());
     }
 

@@ -4,7 +4,7 @@ import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.parse.Parser;
-import nfsm.Event;
+import nfsm.NamedEntity;
 import nfsm.NFSM;
 import nfsm.ProcessingData;
 import nfsm.ProcessingStep;
@@ -61,7 +61,7 @@ public class NFSMDemo {
     }
 
     private static void builderWay() {
-        Event myCustomEvent = new MyCustomEvent("proceed");
+        NamedEntity myCustomEvent = new MyCustomEvent("proceed");
 
         NFSM nfsm = new NFSM.Builder()
                 .state("start", new Step1())

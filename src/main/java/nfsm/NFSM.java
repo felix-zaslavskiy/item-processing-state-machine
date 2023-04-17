@@ -39,7 +39,7 @@ public class NFSM {
         process(data);
     }
 
-    public void triggerEvent(Event event, ProcessingData data) {
+    public void triggerEvent(NamedEntity event, ProcessingData data) {
         String eventName = event.getName();
         triggerEvent(eventName, data);
     }
@@ -257,7 +257,7 @@ public class NFSM {
             return new TransitionBuilder(eventName, this);
         }
 
-        public TransitionBuilder on(Event event){
+        public TransitionBuilder on(NamedEntity event){
             return new TransitionBuilder(event.getName(), this);
         }
 

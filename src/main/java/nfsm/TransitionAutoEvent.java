@@ -1,6 +1,6 @@
 package nfsm;
 
-public class TransitionAutoEvent implements Event {
+public class TransitionAutoEvent implements NamedEntity {
 
     @Override
     public String getName() {
