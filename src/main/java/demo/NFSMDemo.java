@@ -64,18 +64,18 @@ public class NFSMDemo {
         NamedEntity myCustomEvent = new MyCustomEvent("proceed");
 
         NFSM nfsm = new NFSM.Builder()
-                .state("start", new Step1())
-                    .onConditional().goTo("step2") // Generates event name: start_to_step2
-                    .onConditional().goTo("step3") // Generates event name: start_to_step3
+                .state(DemoNames.START, new Step1())
+                    .onConditional().goTo(DemoNames.STEP2) // Generates event name: start_to_step2
+                    .onConditional().goTo(DemoNames.STEP3) // Generates event name: start_to_step3
                 .and()
-                .state("step2", new Step2(), true)
-                    .on(myCustomEvent).goTo("end")
-                    .on("alt_proceed").goTo("step3")
+                .state(DemoNames.STEP2, new Step2(), true)
+                    .on(myCustomEvent).goTo(DemoNames.END)
+                    .on(DemoNames.ALT_PROCEED).goTo(DemoNames.STEP3)
                 .and()
-                .state("step3", new Step3())
-                    .onAuto().goTo("end")
+                .state(DemoNames.STEP3, new Step3())
+                    .onAuto().goTo(DemoNames.END)
                 .and()
-                .finalState("end", new Step4())
+                .finalState(DemoNames.END, new Step4())
                 .build();
 
         String graphvizDot = nfsm.toGraphviz();

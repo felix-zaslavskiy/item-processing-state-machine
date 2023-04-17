@@ -209,8 +209,16 @@ public class NFSM {
             nfsm = new NFSM();
         }
 
+        public StateBuilder state(NamedEntity name, ProcessingStep processingStep) {
+            return state(name.getName(), processingStep);
+        }
+
         public StateBuilder state(String name, ProcessingStep processingStep) {
             return state(name, processingStep, false);
+        }
+
+        public StateBuilder state(NamedEntity name, ProcessingStep processingStep, boolean waitForEventBeforeTransition) {
+            return state(name.getName(), processingStep, waitForEventBeforeTransition);
         }
 
         public StateBuilder state(String name, ProcessingStep processingStep, boolean waitForEventBeforeTransition) {
@@ -218,6 +226,10 @@ public class NFSM {
             nfsm.states.put(name, new State(name, processingStep, waitForEventBeforeTransition));
             lastCreatedStateName = name;
             return new StateBuilder(name, processingStep, waitForEventBeforeTransition, this);
+        }
+
+        public Builder finalState(NamedEntity name, ProcessingStep processingStep){
+            return finalState(name.getName(), processingStep);
         }
 
         public Builder finalState(String name, ProcessingStep processingStep) {
@@ -291,6 +303,10 @@ public class NFSM {
             this.eventName = eventName;
             this.stateBuilder = stateBuilder;
             this.isConditional = isConditional;
+        }
+
+        public StateBuilder goTo(NamedEntity nextState){
+            return goTo(nextState.getName());
         }
 
         public StateBuilder goTo(String nextState) {
