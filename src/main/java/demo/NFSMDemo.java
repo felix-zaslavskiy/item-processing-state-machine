@@ -76,6 +76,7 @@ public class NFSMDemo {
                     .onAuto().goTo(DemoNames.END)
                 .and()
                 .finalState(DemoNames.END, new Step4())
+                .onExceptionGoTo(DemoNames.END)
                 .build();
 
         String graphvizDot = nfsm.toGraphviz();

@@ -41,14 +41,25 @@ public class State {
         return transitions.get(event);
     }
 
-    public void execute(ProcessingData data, Trace trace) {
+    public ExceptionInfo execute(ProcessingData data, Trace trace) {
         trace.add("Before processing: " + processingStep.getClassName());
-        processingStep.process(data);
+        try {
+            processingStep.process(data);
+        }catch (Exception e){
+            trace.add("Exception occurred in "+ processingStep.getClassName() + ".process()");
+            return new ExceptionInfo(e);
+        }
         trace.add("After processing: " + processingStep.getClassName());
+        return new ExceptionInfo();
     }
 
-    public void execute(ProcessingData data) {
-        processingStep.process(data);
+    public ExceptionInfo execute(ProcessingData data) {
+        try {
+            processingStep.process(data);
+            return new ExceptionInfo();
+        }catch(Exception e){
+            return new ExceptionInfo(e);
+        }
     }
 
     public boolean shouldWaitForEventBeforeTransition() {

@@ -2,13 +2,15 @@ package nfsm;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import demo.DemoNames;
 
 import java.util.*;
 
 public class NFSM {
     private final Map<String, State> states;
+    private String onExceptionState;
     private String currentState;
-    private Set<String> finalStates;
+    private final Set<String> finalStates;
     private boolean traceMode;
     private Trace trace;
     private boolean started;
@@ -86,6 +88,13 @@ public class NFSM {
         return started && !finalStates.isEmpty() && finalStates.contains(currentState);
     }
 
+    /**
+     * FSM has terminated.
+     */
+    public boolean isTerminated(){
+        return started && currentState == null;
+    }
+
     public void addFinalState(String finalState) {
         this.finalStates.add(finalState);
     }
@@ -100,12 +109,36 @@ public class NFSM {
             }
 
             data.setNextState(null); // Reset the nextState before executing the step
-            if(traceMode) {
-                state.execute(data, trace);
+
+            ExceptionInfo exceptionInfo;
+            if (traceMode) {
+                exceptionInfo = state.execute(data, trace);
             } else {
-                state.execute(data);
+                exceptionInfo = state.execute(data);
             }
-            if(state.shouldWaitForEventBeforeTransition()){
+
+            if(exceptionInfo.hadException()){
+                // Have a transition for on Exception event
+                data.set("exceptionInfo", exceptionInfo);
+                if(this.onExceptionState != null){
+                    if(traceMode){
+                        trace.add("Due to exception transitioning to state " + this.onExceptionState);
+                    }
+
+                    state = states.get(this.onExceptionState);
+                    currentState = this.onExceptionState;
+
+                    continue;
+
+                } else{
+                    // Don't have a transition for Exception event.
+                    if(traceMode){
+                        trace.add("Stopping because of exception and no onExceptionState transition defined");
+                    }
+                    currentState=null;
+                    break;
+                }
+            } else if(state.shouldWaitForEventBeforeTransition()){
                 if (traceMode) {
                     trace.add("Processed state " + state.getName() + ". Pausing because " + state.getName() + " requires a wait after completion");
                 }
@@ -238,6 +271,15 @@ public class NFSM {
             return this;
         }
 
+        public Builder onExceptionGoTo(NamedEntity state) {
+            return onExceptionGoTo(state.getName());
+        }
+
+        public Builder onExceptionGoTo(String state) {
+            nfsm.onExceptionState = state;
+            return this;
+        }
+
         public NFSM build() {
             if (nfsm.states.isEmpty()) {
                 throw new IllegalStateException("At least one state must be defined.");
@@ -250,6 +292,7 @@ public class NFSM {
                 throw new IllegalArgumentException("A state with the name '" + name + "' already exists.");
             }
         }
+
     }
 
     public static class StateBuilder {
