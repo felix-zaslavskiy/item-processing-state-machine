@@ -28,6 +28,7 @@ public class State {
     public Collection<String> getTransitions() {
         return transitions.values();
     }
+
     public Set<Map.Entry<String, String>> getTransitionEntries() {
         return transitions.entrySet();
     }

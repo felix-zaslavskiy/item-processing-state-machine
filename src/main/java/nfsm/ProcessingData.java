@@ -23,6 +23,10 @@ public class ProcessingData {
         return dataMap.get(key);
     }
 
+    public boolean containsKey(String key) {
+        return dataMap.containsKey(key);
+    }
+
     public boolean hadException(){
         return exceptionInfo != null;
     }

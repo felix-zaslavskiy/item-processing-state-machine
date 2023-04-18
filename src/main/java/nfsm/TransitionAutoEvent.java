@@ -4,8 +4,8 @@ public class TransitionAutoEvent implements NamedEntity {
 
     @Override
     public String getName() {
-        return TransitionAutoEvent.AUTO;
+        return TransitionAutoEvent.NAME;
     }
 
-    public final static String AUTO = "AUTO";
+    public final static String NAME = "AUTO";
 }

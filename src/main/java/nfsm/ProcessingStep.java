@@ -8,12 +8,10 @@ public abstract class ProcessingStep {
         data.setNextState(nextState);
     }
 
-    protected  String getClassName(){
+    protected String getClassName() {
         String name = this.getClass().getSimpleName();
-        if(name.equals("")){
-            return this.getClass().getName();
-        }else{
-            return name;
-        }
+        return name.isEmpty() ? this.getClass().getName() : name;
     }
+
+
 }

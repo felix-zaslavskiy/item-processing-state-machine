@@ -30,8 +30,9 @@ public class NFSM {
     }
 
     public State getState(String name) {
-        return states.get(name);
+        return Objects.requireNonNull(states.get(name), "State with name '" + name + "' not found.");
     }
+
 
     public void start(String startingState, ProcessingData data) {
         currentState = startingState;
@@ -139,7 +140,7 @@ public class NFSM {
 
             String nextState = data.getNextState();
             if (nextState == null) {
-                nextState = state.getNextState(TransitionAutoEvent.AUTO);
+                nextState = state.getNextState(TransitionAutoEvent.NAME);
             }
 
             if (nextState == null) {
@@ -309,7 +310,7 @@ public class NFSM {
         }
 
         public TransitionBuilder onAuto() {
-            return on(TransitionAutoEvent.AUTO);
+            return on(TransitionAutoEvent.NAME);
         }
 
         public TransitionBuilder onConditional() {
