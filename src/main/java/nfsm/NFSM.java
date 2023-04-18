@@ -82,17 +82,12 @@ public class NFSM {
     }
 
     /**
-     * FSM has finished processing one of the finalStates.
+     * FSM has finished processing one of the finalStates,
+     * or it has terminated due to exception without a finalState.
      */
     public boolean isFinished() {
-        return started && !finalStates.isEmpty() && finalStates.contains(currentState);
-    }
-
-    /**
-     * FSM has terminated.
-     */
-    public boolean isTerminated(){
-        return started && currentState == null;
+        return started && ( (!finalStates.isEmpty() && finalStates.contains(currentState))
+                || currentState == null );
     }
 
     public void addFinalState(String finalState) {
@@ -119,7 +114,7 @@ public class NFSM {
 
             if(exceptionInfo.hadException()){
                 // Have a transition for on Exception event
-                data.set("exceptionInfo", exceptionInfo);
+                data.setExceptionInfo(exceptionInfo);
                 if(this.onExceptionState != null){
                     if(traceMode){
                         trace.add("Due to exception transitioning to state " + this.onExceptionState);
@@ -167,8 +162,9 @@ public class NFSM {
                 state = states.get(nextState);
                 currentState = nextState;
             }else {
-                state = null;
                 // Either in finalState or no other transition available.
+                // currentState remains on the last state set.
+                state = null;
             }
 
         }
@@ -284,6 +280,11 @@ public class NFSM {
             if (nfsm.states.isEmpty()) {
                 throw new IllegalStateException("At least one state must be defined.");
             }
+            // Make the onException set as finalState
+            if(nfsm.onExceptionState != null){
+                nfsm.addFinalState(nfsm.onExceptionState);
+            }
+
             return nfsm;
         }
 

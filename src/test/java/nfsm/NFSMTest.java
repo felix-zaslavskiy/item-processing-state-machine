@@ -82,4 +82,63 @@ public class NFSMTest {
         Trace trace = nfsm.getTrace();
         Assertions.assertNotNull(trace);
     }
+
+    @Test
+    public void testExceptionHandler(){
+        NFSM nfsm = new NFSM.Builder()
+                .state("start", new Step1())
+                .onAuto().goTo("step2")
+                .and()
+                .state("step2", new ProcessingStep() {
+                    @Override
+                    protected void process(ProcessingData data) {
+                        throw new RuntimeException("Test");
+                    }
+                })
+                .and()
+                .state("exception", new ExceptionHandler())
+                .end()
+                .onExceptionGoTo("exception")
+                .build();
+
+        nfsm.setTraceMode(true);
+        ProcessingData data = new ProcessingData();
+        data.set("value", 4);
+        nfsm.start("start", data);
+        Trace trace = nfsm.getTrace();
+        trace.print();
+
+        assertNotNull(data.get("error"));
+        assertTrue(data.hadException());
+        assertEquals("Test", data.getException().getMessage());
+        assertTrue(nfsm.isFinished());
+
+    }
+
+    @Test
+    public void testExceptionWithoutHandler(){
+        NFSM nfsm = new NFSM.Builder()
+                .state("start", new Step1())
+                .onAuto().goTo("step2")
+                .and()
+                .state("step2", new ProcessingStep() {
+                    @Override
+                    protected void process(ProcessingData data) {
+                        throw new RuntimeException("Test");
+                    }
+                })
+                .end()
+                .build();
+
+        nfsm.setTraceMode(true);
+        ProcessingData data = new ProcessingData();
+        data.set("value", 4);
+        nfsm.start("start", data);
+        Trace trace = nfsm.getTrace();
+        trace.print();
+
+        assertTrue(data.hadException());
+        assertTrue(nfsm.isFinished());
+
+    }
 }

@@ -2,10 +2,10 @@ package nfsm;
 
 public class ExceptionInfo {
     private boolean hadException = false;
-    Exception e;
-    public ExceptionInfo(Exception e) {
+    public Exception exception;
+    public ExceptionInfo(Exception exception) {
         hadException=true;
-        this.e = e;
+        this.exception = exception;
     }
 
     public ExceptionInfo() {

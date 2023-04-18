@@ -9,6 +9,11 @@ public abstract class ProcessingStep {
     }
 
     protected  String getClassName(){
-        return  this.getClass().getSimpleName();
+        String name = this.getClass().getSimpleName();
+        if(name.equals("")){
+            return this.getClass().getName();
+        }else{
+            return name;
+        }
     }
 }

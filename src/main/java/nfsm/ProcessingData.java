@@ -7,6 +7,9 @@ public class ProcessingData {
     private final Map<String, Object> dataMap;
     private String nextState;
 
+    // If state machine has exception info.
+    private ExceptionInfo exceptionInfo;
+
     public ProcessingData() {
         this.dataMap = new HashMap<>();
         this.nextState = null;
@@ -20,11 +23,22 @@ public class ProcessingData {
         return dataMap.get(key);
     }
 
+    public boolean hadException(){
+        return exceptionInfo != null;
+    }
+    public Exception getException(){
+        return exceptionInfo.exception;
+    }
+
     public String getNextState() {
         return nextState;
     }
 
     public void setNextState(String nextState) {
         this.nextState = nextState;
+    }
+
+    public void setExceptionInfo(ExceptionInfo exceptionInfo){
+        this.exceptionInfo = exceptionInfo;
     }
 }
