@@ -7,5 +7,5 @@ public class TransitionAutoEvent implements NamedEntity {
         return TransitionAutoEvent.AUTO;
     }
 
-    public final static String AUTO = "auto";
+    public final static String AUTO = "AUTO";
 }
