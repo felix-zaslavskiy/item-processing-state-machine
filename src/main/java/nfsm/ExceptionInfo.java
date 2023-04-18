@@ -4,7 +4,7 @@ public class ExceptionInfo {
     private boolean hadException = false;
     public Exception exception;
     public ExceptionInfo(Exception exception) {
-        hadException=true;
+        this.hadException=true;
         this.exception = exception;
     }
 

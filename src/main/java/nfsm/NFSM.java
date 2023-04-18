@@ -231,11 +231,11 @@ public class NFSM {
 
 
     public static class Builder {
-        private NFSM nfsm;
+        private final NFSM nfsm;
         private String lastCreatedStateName;
 
         public Builder() {
-            nfsm = new NFSM();
+            this.nfsm = new NFSM();
         }
 
         public StateBuilder state(NamedEntity name, ProcessingStep processingStep) {
@@ -252,8 +252,8 @@ public class NFSM {
 
         public StateBuilder state(String name, ProcessingStep processingStep, boolean waitForEventBeforeTransition) {
             validateStateName(name);
-            nfsm.states.put(name, new State(name, processingStep, waitForEventBeforeTransition));
-            lastCreatedStateName = name;
+            this.nfsm.states.put(name, new State(name, processingStep, waitForEventBeforeTransition));
+            this.lastCreatedStateName = name;
             return new StateBuilder(name, processingStep, waitForEventBeforeTransition, this);
         }
 
@@ -263,7 +263,7 @@ public class NFSM {
 
         public Builder finalState(String name, ProcessingStep processingStep) {
             state(name, processingStep, false);
-            nfsm.addFinalState(name);
+            this.nfsm.addFinalState(name);
             return this;
         }
 
