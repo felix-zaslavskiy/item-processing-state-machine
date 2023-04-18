@@ -2,8 +2,6 @@ package nfsm;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import demo.DemoNames;
-
 import java.util.*;
 
 public class NFSM {
@@ -42,8 +40,7 @@ public class NFSM {
     }
 
     public void triggerEvent(NamedEntity event, ProcessingData data) {
-        String eventName = event.getName();
-        triggerEvent(eventName, data);
+        triggerEvent(event.getName(), data);
     }
 
     public void triggerEvent(String eventName, ProcessingData data) {
@@ -211,7 +208,7 @@ public class NFSM {
 
     public void importState(String json)  {
         ObjectMapper objectMapper = new ObjectMapper();
-        FSMState fsmState = null;
+        FSMState fsmState;
         try {
             fsmState = objectMapper.readValue(json, FSMState.class);
         } catch (JsonProcessingException e) {
@@ -232,7 +229,6 @@ public class NFSM {
 
     public static class Builder {
         private final NFSM nfsm;
-        private String lastCreatedStateName;
 
         public Builder() {
             this.nfsm = new NFSM();
@@ -253,8 +249,7 @@ public class NFSM {
         public StateBuilder state(String name, ProcessingStep processingStep, boolean waitForEventBeforeTransition) {
             validateStateName(name);
             this.nfsm.states.put(name, new State(name, processingStep, waitForEventBeforeTransition));
-            this.lastCreatedStateName = name;
-            return new StateBuilder(name, processingStep, waitForEventBeforeTransition, this);
+            return new StateBuilder(name, this);
         }
 
         public Builder finalState(NamedEntity name, ProcessingStep processingStep){
@@ -297,15 +292,11 @@ public class NFSM {
     }
 
     public static class StateBuilder {
-        private String name;
-        private ProcessingStep processingStep;
-        private boolean waitForEventBeforeTransition;
-        private Builder nfsmBuilder;
+        private final String name;
+        private final Builder nfsmBuilder;
 
-        public StateBuilder(String name, ProcessingStep processingStep, boolean waitForEventBeforeTransition, Builder nfsmBuilder) {
+        public StateBuilder(String name, Builder nfsmBuilder) {
             this.name = name;
-            this.processingStep = processingStep;
-            this.waitForEventBeforeTransition = waitForEventBeforeTransition;
             this.nfsmBuilder = nfsmBuilder;
         }
 
@@ -336,8 +327,8 @@ public class NFSM {
 
     public static class TransitionBuilder {
         private String eventName;
-        private StateBuilder stateBuilder;
-        private boolean isConditional;
+        private final StateBuilder stateBuilder;
+        private final boolean isConditional;
 
         public TransitionBuilder(String eventName, StateBuilder stateBuilder) {
             this(eventName, stateBuilder, false);
