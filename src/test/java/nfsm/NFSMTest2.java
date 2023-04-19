@@ -16,15 +16,15 @@ public class NFSMTest2 {
     public void setup() {
         nfsm = new NFSM.Builder()
                 .state("start", new Step1())
-                    .onConditional().goTo("step2")
-                    .onConditional().goTo("step3")
+                    .conditional().goTo("step2")
+                    .conditional().goTo("step3")
                 .and()
                 .state("step2", new Step2(), true)
                     .on(proceedEvent).goTo("end")
                     .on("alt_proceed").goTo("step3")
                 .and()
                     .state("step3", new Step3())
-                    .onAuto().goTo("end")
+                    .auto().goTo("end")
                 .and()
                     .finalState("end", new Step4())
                 .build();

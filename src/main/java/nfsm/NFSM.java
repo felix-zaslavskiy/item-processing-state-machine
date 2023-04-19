@@ -40,6 +40,10 @@ public class NFSM {
         process(data);
     }
 
+    public void start(NamedEntity startingState, ProcessingData data){
+        start(startingState.getName(), data);
+    }
+
     public void triggerEvent(NamedEntity event, ProcessingData data) {
         triggerEvent(event.getName(), data);
     }
@@ -178,7 +182,20 @@ public class NFSM {
         for (Map.Entry<String, State> entry : states.entrySet()) {
             String stateName = entry.getKey();
             State state = entry.getValue();
-            dot.append("\t").append(stateName).append("[label=\"").append(stateName).append("\"];\n");
+            dot.append("\t").append(stateName)
+                    .append("[label=\"")
+                    .append(stateName)
+                    .append("\\n")
+                    .append("[").append(state.getProcessStepClassName()).append("]");
+
+            if(state.shouldWaitForEventBeforeTransition()){
+                dot.append("\\n").append("<wait>");
+            }
+            if(finalStates.contains(stateName)){
+                dot.append("\\n").append("<final>");
+            }
+
+                    dot.append("\"];\n");
             for (Map.Entry<String, String> transition : state.getTransitionEntries()) {
                 String eventName = transition.getKey();
                 String targetState = transition.getValue();
@@ -187,6 +204,11 @@ public class NFSM {
                         .append("[label=\"").append(eventName).append("\"];\n");
 
             }
+        }
+        if(onExceptionState!= null){
+            dot.append("Exception [label=\"Exception\" shape=\"box\"];\n");
+            dot.append("\t").append("Exception -> ").append(onExceptionState)
+                    .append("[label=\"ON_EXCEPTION\"];\n");
         }
 
         dot.append("}");
@@ -305,12 +327,12 @@ public class NFSM {
             return new TransitionBuilder(event.getName(), this);
         }
 
-        public TransitionBuilder onAuto() {
+        public TransitionBuilder auto() {
             return on(TransitionAutoEvent.NAME);
         }
 
-        public TransitionBuilder onConditional() {
-            String nextState = name + "_to_";
+        public TransitionBuilder conditional() {
+            String nextState = name + "_TO_";
             return new TransitionBuilder(nextState, this, true);
         }
 

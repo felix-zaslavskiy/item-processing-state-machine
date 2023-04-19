@@ -37,7 +37,6 @@ public class State {
         return transitions.get(event.getName());
     }
 
-
     public String getNextState(String event) {
         return transitions.get(event);
     }
@@ -72,4 +71,7 @@ public class State {
     }
 
 
+    public String getProcessStepClassName() {
+        return processingStep.getClassName();
+    }
 }

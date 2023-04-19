@@ -12,6 +12,7 @@ import nfsm.ProcessingStep;
 import java.io.File;
 import java.io.IOException;
 
+import static demo.DemoNames.*;
 class Step1 extends ProcessingStep {
     @Override
     protected void process(ProcessingData data) {
@@ -21,9 +22,9 @@ class Step1 extends ProcessingStep {
 
         // Select the next state based on the value
         if (value % 2 == 0) {
-            nextState(data, "step2");
+            nextState(data, STEP2);
         } else {
-            nextState(data, "step3");
+            nextState(data, STEP3);
         }
     }
 }
@@ -57,26 +58,26 @@ class Step4 extends ProcessingStep {
 
 public class NFSMDemo {
     public static void main(String[] args) {
-        builderWay();
+        fluentBuilder();
     }
 
-    private static void builderWay() {
-        NamedEntity myCustomEvent = new MyCustomEvent("proceed");
+    private static void fluentBuilder() {
+        NamedEntity myCustomEvent = new MyCustomEvent("PROCEED");
 
         NFSM nfsm = new NFSM.Builder()
-                .state(DemoNames.START, new Step1())
-                    .onConditional().goTo(DemoNames.STEP2) // Generates event name: start_to_step2
-                    .onConditional().goTo(DemoNames.STEP3) // Generates event name: start_to_step3
+                .state(START, new Step1())
+                    .conditional().goTo(STEP2) // Generates event name: START_TO_STEP2
+                    .conditional().goTo(STEP3) // Generates event name: START_TO_STEP3
                 .and()
-                .state(DemoNames.STEP2, new Step2(), true)
-                    .on(myCustomEvent).goTo(DemoNames.END)
-                    .on(DemoNames.ALT_PROCEED).goTo(DemoNames.STEP3)
+                .state(STEP2, new Step2(), true)
+                    .on(myCustomEvent).goTo(END)
+                    .on(ALT_PROCEED).goTo(STEP3)
                 .and()
-                .state(DemoNames.STEP3, new Step3())
-                    .onAuto().goTo(DemoNames.END)
+                .state(STEP3, new Step3())
+                    .auto().goTo(END)
                 .and()
-                .finalState(DemoNames.END, new Step4())
-                .onExceptionGoTo(DemoNames.END)
+                .finalState(END, new Step4())
+                .onExceptionGoTo(END)
                 .build();
 
         String graphvizDot = nfsm.toGraphviz();
@@ -84,7 +85,7 @@ public class NFSMDemo {
 
         ProcessingData data = new ProcessingData();
         data.set("value", 5);
-        nfsm.start("start", data); // Optional event parameter
+        nfsm.start(START, data); // Optional event parameter
 
         String export = nfsm.exportState();
         nfsm.importState(export);
