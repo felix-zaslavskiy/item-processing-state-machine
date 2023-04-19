@@ -87,7 +87,7 @@ public class NFSMTest {
     public void testExceptionHandler(){
         NFSM nfsm = new NFSM.Builder()
                 .state("start", new Step1())
-                .onAuto().goTo("step2")
+                .auto().goTo("step2")
                 .and()
                 .state("step2", new ProcessingStep() {
                     @Override
@@ -119,7 +119,7 @@ public class NFSMTest {
     public void testExceptionWithoutHandler(){
         NFSM nfsm = new NFSM.Builder()
                 .state("start", new Step1())
-                .onAuto().goTo("step2")
+                .auto().goTo("step2")
                 .and()
                 .state("step2", new ProcessingStep() {
                     @Override
@@ -134,8 +134,8 @@ public class NFSMTest {
         ProcessingData data = new ProcessingData();
         data.set("value", 4);
         nfsm.start("start", data);
-        Trace trace = nfsm.getTrace();
-        trace.print();
+        //Trace trace = nfsm.getTrace();
+        //trace.print();
 
         assertTrue(data.hadException());
         assertTrue(nfsm.isFinished());
