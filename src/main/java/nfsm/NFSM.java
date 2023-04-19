@@ -118,6 +118,14 @@ public class NFSM {
                 // Have a transition for on Exception event
                 data.setExceptionInfo(exceptionInfo);
                 if(this.onExceptionState != null){
+                    // If exception handler thrown exception itself.
+                    if(this.onExceptionState == currentState){
+                        trace.add("Exception handler thru exception stopping.");
+                        trace.add(exceptionInfo.exception.getMessage());
+                        currentState=null;
+                        break;
+                    }
+
                     if(traceMode){
                         trace.add("Due to exception transitioning to state " + this.onExceptionState);
                     }
@@ -293,6 +301,11 @@ public class NFSM {
 
         public Builder onExceptionGoTo(String state) {
             nfsm.onExceptionState = state;
+            return this;
+        }
+
+        public Builder withTrace(){
+            nfsm.setTraceMode(true);
             return this;
         }
 

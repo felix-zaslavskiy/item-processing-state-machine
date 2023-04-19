@@ -45,6 +45,7 @@ public class State {
         trace.add("Before processing: " + processingStep.getClassName());
         try {
             processingStep.process(data);
+            trace.addAll(processingStep.logs);
         }catch (Exception e){
             trace.add("Exception occurred in "+ processingStep.getClassName() + ".process()");
             return new ExceptionInfo(e);

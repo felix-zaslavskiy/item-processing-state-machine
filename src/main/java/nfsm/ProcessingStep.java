@@ -1,6 +1,13 @@
 package nfsm;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class ProcessingStep {
+
+    // Collects log entries during step execution.
+    List<String> logs;
+
     protected abstract void process(ProcessingData data);
 
     /**
@@ -24,5 +31,11 @@ public abstract class ProcessingStep {
         return name.isEmpty() ? this.getClass().getName() : name;
     }
 
+    protected void log(String log){
+        if(logs == null){
+            logs = new ArrayList<>();
+        }
+        logs.add(log);
+    }
 
 }

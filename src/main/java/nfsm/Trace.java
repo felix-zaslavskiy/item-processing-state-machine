@@ -9,18 +9,27 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Trace {
 
-    @JsonProperty("log")
-    private List<String> log;
+    @JsonProperty("logs")
+    private List<String> logs;
 
     public Trace() {
-        log = new ArrayList<>();
+        logs = new ArrayList<>();
     }
 
     public void add(String message) {
-        log.add(message);
+        logs.add(message);
+    }
+
+    public String toString(){
+        return String.join("\n", logs);
     }
 
     public void print() {
-        log.forEach(System.out::println);
+        logs.forEach(System.out::println);
+    }
+
+    public void addAll(List<String> logs) {
+        if(logs!=null)
+            this.logs.addAll(logs);
     }
 }

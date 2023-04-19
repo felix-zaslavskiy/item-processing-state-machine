@@ -10,23 +10,23 @@ public class NFSMTest {
     @Test
     public void testStart() {
         NFSM nfsm = new NFSM();
-        nfsm.addState(new State("start", new Step1(), false));
-        nfsm.addState(new State("step2", new Step2(), true));
-        nfsm.addState(new State("step3", new Step3(), false));
-        nfsm.addState(new State("end", new Step4(), false));
+        nfsm.addState(new State("START", new Step1(), false));
+        nfsm.addState(new State("STEP2", new Step2(), true));
+        nfsm.addState(new State("STEP3", new Step3(), false));
+        nfsm.addState(new State("END", new Step4(), false));
 
         // Define transitions
-        nfsm.getState("start").addTransition("step2", "step2");
-        nfsm.getState("start").addTransition("step3", "step3");
+        nfsm.getState("START").addTransition("STEP2", "STEP2");
+        nfsm.getState("START").addTransition("STEP3", "STEP3");
 
-        nfsm.getState("step2").addTransition("proceed", "end");
-        nfsm.getState("step3").addTransition("auto", "end");
+        nfsm.getState("STEP2").addTransition("PROCEED", "END");
+        nfsm.getState("STEP3").addTransition("AUTO", "END");
 
         ProcessingData data = new ProcessingData();
         data.set("value", 5);
 
         assertFalse(nfsm.isStarted());
-        nfsm.start("start", data);
+        nfsm.start("START", data);
         assertTrue(nfsm.isStarted());
     }
 
@@ -34,24 +34,24 @@ public class NFSMTest {
     public void testTriggerEvent() {
         NFSM nfsm = new NFSM();
         nfsm.setTraceMode(true);
-        nfsm.addState(new State("start", new Step1(), false));
-        nfsm.addState(new State("step2", new Step2(), true));
-        nfsm.addState(new State("step3", new Step3(), false));
-        nfsm.addState(new State("end", new Step4(), false));
-        nfsm.addFinalState("end");
+        nfsm.addState(new State("START", new Step1(), false));
+        nfsm.addState(new State("STEP2", new Step2(), true));
+        nfsm.addState(new State("STEP3", new Step3(), false));
+        nfsm.addState(new State("END", new Step4(), false));
+        nfsm.addFinalState("END");
 
         // Define transitions
-        nfsm.getState("start").addTransition("step2", "step2");
-        nfsm.getState("start").addTransition("step3", "step3");
+        nfsm.getState("START").addTransition("STEP2", "STEP2");
+        nfsm.getState("START").addTransition("STEP3", "STEP3");
 
-        nfsm.getState("step2").addTransition("proceed", "end");
-        nfsm.getState("step3").addTransition("auto", "end");
+        nfsm.getState("STEP2").addTransition("PROCEED", "END");
+        nfsm.getState("STEP3").addTransition("AUTO", "END");
 
         ProcessingData data = new ProcessingData();
         data.set("value", 4);
-        nfsm.start("start", data);
+        nfsm.start("START", data);
 
-        nfsm.triggerEvent("proceed", data);
+        nfsm.triggerEvent("PROCEED", data);
 
         nfsm.getTrace().print();
         assertTrue(nfsm.isFinished());
@@ -61,24 +61,25 @@ public class NFSMTest {
     @Test
     public void testTrace() {
         NFSM nfsm = new NFSM();
-        nfsm.addState(new State("start", new Step1(), false));
-        nfsm.addState(new State("step2", new Step2(), true));
-        nfsm.addState(new State("step3", new Step3(), false));
-        nfsm.addState(new State("end", new Step4(), false));
+        nfsm.addState(new State("START", new Step1(), false));
+        nfsm.addState(new State("STEP2", new Step2(), true));
+        nfsm.addState(new State("STEP3", new Step3(), false));
+        nfsm.addState(new State("END", new Step4(), false));
 
         // Define transitions
-        nfsm.getState("start").addTransition("step2", "step2");
-        nfsm.getState("start").addTransition("step3", "step3");
+        nfsm.getState("START").addTransition("STEP2", "STEP2");
+        nfsm.getState("START").addTransition("STEP3", "STEP3");
 
-        nfsm.getState("step2").addTransition("proceed", "end");
-        nfsm.getState("step3").addTransition("auto", "end");
+        nfsm.getState("STEP2").addTransition("PROCEED", "END");
+        nfsm.getState("STEP3").addTransition("AUTO", "END");
+        nfsm.addFinalState("END");
 
         nfsm.setTraceMode(true);
         ProcessingData data = new ProcessingData();
         data.set("value", 4);
-        nfsm.start("start", data);
+        nfsm.start("START", data);
 
-        nfsm.triggerEvent("proceed", data);
+        nfsm.triggerEvent("PROCEED", data);
         Trace trace = nfsm.getTrace();
         Assertions.assertNotNull(trace);
     }
@@ -86,10 +87,10 @@ public class NFSMTest {
     @Test
     public void testExceptionHandler(){
         NFSM nfsm = new NFSM.Builder()
-                .state("start", new Step1())
-                .auto().goTo("step2")
+                .state("START", new Step1())
+                .auto().goTo("STEP2")
                 .and()
-                .state("step2", new ProcessingStep() {
+                .state("STEP2", new ProcessingStep() {
                     @Override
                     protected void process(ProcessingData data) {
                         throw new RuntimeException("Test");
@@ -99,12 +100,12 @@ public class NFSMTest {
                 .state("exception", new ExceptionHandler())
                 .end()
                 .onExceptionGoTo("exception")
+                .withTrace()
                 .build();
 
-        nfsm.setTraceMode(true);
         ProcessingData data = new ProcessingData();
         data.set("value", 4);
-        nfsm.start("start", data);
+        nfsm.start("START", data);
         Trace trace = nfsm.getTrace();
         trace.print();
 
@@ -118,10 +119,10 @@ public class NFSMTest {
     @Test
     public void testExceptionWithoutHandler(){
         NFSM nfsm = new NFSM.Builder()
-                .state("start", new Step1())
-                .auto().goTo("step2")
+                .state("START", new Step1())
+                .auto().goTo("STEP2")
                 .and()
-                .state("step2", new ProcessingStep() {
+                .state("STEP2", new ProcessingStep() {
                     @Override
                     protected void process(ProcessingData data) {
                         throw new RuntimeException("Test");
@@ -133,7 +134,7 @@ public class NFSMTest {
         nfsm.setTraceMode(true);
         ProcessingData data = new ProcessingData();
         data.set("value", 4);
-        nfsm.start("start", data);
+        nfsm.start("START", data);
         //Trace trace = nfsm.getTrace();
         //trace.print();
 

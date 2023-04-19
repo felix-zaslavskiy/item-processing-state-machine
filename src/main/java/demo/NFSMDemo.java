@@ -16,7 +16,7 @@ import static demo.DemoNames.*;
 class Step1 extends ProcessingStep {
     @Override
     protected void process(ProcessingData data) {
-        System.out.println("Processing Step 1");
+        log("Processing Step 1");
         Integer value = (Integer) data.get("value");
         data.set("value", value + 1);
 
@@ -32,7 +32,7 @@ class Step1 extends ProcessingStep {
 class Step2 extends ProcessingStep {
     @Override
     protected void process(ProcessingData data) {
-        System.out.println("Processing Step 2");
+        log("Processing Step 2");
         Integer value = (Integer) data.get("value");
         data.set("value", value * 2);
     }
@@ -41,7 +41,7 @@ class Step2 extends ProcessingStep {
 class Step3 extends ProcessingStep {
     @Override
     protected void process(ProcessingData data) {
-        System.out.println("Processing Step 3");
+        log("Processing Step 3");
         Integer value = (Integer) data.get("value");
         data.set("value", value - 3);
     }
@@ -50,7 +50,7 @@ class Step3 extends ProcessingStep {
 class Step4 extends ProcessingStep {
     @Override
     protected void process(ProcessingData data) {
-        System.out.println("Processing Step 4");
+        log("Processing Step 4");
         Integer value = (Integer) data.get("value");
         data.set("value", value / 2);
     }
@@ -78,6 +78,7 @@ public class NFSMDemo {
                 .and()
                 .finalState(END, new Step4())
                 .onExceptionGoTo(END)
+                .withTrace()
                 .build();
 
         String graphvizDot = nfsm.toGraphviz();
@@ -92,6 +93,9 @@ public class NFSMDemo {
 
         if(nfsm.isPaused())
             nfsm.triggerEvent(myCustomEvent, data);
+
+        System.out.println("\nEnded with state: " + nfsm.getFinalState().getName());
+        System.out.println("\nTrace: \n" + nfsm.getTrace());
     }
 
     public static void renderGraph(String dot, String outputPath) {
