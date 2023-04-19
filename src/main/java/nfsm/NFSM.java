@@ -248,7 +248,9 @@ public class NFSM {
         }
 
         public StateBuilder state(String name, ProcessingStep processingStep, boolean waitForEventBeforeTransition) {
-            validateStateName(name);
+            if (nfsm.states.containsKey(name)) {
+                throw new IllegalArgumentException("A state with the name '" + name + "' already exists.");
+            }
             this.nfsm.states.put(name, new State(name, processingStep, waitForEventBeforeTransition));
             return new StateBuilder(name, this);
         }
@@ -282,12 +284,6 @@ public class NFSM {
             }
 
             return nfsm;
-        }
-
-        private void validateStateName(String name) {
-            if (nfsm.states.containsKey(name)) {
-                throw new IllegalArgumentException("A state with the name '" + name + "' already exists.");
-            }
         }
 
     }
