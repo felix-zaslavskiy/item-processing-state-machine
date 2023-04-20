@@ -1,4 +1,4 @@
-package nfsm;
+package simplefsm;
 
 import demo.MyCustomEvent;
 import org.junit.jupiter.api.BeforeEach;
@@ -7,14 +7,14 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class MoreNFSMTest {
-    private NFSM nfsm;
+public class MoreSimpleFSMTest {
+    private SimpleFSM simpleFSM;
     private ProcessingData data;
     private final NamedEntity proceedEvent = new MyCustomEvent("proceed");
 
     @BeforeEach
     public void setup() {
-        nfsm = new NFSM.Builder()
+        simpleFSM = new SimpleFSM.Builder()
                 .state("START", new Step1())
                     .conditional().goTo("STEP2")
                     .conditional().goTo("STEP3")
@@ -35,35 +35,35 @@ public class MoreNFSMTest {
 
     @Test
     public void testInitialState() {
-        nfsm.start("START", data);
-        assertTrue(nfsm.isStarted());
+        simpleFSM.start("START", data);
+        assertTrue(simpleFSM.isStarted());
     }
 
     @Test
     public void testAutoTransition() {
-        nfsm.start("STEP3", data);
-        assertTrue(nfsm.isFinished());
-        State finalState = nfsm.getFinalState();
+        simpleFSM.start("STEP3", data);
+        assertTrue(simpleFSM.isFinished());
+        State finalState = simpleFSM.getFinalState();
         assertEquals("end", finalState.getName());
     }
 
     @Test
     public void testAlternateTransition() {
         data.set("value", 4); // will go step 2 and wait for
-        nfsm.start("START", data);
+        simpleFSM.start("START", data);
         // At step 2 waiting
-        assertTrue(nfsm.isPaused());
-        nfsm.triggerEvent("alt_proceed", data); // trigger alt_proceed event, will go to step 3
-        assertTrue(nfsm.isFinished());
-        assertEquals("end", nfsm.getFinalState().getName());
+        assertTrue(simpleFSM.isPaused());
+        simpleFSM.triggerEvent("alt_proceed", data); // trigger alt_proceed event, will go to step 3
+        assertTrue(simpleFSM.isFinished());
+        assertEquals("end", simpleFSM.getFinalState().getName());
     }
 
 
     @Test
     public void testStep2Processing() {
         data.set("value", 4);// will go step 2 and wait for
-        nfsm.start("START", data);
-        nfsm.triggerEvent(proceedEvent, data);
+        simpleFSM.start("START", data);
+        simpleFSM.triggerEvent(proceedEvent, data);
         Integer value = (Integer) data.get("value");
         assertEquals(Integer.valueOf(8), value);
     }
@@ -71,9 +71,9 @@ public class MoreNFSMTest {
     @Test
     public void testIsFinished() {
         data.set("value", 4); // will go step 2 and wait for
-        nfsm.start("START", data);
-        nfsm.triggerEvent(proceedEvent, data);
-        assertTrue(nfsm.isFinished());
+        simpleFSM.start("START", data);
+        simpleFSM.triggerEvent(proceedEvent, data);
+        assertTrue(simpleFSM.isFinished());
     }
 }
 

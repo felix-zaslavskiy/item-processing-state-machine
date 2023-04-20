@@ -1,12 +1,12 @@
 package demo;
 
 
-import nfsm.NFSM;
-import nfsm.ProcessingData;
-import nfsm.State;
+import simplefsm.SimpleFSM;
+import simplefsm.ProcessingData;
+import simplefsm.State;
 
 
-public class NSFMDemoOld {
+public class SimpleFMDemoOld {
     public static void main(String[] args) {
         nonBuilder();
     }
@@ -27,46 +27,46 @@ public class NSFMDemoOld {
         step3State.addTransition("auto", "end");
 
         // Create nfsm.NFSM and add states
-        NFSM nfsm = new NFSM();
-        nfsm.addState(startState);
-        nfsm.addState(step2State);
-        nfsm.addState(step3State);
-        nfsm.addState(endState);
-        nfsm.setTraceMode(true);
+        SimpleFSM simpleFSM = new SimpleFSM();
+        simpleFSM.addState(startState);
+        simpleFSM.addState(step2State);
+        simpleFSM.addState(step3State);
+        simpleFSM.addState(endState);
+        simpleFSM.setTraceMode(true);
 
         // Start processing with initial data
         // Will go Start -> Step3 -> End
         ProcessingData data = new ProcessingData();
         data.set("value", 5);
-        nfsm.start("start", data);
+        simpleFSM.start("start", data);
 
-        nfsm.getTrace().print();
+        simpleFSM.getTrace().print();
 
-        System.out.println("State machine is active: " + nfsm.isStarted());
+        System.out.println("State machine is active: " + simpleFSM.isStarted());
 
         // Output final result
         System.out.println("Final result: " + data.get("value"));
 
         // Second example
-        nfsm = new NFSM();
-        nfsm.addState(startState);
-        nfsm.addState(step2State);
-        nfsm.addState(step3State);
-        nfsm.addState(endState);
-        nfsm.setTraceMode(true);
+        simpleFSM = new SimpleFSM();
+        simpleFSM.addState(startState);
+        simpleFSM.addState(step2State);
+        simpleFSM.addState(step3State);
+        simpleFSM.addState(endState);
+        simpleFSM.setTraceMode(true);
 
         // Start processing with initial data
         // Will go Start -> Step2 -> Wait -> Proceed -> End
         ProcessingData data2 = new ProcessingData();
         data2.set("value", 4);
-        nfsm.start("start", data2);
+        simpleFSM.start("start", data2);
 
         // Trigger external event
-        nfsm.triggerEvent("proceed", data2);
+        simpleFSM.triggerEvent("proceed", data2);
 
-        nfsm.getTrace().print();
+        simpleFSM.getTrace().print();
 
-        System.out.println("State machine is active: " + nfsm.isPaused());
+        System.out.println("State machine is active: " + simpleFSM.isPaused());
 
 
         // Output final result

@@ -1,6 +1,6 @@
 package demo;
 
-import nfsm.NamedEntity;
+import simplefsm.NamedEntity;
 
 public enum DemoNames implements NamedEntity {
     START,

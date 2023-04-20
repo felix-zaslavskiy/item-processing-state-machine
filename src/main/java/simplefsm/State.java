@@ -1,4 +1,4 @@
-package nfsm;
+package simplefsm;
 
 import java.util.Collection;
 import java.util.HashMap;

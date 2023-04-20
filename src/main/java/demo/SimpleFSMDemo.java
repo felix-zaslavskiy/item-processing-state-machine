@@ -4,10 +4,10 @@ import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.parse.Parser;
-import nfsm.NamedEntity;
-import nfsm.NFSM;
-import nfsm.ProcessingData;
-import nfsm.ProcessingStep;
+import simplefsm.NamedEntity;
+import simplefsm.SimpleFSM;
+import simplefsm.ProcessingData;
+import simplefsm.ProcessingStep;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,7 +56,7 @@ class Step4 extends ProcessingStep {
     }
 }
 
-public class NFSMDemo {
+public class SimpleFSMDemo {
     public static void main(String[] args) {
         fluentBuilder();
     }
@@ -64,7 +64,7 @@ public class NFSMDemo {
     private static void fluentBuilder() {
         NamedEntity myCustomEvent = new MyCustomEvent("PROCEED");
 
-        NFSM nfsm = new NFSM.Builder()
+        SimpleFSM simpleFSM = new SimpleFSM.Builder()
                 .state(START, new Step1())
                     .conditional().goTo(STEP2) // Generates event name: START_TO_STEP2
                     .conditional().goTo(STEP3) // Generates event name: START_TO_STEP3
@@ -81,21 +81,21 @@ public class NFSMDemo {
                 .withTrace()
                 .build();
 
-        String graphvizDot = nfsm.toGraphviz();
+        String graphvizDot = simpleFSM.toGraphviz();
         renderGraph(graphvizDot, "state_machine.png");
 
         ProcessingData data = new ProcessingData();
         data.set("value", 5);
-        nfsm.start(START, data); // Optional event parameter
+        simpleFSM.start(START, data); // Optional event parameter
 
-        String export = nfsm.exportState();
-        nfsm.importState(export);
+        String export = simpleFSM.exportState();
+        simpleFSM.importState(export);
 
-        if(nfsm.isPaused())
-            nfsm.triggerEvent(myCustomEvent, data);
+        if(simpleFSM.isPaused())
+            simpleFSM.triggerEvent(myCustomEvent, data);
 
-        System.out.println("\nEnded with state: " + nfsm.getFinalState().getName());
-        System.out.println("\nTrace: \n" + nfsm.getTrace());
+        System.out.println("\nEnded with state: " + simpleFSM.getFinalState().getName());
+        System.out.println("\nTrace: \n" + simpleFSM.getTrace());
     }
 
     public static void renderGraph(String dot, String outputPath) {

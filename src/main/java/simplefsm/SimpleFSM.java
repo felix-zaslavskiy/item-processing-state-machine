@@ -1,10 +1,10 @@
-package nfsm;
+package simplefsm;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.*;
 
-public class NFSM {
+public class SimpleFSM {
     private final Map<String, State> states;
     private String onExceptionState;
     private String currentState;
@@ -13,7 +13,7 @@ public class NFSM {
     private Trace trace;
     private boolean started;
 
-    public NFSM() {
+    public SimpleFSM() {
         states = new HashMap<>();
         traceMode = false;
         trace = new Trace();
@@ -259,10 +259,10 @@ public class NFSM {
 
 
     public static class Builder {
-        private final NFSM nfsm;
+        private final SimpleFSM simpleFSM;
 
         public Builder() {
-            this.nfsm = new NFSM();
+            this.simpleFSM = new SimpleFSM();
         }
 
         public StateBuilder state(NamedEntity name, ProcessingStep processingStep) {
@@ -278,10 +278,10 @@ public class NFSM {
         }
 
         public StateBuilder state(String name, ProcessingStep processingStep, boolean waitForEventBeforeTransition) {
-            if (nfsm.states.containsKey(name)) {
+            if (simpleFSM.states.containsKey(name)) {
                 throw new IllegalArgumentException("A state with the name '" + name + "' already exists.");
             }
-            this.nfsm.states.put(name, new State(name, processingStep, waitForEventBeforeTransition));
+            this.simpleFSM.states.put(name, new State(name, processingStep, waitForEventBeforeTransition));
             return new StateBuilder(name, this);
         }
 
@@ -291,7 +291,7 @@ public class NFSM {
 
         public Builder finalState(String name, ProcessingStep processingStep) {
             state(name, processingStep, false);
-            this.nfsm.addFinalState(name);
+            this.simpleFSM.addFinalState(name);
             return this;
         }
 
@@ -300,25 +300,25 @@ public class NFSM {
         }
 
         public Builder onExceptionGoTo(String state) {
-            nfsm.onExceptionState = state;
+            simpleFSM.onExceptionState = state;
             return this;
         }
 
         public Builder withTrace(){
-            nfsm.setTraceMode(true);
+            simpleFSM.setTraceMode(true);
             return this;
         }
 
-        public NFSM build() {
-            if (nfsm.states.isEmpty()) {
+        public SimpleFSM build() {
+            if (simpleFSM.states.isEmpty()) {
                 throw new IllegalStateException("At least one state must be defined.");
             }
             // Make the onException set as finalState
-            if(nfsm.onExceptionState != null){
-                nfsm.addFinalState(nfsm.onExceptionState);
+            if(simpleFSM.onExceptionState != null){
+                simpleFSM.addFinalState(simpleFSM.onExceptionState);
             }
 
-            return nfsm;
+            return simpleFSM;
         }
 
     }
@@ -380,7 +380,7 @@ public class NFSM {
             if (isConditional) {
                 eventName += nextState;
             }
-            stateBuilder.nfsmBuilder.nfsm.states.get(stateBuilder.name).addTransition(eventName, nextState);
+            stateBuilder.nfsmBuilder.simpleFSM.states.get(stateBuilder.name).addTransition(eventName, nextState);
             return stateBuilder;
         }
     }

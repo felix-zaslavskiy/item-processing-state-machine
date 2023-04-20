@@ -1,4 +1,4 @@
-package nfsm;
+package simplefsm;
 
 class Step4 extends ProcessingStep {
     @Override

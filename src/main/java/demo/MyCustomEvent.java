@@ -1,6 +1,6 @@
 package demo;
 
-import nfsm.NamedEntity;
+import simplefsm.NamedEntity;
 
 public class MyCustomEvent implements NamedEntity {
     private final String name;

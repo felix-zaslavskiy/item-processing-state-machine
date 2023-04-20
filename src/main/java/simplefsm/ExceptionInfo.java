@@ -1,4 +1,4 @@
-package nfsm;
+package simplefsm;
 
 public class ExceptionInfo {
     private boolean hadException = false;

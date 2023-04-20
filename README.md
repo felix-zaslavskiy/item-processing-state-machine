@@ -16,27 +16,28 @@ Finite state machines (FSMs) are a powerful technique to manage the flow of cont
 
 ## Getting Started
 To use SimpleFSM in your Java project, simply include it as a dependency and start defining states and transitions. Here's a basic example to get you started:
+
 ```java
-import nfsm.*;
+import simplefsm.*;
 
 public class MyFSM {
 
     public static void main(String[] args) {
         // Create a new NFSM.Builder instance
-        NFSM.Builder builder = new NFSM.Builder();
+        SimpleFSM.Builder builder = new SimpleFSM.Builder();
 
         // Define states and transitions
         builder
-            .state("state1", new MyProcessingStep1())
+                .state("state1", new MyProcessingStep1())
                 .on("event1").goTo("state2")
-            .and()
-            .state("state2", new MyProcessingStep2())
-            .   on("event2").goTo("state3")
-            .and()
-            .finalState("state3", new MyProcessingStep3());
+                .and()
+                .state("state2", new MyProcessingStep2())
+                .on("event2").goTo("state3")
+                .and()
+                .finalState("state3", new MyProcessingStep3());
 
         // Build the NFSM instance
-        NFSM fsm = builder.build();
+        SimpleFSM fsm = builder.build();
 
         // Initialize the FSM with a starting state and data
         ProcessingData data = new ProcessingData();
@@ -55,11 +56,11 @@ public class MyFSM {
 ```
 
 In this example, we define a simple FSM with three states and two events. 
-Each state has a processing step associated with it, which can be any class that extends [ProcessingStep](src/main/java/nfsm/ProcessingStep.java). 
+Each state has a processing step associated with it, which can be any class that extends [ProcessingStep](src/main/java/simplefsm/ProcessingStep.java). 
 The processing steps are responsible for performing the required actions in each state and setting the next state, if necessary.
-For a more in depth demo take a look at [NFSMDemo](src/main/java/demo/NFSMDemo.java).
+For a more in depth demo take a look at [SimpleFSMDemo](src/main/java/demo/SimpleFSMDemo.java).
 
-The [NFSM.Builder](src/main/java/nfsm/NFSM.java) class provides a fluent API for defining states, transitions, and other FSM properties, making it easy to build complex state machines in a clean, readable way.
+The [SimpleFSM.Builder](src/main/java/simplefsm/SimpleFSM.java) class provides a fluent API for defining states, transitions, and other FSM properties, making it easy to build complex state machines in a clean, readable way.
 
 ## Documentation
 For more information on using SimpleFSM, including detailed API documentation, examples, and best practices, please refer to the [official documentation](DOC.MD).

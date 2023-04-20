@@ -1,4 +1,4 @@
-package nfsm;
+package simplefsm;
 
 import java.util.ArrayList;
 import java.util.List;
