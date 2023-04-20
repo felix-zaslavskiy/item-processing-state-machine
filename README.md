@@ -1,6 +1,6 @@
-# Non-Deterministic Finate State Machine (NFSM)
+# Simple Finate State Machine (SimpleFSM)
 
-NFSM is a lightweight and customizable finite state machine library for Java, designed to simplify complex workflows and manage states effectively. The primary goal of this library is to provide developers with a simple yet powerful tool to implement and manage state machines within their applications.
+SimpleFSM is a lightweight and customizable non-deterministic finite state machine library for Java, designed to simplify complex workflows and manage states effectively. The primary goal of this library is to provide developers with a simple yet powerful tool to implement and manage state machines within their applications.
 
 ## Background
 Finite state machines (FSMs) are a powerful technique to manage the flow of control in an application. They allow you to define a set of states and transitions between those states, ensuring that the application behaves in a predictable and maintainable manner. NFSM aims to provide an easy-to-use implementation of FSMs, which makes it ideal for managing complex workflows and handling state transitions in a more organized way.
@@ -15,7 +15,7 @@ Finite state machines (FSMs) are a powerful technique to manage the flow of cont
 - Graphviz integration for visualizing the state machine.
 
 ## Getting Started
-To use NFSM in your Java project, simply include it as a dependency and start defining states and transitions. Here's a basic example to get you started:
+To use SimpleFSM in your Java project, simply include it as a dependency and start defining states and transitions. Here's a basic example to get you started:
 ```java
 import nfsm.*;
 
@@ -62,10 +62,10 @@ For a more in depth demo take a look at [NFSMDemo](src/main/java/demo/NFSMDemo.j
 The [NFSM.Builder](src/main/java/nfsm/NFSM.java) class provides a fluent API for defining states, transitions, and other FSM properties, making it easy to build complex state machines in a clean, readable way.
 
 ## Documentation
-For more information on using NFSM, including detailed API documentation, examples, and best practices, please refer to the [official documentation](DOC.MD).
+For more information on using SimpleFSM, including detailed API documentation, examples, and best practices, please refer to the [official documentation](DOC.MD).
 
 ## Contributing
-We welcome contributions to NFSM! If you'd like to contribute, please fork the repository, make your changes, and submit a pull request. For more information on contributing, please see our contributing guidelines.
+We welcome contributions to SimpleFSM! If you'd like to contribute, please fork the repository, make your changes, and submit a pull request. For more information on contributing, please see our contributing guidelines.
 
 ## License
-NFSM is released under the **Apache Version 2.0**
+SimpleFSM is released under the **Apache Version 2.0**
