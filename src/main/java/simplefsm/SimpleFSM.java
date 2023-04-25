@@ -11,18 +11,20 @@ public class SimpleFSM {
     private final Set<String> finalStates;
     private boolean traceMode;
     private Trace trace;
+    private ExecutionHooks executionHooks;
+    private boolean onExecutionHookExceptionTerminate;
     private boolean started;
+
 
     public SimpleFSM() {
         states = new HashMap<>();
-        traceMode = false;
         trace = new Trace();
         started = false;
         finalStates = new HashSet<>();
     }
 
     public void setTraceMode(boolean traceMode) {
-        this.traceMode = traceMode;
+        this.trace.setTraceMode(traceMode);
     }
 
     public void addState(State state) {
@@ -58,7 +60,7 @@ public class SimpleFSM {
             throw new IllegalStateException("No transition found for event '" + eventName + "' in the current state '" + currentState + "'.");
         }
 
-        if (traceMode) {
+        if (trace.isTraceMode()) {
             trace.add("triggerEvent, continuing to state: " + nextState);
         }
         currentState = nextState;
@@ -101,32 +103,37 @@ public class SimpleFSM {
         State state = states.get(currentState);
         while (state != null) {
 
-            if (traceMode) {
+            if (trace.isTraceMode()) {
                 trace.add("Entering state: " + state.getName());
             }
 
             data.setNextState(null); // Reset the nextState before executing the step
 
             ExceptionInfo exceptionInfo;
-            if (traceMode) {
-                exceptionInfo = state.execute(data, trace);
-            } else {
-                exceptionInfo = state.execute(data);
-            }
+
+            exceptionInfo = state.execute(data, trace , executionHooks);
 
             if(exceptionInfo.hadException()){
                 // Have a transition for on Exception event
                 data.setExceptionInfo(exceptionInfo);
                 if(this.onExceptionState != null){
                     // If exception handler thrown exception itself.
-                    if(this.onExceptionState == currentState){
-                        trace.add("Exception handler thru exception stopping.");
-                        trace.add(exceptionInfo.exception.getMessage());
+                    if(this.onExceptionState.equals(currentState)){
+                        if (trace.isTraceMode()) {
+                            trace.add("Exception handler thru exception stopping.");
+                            trace.add(exceptionInfo.exception.getMessage());
+                        }
                         currentState=null;
                         break;
                     }
 
-                    if(traceMode){
+                    if(exceptionInfo.isOnHook() && this.onExecutionHookExceptionTerminate) {
+                        if(trace.isTraceMode()) trace.add("Stopping because of exception in a execution hook and onExecutionHookExceptionTerminate = true");
+                        currentState=null;
+                        break;
+                    }
+
+                    if (trace.isTraceMode()) {
                         trace.add("Due to exception transitioning to state " + this.onExceptionState);
                     }
 
@@ -135,16 +142,20 @@ public class SimpleFSM {
 
                     continue;
 
+
                 } else{
                     // Don't have a transition for Exception event.
-                    if(traceMode){
+                    if(trace.isTraceMode()){
+                        if(exceptionInfo.isOnHook()){
+                            trace.add("Exception from a execution hook method");
+                        }
                         trace.add("Stopping because of exception and no onExceptionState transition defined");
                     }
                     currentState=null;
                     break;
                 }
             } else if(state.shouldWaitForEventBeforeTransition()){
-                if (traceMode) {
+                if (trace.isTraceMode()) {
                     trace.add("Processed state " + state.getName() + ". Pausing because " + state.getName() + " requires a wait after completion");
                 }
                 break;
@@ -164,7 +175,7 @@ public class SimpleFSM {
                 }
             }
 
-            if (traceMode) {
+            if (trace.isTraceMode()) {
                 trace.add("Exiting state: " + state.getName() + ", transitioning to: " + (nextState == null ? "terminated" : nextState));
             }
 
@@ -227,7 +238,6 @@ public class SimpleFSM {
         ObjectMapper objectMapper = new ObjectMapper();
         FSMState fsmState = new FSMState();
         fsmState.setCurrentState(currentState);
-        fsmState.setTraceMode(traceMode);
         fsmState.setTrace(trace);
         fsmState.setStarted(started);
         try {
@@ -246,7 +256,6 @@ public class SimpleFSM {
             throw new RuntimeException(e);
         }
         currentState = fsmState.getCurrentState();
-        traceMode = fsmState.isTraceMode();
         trace = fsmState.getTrace();
         started = fsmState.isStarted();
     }
@@ -301,6 +310,23 @@ public class SimpleFSM {
 
         public Builder onExceptionGoTo(String state) {
             simpleFSM.onExceptionState = state;
+            return this;
+        }
+
+        public Builder withExecutionHook(ExecutionHooks hook){
+            simpleFSM.executionHooks = hook;
+            return this;
+        }
+
+        /**
+         * Override default. Terminate State machine if exception
+         * in execution hook. By default, State machine will go to
+         * Exception state.
+         *
+         * @return
+         */
+        public Builder onExecutionHookExceptionTerminate() {
+            simpleFSM.onExecutionHookExceptionTerminate = true;
             return this;
         }
 

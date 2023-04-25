@@ -41,26 +41,36 @@ public class State {
         return transitions.get(event);
     }
 
-    public ExceptionInfo execute(ProcessingData data, Trace trace) {
-        trace.add("Before processing: " + processingStep.getClassName());
+    public ExceptionInfo execute(ProcessingData data, Trace trace, ExecutionHooks executionHooks) {
+        // Call the before hook
+        if( executionHooks != null) {
+            try {
+                if(trace.isTraceMode()) trace.add("Before execution hook: " + processingStep.getClassName());
+                executionHooks.before(this, data);
+            } catch (Exception e) {
+                return new ExceptionInfo(e, true);
+            }
+        }
+        if(trace.isTraceMode()) trace.add("Before processing: " + processingStep.getClassName());
         try {
             processingStep.process(data);
             trace.addAll(processingStep.logs);
         }catch (Exception e){
-            trace.add("Exception occurred in "+ processingStep.getClassName() + ".process()");
-            return new ExceptionInfo(e);
+            if(trace.isTraceMode())trace.add("Exception occurred in "+ processingStep.getClassName() + ".process()");
+            return new ExceptionInfo(e, false);
         }
-        trace.add("After processing: " + processingStep.getClassName());
-        return new ExceptionInfo();
-    }
+        if(trace.isTraceMode())trace.add("After processing: " + processingStep.getClassName());
 
-    public ExceptionInfo execute(ProcessingData data) {
-        try {
-            processingStep.process(data);
-            return new ExceptionInfo();
-        }catch(Exception e){
-            return new ExceptionInfo(e);
+        // Call the before hook
+        if( executionHooks != null) {
+            try {
+                if(trace.isTraceMode()) trace.add("After execution hook: " + processingStep.getClassName());
+                executionHooks.after(this, data);
+            } catch (Exception e) {
+                return new ExceptionInfo(e, true);
+            }
         }
+        return new ExceptionInfo();
     }
 
     public boolean shouldWaitForEventBeforeTransition() {

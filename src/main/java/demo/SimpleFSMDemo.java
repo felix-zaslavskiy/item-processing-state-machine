@@ -4,10 +4,7 @@ import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.parse.Parser;
-import simplefsm.NamedEntity;
-import simplefsm.SimpleFSM;
-import simplefsm.ProcessingData;
-import simplefsm.ProcessingStep;
+import simplefsm.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,6 +53,21 @@ class Step4 extends ProcessingStep {
     }
 }
 
+class Hooks implements ExecutionHooks {
+
+    @Override
+    public void before(State state, ProcessingData data) throws Exception {
+        throw new RuntimeException();
+        // System.out.println("Before hook " + state.getName() + " " + state.getProcessStepClassName());
+    }
+
+    @Override
+    public void after(State state, ProcessingData data) throws Exception {
+        System.out.println("After hook " + state.getName() + " " + state.getProcessStepClassName());
+    }
+
+}
+
 public class SimpleFSMDemo {
     public static void main(String[] args) {
         fluentBuilder();
@@ -79,6 +91,7 @@ public class SimpleFSMDemo {
                 .finalState(END, new Step4())
                 .onExceptionGoTo(END)
                 .withTrace()
+                .withExecutionHook(new Hooks())
                 .build();
 
         String graphvizDot = simpleFSM.toGraphviz();
@@ -94,7 +107,9 @@ public class SimpleFSMDemo {
         if(simpleFSM.isPaused())
             simpleFSM.triggerEvent(myCustomEvent, data);
 
-        System.out.println("\nEnded with state: " + simpleFSM.getFinalState().getName());
+        if(simpleFSM.getFinalState()!=null)
+            System.out.println("\nEnded with state: " + simpleFSM.getFinalState().getName());
+
         System.out.println("\nTrace: \n" + simpleFSM.getTrace());
     }
 

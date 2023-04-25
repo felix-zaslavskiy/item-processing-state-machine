@@ -12,6 +12,17 @@ public class Trace {
     @JsonProperty("logs")
     private List<String> logs;
 
+    public boolean isTraceMode() {
+        return traceMode;
+    }
+
+    public void setTraceMode(boolean traceMode) {
+        this.traceMode = traceMode;
+    }
+
+    @JsonProperty("traceMode")
+    private boolean traceMode = false;
+
     public Trace() {
         logs = new ArrayList<>();
     }
