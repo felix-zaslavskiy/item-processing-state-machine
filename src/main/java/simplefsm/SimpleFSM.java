@@ -121,7 +121,7 @@ public class SimpleFSM {
                     if(this.onExceptionState.equals(currentState)){
                         if (trace.isTraceMode()) {
                             trace.add("Exception handler thru exception stopping.");
-                            trace.add(exceptionInfo.exception.getMessage());
+                            trace.add(exceptionInfo.exception.getMessage()!=null ? exceptionInfo.exception.getMessage() : "Exception message is null");
                         }
                         currentState=null;
                         break;
