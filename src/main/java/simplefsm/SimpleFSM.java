@@ -9,7 +9,6 @@ public class SimpleFSM {
     private String onExceptionState;
     private String currentState;
     private final Set<String> finalStates;
-    private boolean traceMode;
     private Trace trace;
     private ExecutionHooks executionHooks;
     private boolean onExecutionHookExceptionTerminate;
@@ -213,8 +212,8 @@ public class SimpleFSM {
             if(finalStates.contains(stateName)){
                 dot.append("\\n").append("<final>");
             }
+            dot.append("\"];\n");
 
-                    dot.append("\"];\n");
             for (Map.Entry<String, String> transition : state.getTransitionEntries()) {
                 String eventName = transition.getKey();
                 String targetState = transition.getValue();
@@ -225,7 +224,7 @@ public class SimpleFSM {
             }
         }
         if(onExceptionState!= null){
-            dot.append("Exception [label=\"Exception\" shape=\"box\"];\n");
+            dot.append("\t").append("Exception [label=\"Exception\" shape=\"box\"];\n");
             dot.append("\t").append("Exception -> ").append(onExceptionState)
                     .append("[label=\"ON_EXCEPTION\"];\n");
         }
@@ -260,9 +259,20 @@ public class SimpleFSM {
         started = fsmState.isStarted();
     }
 
+    public State getPausedOnState(){
+        if(isFinished())
+            throw new IllegalStateException("State machine must not have finished to return Paused on state");
+
+        return states.get(currentState);
+    }
+
     public State getFinalState() {
         if(!isFinished())
             throw new IllegalStateException("State machine must finish to have final state");
+
+        if(currentState==null)
+            throw new IllegalStateException("State machine in terminated state can not have final state");
+
         return states.get(currentState);
     }
 
