@@ -56,7 +56,7 @@ public class SimpleFSM {
         State state = states.get(currentState);
         String nextState = state.getNextState(eventName);
         if (nextState == null) {
-            throw new IllegalStateException("No transition found for event '" + eventName + "' in the current state '" + currentState + "'.");
+            throw new IllegalArgumentException("No transition found for event '" + eventName + "' in the current state '" + currentState + "'.");
         }
 
         if (trace.isTraceMode()) {

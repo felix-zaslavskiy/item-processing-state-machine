@@ -53,8 +53,11 @@ public class MoreSimpleFSMTest {
         simpleFSM.start("START", data);
         // At step 2 waiting
         assertTrue(simpleFSM.isPaused());
+        assertThrows(IllegalStateException.class, () -> simpleFSM.getFinalState());
+
         simpleFSM.triggerEvent("alt_proceed", data); // trigger alt_proceed event, will go to step 3
         assertTrue(simpleFSM.isFinished());
+        assertThrows(IllegalStateException.class, () -> simpleFSM.getPausedOnState());
         assertEquals("end", simpleFSM.getFinalState().getName());
     }
 
@@ -80,7 +83,15 @@ public class MoreSimpleFSMTest {
     public void notStarted(){
         assertFalse(simpleFSM.isStarted());
         assertFalse(simpleFSM.isFinished());
+        assertFalse(simpleFSM.wasTerminated());
         assertThrows(IllegalStateException.class, () -> simpleFSM.triggerEvent("alt_proceed", data));
+    }
+
+    @Test
+    public void triggerInvalidEvent(){
+        data.set("value", 4); // will go step 2 and wait for
+        simpleFSM.start("START", data);
+        assertThrows(IllegalArgumentException.class, () -> simpleFSM.triggerEvent("does_not_exist", data));
     }
 }
 
