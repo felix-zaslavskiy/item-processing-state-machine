@@ -25,23 +25,19 @@ public class State {
         transitions.put(eventName, nextState);
     }
 
-    public Collection<String> getTransitions() {
+    Collection<String> getTransitions() {
         return transitions.values();
     }
 
-    public Set<Map.Entry<String, String>> getTransitionEntries() {
+    Set<Map.Entry<String, String>> getTransitionEntries() {
         return transitions.entrySet();
     }
 
-    public String getNextState(NamedEntity event) {
-        return transitions.get(event.getName());
-    }
-
-    public String getNextState(String event) {
+    String getNextState(String event) {
         return transitions.get(event);
     }
 
-    public ExceptionInfo execute(ProcessingData data, Trace trace, ExecutionHooks executionHooks) {
+    ExceptionInfo execute(ProcessingData data, Trace trace, ExecutionHooks executionHooks) {
         // Call the before hook
         if( executionHooks != null) {
             try {
