@@ -22,7 +22,28 @@ public class BuilderErrorsTest {
                         .build()
         );
 
+        // Duplicate transitions should throw exception
+        assertThrows( IllegalArgumentException.class,
+                () -> new SimpleFSM.Builder()
+                        .state("STATE1", new Step1())
+                        .on("EVENT1").goTo("STATE2")
+                        .on("EVENT1").goTo("STATE2")
+                        .and()
+                        .state("STATE2", new Step2())
+                        .end()
+                        .build()
+        );
 
-
+        assertThrows( IllegalArgumentException.class,
+                () -> new SimpleFSM.Builder()
+                        .state("STATE1", new Step1())
+                        .auto().goTo("STATE2")
+                        .auto().goTo("STATE2")
+                        .and()
+                        .state("STATE2", new Step2())
+                        .end()
+                        .build()
+        );
     }
+
 }

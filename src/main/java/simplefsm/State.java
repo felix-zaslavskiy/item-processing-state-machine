@@ -61,7 +61,7 @@ public class State {
         }
         if(trace.isTraceMode())trace.add("After processing: " + processingStep.getClassName());
 
-        // Call the before hook
+        // Call the after hook
         if( executionHooks != null) {
             try {
                 if(trace.isTraceMode()) trace.add("After execution hook: " + processingStep.getClassName());

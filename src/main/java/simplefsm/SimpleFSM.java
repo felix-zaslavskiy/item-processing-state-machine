@@ -93,6 +93,13 @@ public class SimpleFSM {
                 || currentState == null );
     }
 
+    /**
+     * If the state machine was terminated due to an exception without having finished to a finalState
+     */
+    public boolean wasTerminated() {
+        return started && currentState == null;
+    }
+
     public void addFinalState(String finalState) {
         this.finalStates.add(finalState);
     }
@@ -275,6 +282,8 @@ public class SimpleFSM {
 
         return states.get(currentState);
     }
+
+
 
 
     public static class Builder {
