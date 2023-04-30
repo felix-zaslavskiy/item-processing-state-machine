@@ -332,8 +332,6 @@ public class SimpleFSM {
          * Override default. Terminate State machine if exception
          * in execution hook. By default, State machine will go to
          * Exception state.
-         *
-         * @return
          */
         public Builder onExecutionHookExceptionTerminate() {
             simpleFSM.onExecutionHookExceptionTerminate = true;
@@ -347,7 +345,7 @@ public class SimpleFSM {
 
         public SimpleFSM build() {
             if (simpleFSM.states.isEmpty()) {
-                throw new IllegalStateException("At least one state must be defined.");
+                throw new IllegalArgumentException("At least one state must be defined.");
             }
             // Make the onException set as finalState
             if(simpleFSM.onExceptionState != null){

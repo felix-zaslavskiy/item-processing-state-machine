@@ -4,8 +4,7 @@ import demo.MyCustomEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MoreSimpleFSMTest {
     private SimpleFSM simpleFSM;
@@ -37,6 +36,7 @@ public class MoreSimpleFSMTest {
     public void testInitialState() {
         simpleFSM.start("START", data);
         assertTrue(simpleFSM.isStarted());
+        assertFalse(simpleFSM.isPaused());
     }
 
     @Test
@@ -74,6 +74,13 @@ public class MoreSimpleFSMTest {
         simpleFSM.start("START", data);
         simpleFSM.triggerEvent(proceedEvent, data);
         assertTrue(simpleFSM.isFinished());
+    }
+
+    @Test
+    public void notStarted(){
+        assertFalse(simpleFSM.isStarted());
+        assertFalse(simpleFSM.isFinished());
+        assertThrows(IllegalStateException.class, () -> simpleFSM.triggerEvent("alt_proceed", data));
     }
 }
 
