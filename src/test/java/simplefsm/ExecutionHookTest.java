@@ -68,10 +68,32 @@ public class ExecutionHookTest {
         data.set("value", 5);
         simpleFSM.start("STEP2", data);
         assertTrue(simpleFSM.isStarted());
+        assertFalse(simpleFSM.isPaused());
         assertTrue(simpleFSM.isFinished());
         assertTrue(simpleFSM.wasTerminated());
     }
 
+    @Test
+    public void testHook2a(){
+        // unlike testHook2 this has onExceptionGoTo()
+        SimpleFSM simpleFSM = new SimpleFSM.Builder()
+                .state("STEP2", new Step2())
+                .auto().goTo("END")
+                .and()
+                .finalState("END", new Step4())
+                .withExecutionHook(new Hooks2())
+                .onExecutionHookExceptionTerminate()
+                .onExceptionGoTo("END")
+                .withTrace()
+                .build();
+        ProcessingData data = new ProcessingData();
+        data.set("value", 5);
+        simpleFSM.start("STEP2", data);
+        assertTrue(simpleFSM.isStarted());
+        assertFalse(simpleFSM.isPaused());
+        assertTrue(simpleFSM.isFinished());
+        assertTrue(simpleFSM.wasTerminated());
+    }
     @Test
     public void testHook3(){
         SimpleFSM simpleFSM = new SimpleFSM.Builder()

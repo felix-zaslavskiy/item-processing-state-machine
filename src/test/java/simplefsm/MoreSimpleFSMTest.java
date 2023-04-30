@@ -84,6 +84,7 @@ public class MoreSimpleFSMTest {
         assertFalse(simpleFSM.isStarted());
         assertFalse(simpleFSM.isFinished());
         assertFalse(simpleFSM.wasTerminated());
+        assertFalse(simpleFSM.isPaused());
         assertThrows(IllegalStateException.class, () -> simpleFSM.triggerEvent("alt_proceed", data));
     }
 

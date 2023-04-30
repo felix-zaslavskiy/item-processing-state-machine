@@ -143,5 +143,11 @@ public class ImportExportFSMTest {
 
     }
 
+    @Test
+    public void importError(){
+        SimpleFSM newStateMachine = new SimpleFSM();
+        assertThrows(RuntimeException.class, () -> newStateMachine.importState("{exportState}"));
+    }
+
 }
 
