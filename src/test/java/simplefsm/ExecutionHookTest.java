@@ -109,7 +109,7 @@ public class ExecutionHookTest {
 
                     @Override
                     public void after(State state, ProcessingData data)  {
-                        throw new RuntimeException();
+                        throw new RuntimeException("Something went wrong");
                     }
                 })
                 .onExecutionHookExceptionTerminate()

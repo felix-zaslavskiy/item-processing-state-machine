@@ -2,8 +2,7 @@ package simplefsm;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class EdgeCasesTest {
 
@@ -56,6 +55,32 @@ public class EdgeCasesTest {
         data.set("value", 5);
         simpleFSM.start("START", data);
         assertTrue(simpleFSM.isFinished());
+        assertEquals("end", simpleFSM.getFinalState().getName());
+    }
 
+    @Test
+    public void autoTransitionWithConditional(){
+        SimpleFSM  simpleFSM = new SimpleFSM.Builder()
+                .state("START", new ProcessingStep() {
+                    @Override
+                    protected void process(ProcessingData data) {
+
+                    }
+                })
+                .conditional().goTo("STEP3")
+                .and()
+                .state("STEP2", new Step2(), true)
+                .on("alt_proceed").goTo("STEP3")
+                .and()
+                .state("STEP3", new Step3())
+                .auto().goTo("end")
+                .and()
+                .finalState("end", new Step4())
+                .build();
+        ProcessingData data = new ProcessingData();
+        data.set("value", 5);
+        simpleFSM.start("START", data);
+        assertTrue(simpleFSM.isFinished());
+        assertEquals("end", simpleFSM.getFinalState().getName());
     }
 }
