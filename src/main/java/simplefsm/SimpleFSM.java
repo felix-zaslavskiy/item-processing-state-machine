@@ -134,7 +134,10 @@ public class SimpleFSM {
                     }
 
                     if(exceptionInfo.isOnHook() && this.onExecutionHookExceptionTerminate) {
-                        if(trace.isTraceMode()) trace.add("Stopping because of exception in a execution hook and onExecutionHookExceptionTerminate = true");
+                        if(trace.isTraceMode()){
+                            trace.add("Stopping because of exception in a execution hook and onExecutionHookExceptionTerminate = true");
+                            trace.add(exceptionInfo.exception.getMessage()!=null ? exceptionInfo.exception.getMessage() : "Exception message is null");
+                        }
                         currentState=null;
                         break;
                     }
@@ -156,6 +159,7 @@ public class SimpleFSM {
                             trace.add("Exception from a execution hook method");
                         }
                         trace.add("Stopping because of exception and no onExceptionState transition defined");
+                        trace.add(exceptionInfo.exception.getMessage()!=null ? exceptionInfo.exception.getMessage() : "Exception message is null");
                     }
                     currentState=null;
                     break;
