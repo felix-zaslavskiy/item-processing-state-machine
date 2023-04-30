@@ -101,6 +101,67 @@ public class ExecutionHookTest {
         assertTrue(simpleFSM.wasTerminated());
     }
 
+
+    @Test
+    public void testHook4(){
+        // Unlike testHook3 there is no .onExecutionHookExceptionTerminate()
+        SimpleFSM simpleFSM = new SimpleFSM.Builder()
+                .state("STEP2", new Step2())
+                .auto().goTo("END")
+                .and()
+                .finalState("END", new Step4())
+                .withExecutionHook(new ExecutionHooks() {
+                    @Override
+                    public void before(State state, ProcessingData data) {
+                        // Nothing here.
+                    }
+
+                    @Override
+                    public void after(State state, ProcessingData data)  {
+                        throw new RuntimeException();
+                    }
+                })
+                .withTrace()
+                .build();
+        ProcessingData data = new ProcessingData();
+        data.set("value", 5);
+        simpleFSM.start("STEP2", data);
+        assertTrue(simpleFSM.isStarted());
+        assertTrue(simpleFSM.isFinished());
+        assertTrue(simpleFSM.wasTerminated());
+    }
+
+    @Test
+    public void testHook5(){
+        // On exception in Hook got to END
+        SimpleFSM simpleFSM = new SimpleFSM.Builder()
+                .state("STEP2", new Step2())
+                .auto().goTo("END")
+                .and()
+                .finalState("END", new Step4())
+                .withExecutionHook(new ExecutionHooks() {
+                    @Override
+                    public void before(State state, ProcessingData data) {
+                        // Nothing here.
+                    }
+
+                    @Override
+                    public void after(State state, ProcessingData data)  {
+                        if( state.getName().equals("STEP2") )
+                            throw new RuntimeException();
+                    }
+                })
+                .onExceptionGoTo("END")
+                .withTrace()
+                .build();
+        ProcessingData data = new ProcessingData();
+        data.set("value", 5);
+        simpleFSM.start("STEP2", data);
+        assertTrue(simpleFSM.isStarted());
+        assertTrue(simpleFSM.isFinished());
+        assertFalse(simpleFSM.wasTerminated());
+        assertEquals("END", simpleFSM.getFinalState().getName());
+    }
     @Test
     public void onExceptionHandler(){
         SimpleFSM simpleFSM = new SimpleFSM.Builder()
