@@ -10,7 +10,7 @@ import java.util.List;
 public class Trace {
 
     @JsonProperty("logs")
-    private List<String> logs;
+    private final List<String> logs;
 
     public boolean isTraceMode() {
         return traceMode;

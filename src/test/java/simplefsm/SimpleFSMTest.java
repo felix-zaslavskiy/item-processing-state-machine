@@ -135,8 +135,6 @@ public class SimpleFSMTest {
         ProcessingData data = new ProcessingData();
         data.set("value", 4);
         simpleFSM.start("START", data);
-        //Trace trace = nfsm.getTrace();
-        //trace.print();
 
         assertTrue(data.hadException());
         assertTrue(simpleFSM.isFinished());
