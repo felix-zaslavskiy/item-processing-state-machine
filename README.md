@@ -20,31 +20,33 @@ To use SimpleFSM in your Java project, simply include it as a dependency and sta
 ```java
 import simplefsm.*;
 
+class ProcessingStep1() extends ProcessingStep {
+    @Override
+    protected void process(ProcessingData data) {
+        // .. perform relevant processing
+        nextState("state2"); // set conditionally the next step.
+    }
+}
 public class MyFSM {
 
     public static void main(String[] args) {
-        // Create a new NFSM.Builder instance
-        SimpleFSM.Builder builder = new SimpleFSM.Builder();
-
-        // Define states and transitions
-        builder
-                .state("state1", new MyProcessingStep1())
-                .on("event1").goTo("state2")
+        // Create a new SimpleFSM instance
+        SimpleFSM fsm = new SimpleFSM.Builder()
+                .state("state1", new ProcessingStep1())
+                    .conditional().goTo("state2")
+                    .conditional().goTo("state3")
                 .and()
-                .state("state2", new MyProcessingStep2())
-                .on("event2").goTo("state3")
-                .and()
-                .finalState("state3", new MyProcessingStep3());
-
-        // Build the NFSM instance
-        SimpleFSM fsm = builder.build();
+                .state("state2", new ProcessingStep2(), true) // Pause after step
+                    .on("event2").goTo("state3")
+                .end()
+                .finalState("state3", new ProcessingStep3())
+                .build();
 
         // Initialize the FSM with a starting state and data
         ProcessingData data = new ProcessingData();
         fsm.start("state1", data);
 
         // Trigger events to drive the FSM
-        fsm.triggerEvent("event1", data);
         fsm.triggerEvent("event2", data);
 
         // Check if the FSM has reached a final state
@@ -55,7 +57,7 @@ public class MyFSM {
 }
 ```
 
-In this example, we define a simple FSM with three states and two events. 
+In this example, we define a simple FSM with three states and one events. 
 Each state has a processing step associated with it, which can be any class that extends [ProcessingStep](src/main/java/simplefsm/ProcessingStep.java). 
 The processing steps are responsible for performing the required actions in each state and setting the next state, if necessary.
 For a more in depth demo take a look at [SimpleFSMDemo](src/main/java/demo/SimpleFSMDemo.java).

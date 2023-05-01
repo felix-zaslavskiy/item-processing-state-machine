@@ -86,7 +86,7 @@ public class SimpleFSMDemo {
                 .and()
                 .state(STEP3, new Step3())
                     .auto().goTo(END)
-                .and()
+                .end()
                 .finalState(END, new Step4())
                 .onExceptionGoTo(END)
                 .withTrace()
