@@ -56,12 +56,12 @@ class Step4 extends ProcessingStep {
 class Hooks implements ExecutionHooks {
 
     @Override
-    public void before(State state, ProcessingData data) throws Exception {
+    public void before(State state, ProcessingData data) {
         System.out.println("Before hook " + state.getName() + " " + state.getProcessStepClassName());
     }
 
     @Override
-    public void after(State state, ProcessingData data) throws Exception {
+    public void after(State state, ProcessingData data) {
         System.out.println("After hook " + state.getName() + " " + state.getProcessStepClassName());
     }
 

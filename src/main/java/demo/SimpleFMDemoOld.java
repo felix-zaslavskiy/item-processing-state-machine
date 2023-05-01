@@ -26,7 +26,7 @@ public class SimpleFMDemoOld {
         step2State.addTransition("proceed", "end");
         step3State.addTransition("auto", "end");
 
-        // Create nfsm.NFSM and add states
+        // Create simpleFSM and add states
         SimpleFSM simpleFSM = new SimpleFSM();
         simpleFSM.addState(startState);
         simpleFSM.addState(step2State);

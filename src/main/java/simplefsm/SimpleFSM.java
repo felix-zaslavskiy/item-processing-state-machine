@@ -222,8 +222,8 @@ public class SimpleFSM {
         StringBuilder dot = new StringBuilder("digraph G {\n");
 
         if(name != null){
-            dot.append("labelloc=\"t\";\n" +
-                    "label=<<B>" + StringEscapeUtils.escapeHtml4(name) + "</B>>;\n");
+            dot.append("labelloc=\"t\";\n" + "label=<<B>")
+                    .append(StringEscapeUtils.escapeHtml4(name)).append("</B>>;\n");
         }
         for (Map.Entry<String, State> entry : states.entrySet()) {
             String stateName = entry.getKey();
