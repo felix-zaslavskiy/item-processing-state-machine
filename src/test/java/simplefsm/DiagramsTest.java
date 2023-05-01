@@ -32,6 +32,7 @@ public class DiagramsTest {
                 .and()
                 .finalState("END", new Step4())
                 .onExceptionGoTo("END")
+                .withName("Test FSM")
                 .build();
     }
 
@@ -40,7 +41,9 @@ public class DiagramsTest {
         String graphviz = simpleFSM.toGraphviz();
         assertNotNull(graphviz);
         // a bit brittle but ok for now.
-        assertEquals(graphviz, "digraph G {\n" +
+        assertEquals( "digraph G {\n" +
+                "labelloc=\"t\";\n" +
+                "label=<<B>Test FSM</B>>;\n" +
                 "\tEXCEPTION[label=\"EXCEPTION\\n[ExceptionState]\"];\n" +
                 "\tSTART[label=\"START\\n[Step1]\"];\n" +
                 "\tSTART -> STEP3[label=\"START_TO_STEP3\"];\n" +
@@ -53,7 +56,7 @@ public class DiagramsTest {
                 "\tSTEP3 -> END[label=\"AUTO\"];\n" +
                 "\tException [label=\"Exception\" shape=\"box\"];\n" +
                 "\tException -> END[label=\"ON_EXCEPTION\"];\n" +
-                "}");
+                "}" , graphviz);
     }
 
 }

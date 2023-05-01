@@ -57,8 +57,7 @@ class Hooks implements ExecutionHooks {
 
     @Override
     public void before(State state, ProcessingData data) throws Exception {
-        throw new RuntimeException();
-        // System.out.println("Before hook " + state.getName() + " " + state.getProcessStepClassName());
+        System.out.println("Before hook " + state.getName() + " " + state.getProcessStepClassName());
     }
 
     @Override
@@ -92,6 +91,7 @@ public class SimpleFSMDemo {
                 .onExceptionGoTo(END)
                 .withTrace()
                 .withExecutionHook(new Hooks())
+                .withName("Demo <Hi> \" ' &")
                 .build();
 
         String graphvizDot = simpleFSM.toGraphviz();
@@ -107,10 +107,12 @@ public class SimpleFSMDemo {
         if(simpleFSM.isPaused())
             simpleFSM.triggerEvent(myCustomEvent, data);
 
+        System.out.println("\nTrace: \n" + simpleFSM.getTrace());
+
         if(simpleFSM.getFinalState()!=null)
             System.out.println("\nEnded with state: " + simpleFSM.getFinalState().getName());
 
-        System.out.println("\nTrace: \n" + simpleFSM.getTrace());
+
     }
 
     public static void renderGraph(String dot, String outputPath) {

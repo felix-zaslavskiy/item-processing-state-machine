@@ -6,6 +6,8 @@ public class FSMState {
     private Trace trace;
     private boolean started;
 
+    private String name;
+
     public String getCurrentState() {
         return currentState;
     }
@@ -36,5 +38,13 @@ public class FSMState {
 
     public void setStarted(boolean started) {
         this.started = started;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

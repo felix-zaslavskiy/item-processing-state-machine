@@ -94,5 +94,13 @@ public class MoreSimpleFSMTest {
         simpleFSM.start("START", data);
         assertThrows(IllegalArgumentException.class, () -> simpleFSM.triggerEvent("does_not_exist", data));
     }
+
+    @Test
+    public void testToString(){
+        simpleFSM.start("STEP3", data);
+        assertTrue(simpleFSM.isFinished());
+        assertNotNull(simpleFSM.toString());
+        assertTrue(simpleFSM.toString().length() > 1);
+    }
 }
 

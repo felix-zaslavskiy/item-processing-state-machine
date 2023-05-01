@@ -2,6 +2,8 @@ package simplefsm;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.text.StringEscapeUtils;
+
 import java.util.*;
 
 public class SimpleFSM {
@@ -13,6 +15,7 @@ public class SimpleFSM {
     private ExecutionHooks executionHooks;
     private boolean onExecutionHookExceptionTerminate;
     private boolean started;
+    String name;
 
 
     public SimpleFSM() {
@@ -34,6 +37,16 @@ public class SimpleFSM {
         return Objects.requireNonNull(states.get(name), "State with name '" + name + "' not found.");
     }
 
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Name the instance of SimpleFSM. Optional.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public void start(String startingState, ProcessingData data) {
         currentState = startingState;
@@ -208,6 +221,10 @@ public class SimpleFSM {
     public String toGraphviz() {
         StringBuilder dot = new StringBuilder("digraph G {\n");
 
+        if(name != null){
+            dot.append("labelloc=\"t\";\n" +
+                    "label=<<B>" + StringEscapeUtils.escapeHtml4(name) + "</B>>;\n");
+        }
         for (Map.Entry<String, State> entry : states.entrySet()) {
             String stateName = entry.getKey();
             State state = entry.getValue();
@@ -250,6 +267,7 @@ public class SimpleFSM {
         fsmState.setCurrentState(currentState);
         fsmState.setTrace(trace);
         fsmState.setStarted(started);
+        fsmState.setName(name);
         try {
             return objectMapper.writeValueAsString(fsmState);
         } catch (JsonProcessingException e) {
@@ -268,6 +286,7 @@ public class SimpleFSM {
         currentState = fsmState.getCurrentState();
         trace = fsmState.getTrace();
         started = fsmState.isStarted();
+        name = fsmState.getName();
     }
 
     public State getPausedOnState(){
@@ -338,6 +357,11 @@ public class SimpleFSM {
 
         public Builder withExecutionHook(ExecutionHooks hook){
             simpleFSM.executionHooks = hook;
+            return this;
+        }
+
+        public Builder withName(String name){
+            simpleFSM.setName(name);
             return this;
         }
 
@@ -430,5 +454,18 @@ public class SimpleFSM {
             stateBuilder.nfsmBuilder.simpleFSM.states.get(stateBuilder.name).addTransition(eventName, nextState);
             return stateBuilder;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "SimpleFSM{" +
+                (name!=null ? "name='" + name + "'\n" : "") +
+                "onExceptionState='" + onExceptionState + "'\n" +
+                ", currentState='" + currentState + "'\n" +
+                ", executionHooks=" + executionHooks + '\n' +
+                ", onExecutionHookExceptionTerminate=" + onExecutionHookExceptionTerminate + '\n' +
+                ", started=" + started + '\n' +
+                ", trace=" + trace +
+                '}';
     }
 }

@@ -38,6 +38,7 @@ public class ImportExportFSMTest {
                 .state("EXCEPTION", new ExceptionState())
                 .and()
                 .finalState("END", new Step4())
+                .withName("name")
 
                 .build();
     }
@@ -59,6 +60,8 @@ public class ImportExportFSMTest {
 
         assertEquals("END", importedFSM.getFinalState().getName());
         assertTrue( importedFSM.isFinished());
+
+        assertEquals("name", importedFSM.getName());
 
     }
 
