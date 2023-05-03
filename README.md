@@ -65,7 +65,7 @@ For a more in depth demo take a look at [SimpleFSMDemo](src/main/java/demo/Simpl
 The [SimpleFSM.Builder](src/main/java/simplefsm/SimpleFSM.java) class provides a fluent API for defining states, transitions, and other FSM properties, making it easy to build complex state machines in a clean, readable way.
 
 ## Documentation
-For more information on using SimpleFSM, including detailed API documentation, examples, and best practices, please refer to the [official documentation](DOC.MD).
+For more information on using SimpleFSM, including detailed API documentation, examples, and best practices, please refer to the [official documentation](Docs.md).
 
 ## Contributing
 We welcome contributions to SimpleFSM! If you'd like to contribute, please fork the repository, make your changes, and submit a pull request. For more information on contributing, please see our contributing guidelines.
