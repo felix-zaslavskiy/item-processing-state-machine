@@ -1,6 +1,5 @@
 package simplefsm;
 
-import demo.MyCustomEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

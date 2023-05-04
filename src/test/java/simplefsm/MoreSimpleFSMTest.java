@@ -1,11 +1,22 @@
 package simplefsm;
 
-import demo.MyCustomEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+class MyCustomEvent implements NamedEntity {
+    private final String name;
+
+    public MyCustomEvent(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+}
 public class MoreSimpleFSMTest {
     private SimpleFSM simpleFSM;
     private ProcessingData data;

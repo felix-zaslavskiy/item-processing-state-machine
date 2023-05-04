@@ -1,10 +1,8 @@
 package simplefsm;
 
-import demo.MyCustomEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static demo.DemoNames.START;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ExceptionState extends ProcessingStep {
@@ -48,7 +46,7 @@ public class ImportExportFSMTest {
 
         ProcessingData data = new ProcessingData();
         data.set("value", 5);
-        simpleFSM.start(START, data); // Optional event parameter
+        simpleFSM.start("START", data); // Optional event parameter
 
         String exportState = simpleFSM.exportState();
 
@@ -70,7 +68,7 @@ public class ImportExportFSMTest {
 
         ProcessingData data = new ProcessingData();
         data.set("value", 4);
-        simpleFSM.start(START, data); // Optional event parameter
+        simpleFSM.start("START", data); // Optional event parameter
 
         String exportState = simpleFSM.exportState();
 
@@ -109,7 +107,7 @@ public class ImportExportFSMTest {
 
         ProcessingData data = new ProcessingData();
         data.set("value", 4);
-        simpleFSM.start(START, data); // Optional event parameter
+        simpleFSM.start("START", data); // Optional event parameter
         simpleFSM.setTraceMode(true);
 
         simpleFSM.triggerEvent("alt_proceed", data);
@@ -131,7 +129,7 @@ public class ImportExportFSMTest {
         ProcessingData data = new ProcessingData();
         data.set("value", 5);
         simpleFSM.setTraceMode(true);
-        simpleFSM.start(START, data); // Optional event parameter
+        simpleFSM.start("START", data); // Optional event parameter
 
         assertTrue(simpleFSM.isFinished());
         String trace = simpleFSM.getTrace().toString();
