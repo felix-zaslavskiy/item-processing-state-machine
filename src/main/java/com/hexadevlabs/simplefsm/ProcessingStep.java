@@ -1,4 +1,4 @@
-package simplefsm;
+package com.hexadevlabs.simplefsm;
 
 import java.util.ArrayList;
 import java.util.List;

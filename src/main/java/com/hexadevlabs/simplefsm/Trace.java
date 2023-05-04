@@ -1,4 +1,4 @@
-package simplefsm;
+package com.hexadevlabs.simplefsm;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

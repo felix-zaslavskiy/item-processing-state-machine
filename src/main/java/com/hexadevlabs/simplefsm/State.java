@@ -1,4 +1,4 @@
-package simplefsm;
+package com.hexadevlabs.simplefsm;
 
 import java.util.Collection;
 import java.util.HashMap;

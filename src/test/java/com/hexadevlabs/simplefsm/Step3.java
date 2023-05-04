@@ -1,4 +1,4 @@
-package simplefsm;
+package com.hexadevlabs.simplefsm;
 
 class Step3 extends ProcessingStep {
     @Override

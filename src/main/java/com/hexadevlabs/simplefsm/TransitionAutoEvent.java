@@ -1,4 +1,4 @@
-package simplefsm;
+package com.hexadevlabs.simplefsm;
 
 public class TransitionAutoEvent implements NamedEntity {
 

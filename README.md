@@ -18,6 +18,9 @@ Finite state machines (FSMs) are a powerful technique to manage the flow of cont
 To use SimpleFSM in your Java project, simply include it as a dependency and start defining states and transitions. Here's a basic example to get you started:
 
 ```java
+import com.hexadevlabs.simplefsm.ProcessingData;
+import com.hexadevlabs.simplefsm.ProcessingStep;
+import com.hexadevlabs.simplefsm.SimpleFSM;
 import simplefsm.*;
 
 class ProcessingStep1() extends ProcessingStep {
@@ -27,17 +30,18 @@ class ProcessingStep1() extends ProcessingStep {
         nextState("state2"); // set conditionally the next step.
     }
 }
+
 public class MyFSM {
 
     public static void main(String[] args) {
         // Create a new SimpleFSM instance
         SimpleFSM fsm = new SimpleFSM.Builder()
                 .state("state1", new ProcessingStep1())
-                    .conditional().goTo("state2")
-                    .conditional().goTo("state3")
+                .conditional().goTo("state2")
+                .conditional().goTo("state3")
                 .and()
                 .state("state2", new ProcessingStep2(), true) // Pause after step
-                    .on("event2").goTo("state3")
+                .on("event2").goTo("state3")
                 .end()
                 .finalState("state3", new ProcessingStep3())
                 .build();
@@ -58,11 +62,11 @@ public class MyFSM {
 ```
 
 In this example, we define a simple FSM with three states and one events. 
-Each state has a processing step associated with it, which can be any class that extends [ProcessingStep](src/main/java/simplefsm/ProcessingStep.java). 
+Each state has a processing step associated with it, which can be any class that extends [ProcessingStep](src/main/java/com/hexadevlabs/simplefsm/ProcessingStep.java). 
 The processing steps are responsible for performing the required actions in each state and setting the next state, if necessary.
 For a more in depth demo take a look at [SimpleFSMDemo](src/main/java/demo/SimpleFSMDemo.java).
 
-The [SimpleFSM.Builder](src/main/java/simplefsm/SimpleFSM.java) class provides a fluent API for defining states, transitions, and other FSM properties, making it easy to build complex state machines in a clean, readable way.
+The [SimpleFSM.Builder](src/main/java/com/hexadevlabs/simplefsm/SimpleFSM.java) class provides a fluent API for defining states, transitions, and other FSM properties, making it easy to build complex state machines in a clean, readable way.
 
 ## Documentation
 For more information on using SimpleFSM, including detailed API documentation, examples, and best practices, please refer to the [official documentation](Docs.md).
