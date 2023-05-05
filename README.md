@@ -1,3 +1,5 @@
+![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.hexadevlabs/simple-finite-state-machine/badge.svg)
+
 # Simple Finite State Machine (SimpleFSM)
 
 SimpleFSM is a lightweight and customizable non-deterministic finite state machine library for Java, designed to simplify complex workflows and manage states effectively. The primary goal of this library is to provide developers with a simple yet powerful tool to implement and manage state machines within their applications.
