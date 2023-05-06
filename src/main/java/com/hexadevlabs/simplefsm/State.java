@@ -5,12 +5,27 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * The State class represents a state in a finite state machine (FSM). Each state has a name,
+ * a processing step, a set of transitions, and a flag to determine if the state should wait
+ * for an event before transitioning. The class provides methods for adding transitions,
+ * retrieving the next state based on an event, and executing the processing step.
+ */
 public class State {
     private final String name;
     private final Map<String, String> transitions;
     private final ProcessingStep processingStep;
     private final boolean waitForEventBeforeTransition;
 
+    /**
+     * Constructs a new State instance with the given name, processing step, and
+     * waitForEventBeforeTransition flag.
+     *
+     * @param name                      The name of the state.
+     * @param processingStep            The processing step to be executed in this state.
+     * @param waitForEventBeforeTransition Indicates whether the state should wait for an event
+     *                                  before transitioning to the next state.
+     */
     public State(String name, ProcessingStep processingStep, boolean waitForEventBeforeTransition) {
         this.name = name;
         this.processingStep = processingStep;
@@ -18,6 +33,13 @@ public class State {
         this.waitForEventBeforeTransition = waitForEventBeforeTransition;
     }
 
+    /**
+     * Adds a transition to the state with the given event name and next state.
+     *
+     * @param eventName The name of the event that triggers the transition.
+     * @param nextState The name of the next state to transition to.
+     * @throws IllegalArgumentException If a transition with the same event name already exists.
+     */
     public void addTransition(String eventName, String nextState) {
         if (transitions.containsKey(eventName)) {
             throw new IllegalArgumentException("A transition with the event name '" + eventName + "' already exists in the state '" + name + "'.");
@@ -37,6 +59,16 @@ public class State {
         return transitions.get(event);
     }
 
+    /**
+     * Executes the processing step with the provided ProcessingData instance and
+     * updates the Trace with the process execution log.
+     *
+     * @param data The ProcessingData instance containing data relevant to the current state.
+     * @param trace The Trace instance for recording the execution log.
+     * @param executionHooks The ExecutionHooks instance for before and after hooks.
+     * @return An ExceptionInfo instance with exception details if an exception occurred,
+     *         otherwise an empty ExceptionInfo instance.
+     */
     ExceptionInfo execute(ProcessingData data, Trace trace, ExecutionHooks executionHooks) {
         // Call the before hook
         if( executionHooks != null) {

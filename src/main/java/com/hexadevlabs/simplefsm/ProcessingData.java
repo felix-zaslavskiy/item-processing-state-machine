@@ -3,6 +3,12 @@ package com.hexadevlabs.simplefsm;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The ProcessingData class represents a container for storing and managing data during the
+ * execution of a finite state machine. It maintains a map of key-value pairs and allows
+ * for setting and retrieving data by keys. It also holds the next state and exception
+ * information, if any.
+ */
 public class ProcessingData {
     private final Map<String, Object> dataMap;
     private String nextState;
@@ -15,10 +21,23 @@ public class ProcessingData {
         this.nextState = null;
     }
 
+    /**
+     * Sets a key-value pair in the data map.
+     *
+     * @param key   The key to store the value under.
+     * @param value The value to store.
+     */
     public void set(String key, Object value) {
         dataMap.put(key, value);
     }
 
+
+    /**
+     * Retrieves the value stored under the specified key.
+     *
+     * @param key The key to look up the value.
+     * @return The value associated with the specified key, or null if the key is not present.
+     */
     public Object get(String key) {
         return dataMap.get(key);
     }
@@ -34,15 +53,15 @@ public class ProcessingData {
         return exceptionInfo.exception;
     }
 
-    public String getNextState() {
+    String getNextState() {
         return nextState;
     }
 
-    public void setNextState(String nextState) {
+    void setNextState(String nextState) {
         this.nextState = nextState;
     }
 
-    public void setExceptionInfo(ExceptionInfo exceptionInfo){
+    void setExceptionInfo(ExceptionInfo exceptionInfo){
         this.exceptionInfo = exceptionInfo;
     }
 }

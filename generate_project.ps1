@@ -6,4 +6,4 @@ Start-Process -FilePath "python" -ArgumentList "..\useful-python-scripts\concat_
  ".\src\main\java\com\hexadevlabs\simplefsm\FSMState.java", `
  ".\src\main\java\com\hexadevlabs\simplefsm\NamedEntity.java", `
  ".\src\main\java\com\hexadevlabs\simplefsm\ExceptionInfo.java", `
- ".\src\main\java\com\hexadevlabs\simplefsm\NFSM.java"
+ ".\src\main\java\com\hexadevlabs\simplefsm\SimpleFSM.java"
