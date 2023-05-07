@@ -29,6 +29,11 @@ public class SimpleFSM {
         this.trace.setTraceMode(traceMode);
     }
 
+    /**
+     * Adds a State instance to the SimpleFSM.
+     *
+     * @param state The State instance to be added.
+     */
     public void addState(State state) {
         states.put(state.getName(), state);
     }
@@ -261,6 +266,11 @@ public class SimpleFSM {
         return dot.toString();
     }
 
+    /**
+     * Exports the current state of the FSM as a JSON string.
+     *
+     * @return A JSON string representing the current state of the FSM.
+     */
     public String exportState() {
         ObjectMapper objectMapper = new ObjectMapper();
         FSMState fsmState = new FSMState();
@@ -275,6 +285,11 @@ public class SimpleFSM {
         }
     }
 
+    /**
+     * Imports the state of the FSM from a JSON string.
+     *
+     * @param json The JSON string representing the state to be imported.
+     */
     public void importState(String json)  {
         ObjectMapper objectMapper = new ObjectMapper();
         FSMState fsmState;
@@ -289,6 +304,12 @@ public class SimpleFSM {
         name = fsmState.getName();
     }
 
+    /**
+     * Retrieves the state on which the FSM is paused.
+     *
+     * @return The State instance on which the FSM is paused.
+     * @throws IllegalStateException If the FSM is finished.
+     */
     public State getPausedOnState(){
         if(isFinished())
             throw new IllegalStateException("State machine must not have finished to return Paused on state");
@@ -296,6 +317,12 @@ public class SimpleFSM {
         return states.get(currentState);
     }
 
+    /**
+     * Retrieves the final state of the FSM if the FSM is finished.
+     *
+     * @return The State instance representing the final state.
+     * @throws IllegalStateException If the FSM is not finished or is terminated.
+     */
     public State getFinalState() {
         if(!isFinished())
             throw new IllegalStateException("State machine must finish to have final state");
@@ -346,15 +373,30 @@ public class SimpleFSM {
             return this;
         }
 
+        /**
+         * Sets the name of the state to transition to in case of an exception.
+         *
+         * @param state The name of the state to transition to.
+         */
         public Builder onExceptionGoTo(NamedEntity state) {
             return onExceptionGoTo(state.getName());
         }
 
+        /**
+         * Sets the name of the state to transition to in case of an exception.
+         *
+         * @param state The name of the state to transition to.
+         */
         public Builder onExceptionGoTo(String state) {
             simpleFSM.onExceptionState = state;
             return this;
         }
 
+        /**
+         * Sets the ExecutionHooks instance to be used for before and after hooks.
+         *
+         * @param hook The ExecutionHooks instance to be used.
+         */
         public Builder withExecutionHook(ExecutionHooks hook){
             simpleFSM.executionHooks = hook;
             return this;
@@ -366,8 +408,8 @@ public class SimpleFSM {
         }
 
         /**
-         * Override default. Terminate State machine if exception
-         * in execution hook. By default, State machine will go to
+         * FSM should terminate when an exception occurs during
+         * the execution of a hook. By default, State machine will go to
          * Exception state.
          */
         public Builder onExecutionHookExceptionTerminate() {
