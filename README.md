@@ -80,11 +80,18 @@ For a more in depth demo take a look at [SimpleFSMDemo](https://github.com/felix
 
 The [SimpleFSM.Builder](src/main/java/com/hexadevlabs/simplefsm/SimpleFSM.java) class provides a fluent API for defining states, transitions, and other FSM properties, making it easy to build complex state machines in a clean, readable way.
 
-## Documentation
-For more information on using SimpleFSM, including detailed API documentation, examples, and best practices, please refer to the [official documentation](Docs.md).
+Using the **SimpleFSM.toGraphviz()** method you can generate a Dot notation graph representing the FSM. This text can be rendered in various ways such to a PNG file. An example of what it will look like is below:
+
+<img src="state_machine.png" alt="State Machine Graph" width="400" height="500" />
+
+## Future considerations
+* Consider adding timeout handling for events.(seems complex)
+* Should the state of FSM be represented as graph structure instead of Hashtable. probably needed for high perforce.
+* For a completed FSM draw a graph that shows the path taken by that execution. Seems like nice idea for debugging.
+* For additional features need to see what real world use-cases demand.
 
 ## Contributing
-We welcome contributions to SimpleFSM! If you'd like to contribute, please fork the repository, make your changes, and submit a pull request. For more information on contributing, please see our contributing guidelines.
+We welcome contributions to SimpleFSM! If you'd like to contribute, please fork the repository, make your changes, and submit a pull request.
 
 ## License
 SimpleFSM is released under the **Apache Version 2.0**
