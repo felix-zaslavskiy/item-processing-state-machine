@@ -1,6 +1,8 @@
 package com.hexadevlabs.simplefsm;
 
-public class ExceptionInfo {
+import java.io.Serializable;
+
+public class ExceptionInfo implements Serializable {
     private boolean hadException = false;
     private boolean onHook = false;
     public Exception exception;

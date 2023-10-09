@@ -1,5 +1,6 @@
 package com.hexadevlabs.simplefsm;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,7 +10,7 @@ import java.util.Map;
  * for setting and retrieving data by keys. It also holds the next state and exception
  * information, if any.
  */
-public class ProcessingData {
+public class ProcessingData implements Serializable {
     private final Map<String, Object> dataMap;
     private String nextState;
 
