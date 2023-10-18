@@ -14,7 +14,7 @@ import java.util.Set;
 public class State {
     private final String name;
     private final Map<String, String> transitions;
-    private final ProcessingStep processingStep;
+    private ProcessingStep processingStep;
     private final boolean waitForEventBeforeTransition;
 
     /**
@@ -112,5 +112,13 @@ public class State {
 
     public String getProcessStepClassName() {
         return processingStep.getClassName();
+    }
+
+    /**
+     * Set the processingStep for this State.
+     * @param processingStep What will be executed.
+     */
+    public void setProcessingStep(ProcessingStep processingStep){
+        this.processingStep = processingStep;
     }
 }

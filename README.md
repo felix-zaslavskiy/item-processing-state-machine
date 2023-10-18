@@ -93,5 +93,9 @@ Using the **SimpleFSM.toGraphviz()** method you can generate a Dot notation grap
 ## Contributing
 We welcome contributions to SimpleFSM! If you'd like to contribute, please fork the repository, make your changes, and submit a pull request.
 
+## Version history
+* 1.0.1 Make ProcessingData Serializable
+* 1.0.2 Add setProcessingStep() to State class.
+
 ## License
 SimpleFSM is released under the **Apache Version 2.0**
