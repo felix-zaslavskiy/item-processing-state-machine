@@ -39,23 +39,26 @@ public class DiagramsTest {
     public void graphTest(){
         String graphviz = simpleFSM.toGraphviz();
         assertNotNull(graphviz);
+        String expected = """
+                digraph G {
+                labelloc="t";
+                label=<<B>Test FSM</B>>;
+                \tEXCEPTION[label="EXCEPTION\\n[ExceptionState]"];
+                \tSTART[label="START\\n[Step1]"];
+                \tSTART -> STEP3[label="START_TO_STEP3"];
+                \tSTART -> STEP2[label="START_TO_STEP2"];
+                \tEND[label="END\\n[Step4]\\n<final>"];
+                \tSTEP2[label="STEP2\\n[Step2]\\n<wait>"];
+                \tSTEP2 -> END[label="proceed"];
+                \tSTEP2 -> EXCEPTION[label="alt_proceed"];
+                \tSTEP3[label="STEP3\\n[Step3]"];
+                \tSTEP3 -> END[label="AUTO"];
+                \tException [label="Exception" shape="box"];
+                \tException -> END[label="ON_EXCEPTION"];
+                }""";
+
         // a bit brittle but ok for now.
-        assertEquals( "digraph G {\n" +
-                "labelloc=\"t\";\n" +
-                "label=<<B>Test FSM</B>>;\n" +
-                "\tEXCEPTION[label=\"EXCEPTION\\n[ExceptionState]\"];\n" +
-                "\tSTART[label=\"START\\n[Step1]\"];\n" +
-                "\tSTART -> STEP3[label=\"START_TO_STEP3\"];\n" +
-                "\tSTART -> STEP2[label=\"START_TO_STEP2\"];\n" +
-                "\tEND[label=\"END\\n[Step4]\\n<final>\"];\n" +
-                "\tSTEP2[label=\"STEP2\\n[Step2]\\n<wait>\"];\n" +
-                "\tSTEP2 -> end[label=\"proceed\"];\n" +
-                "\tSTEP2 -> EXCEPTION[label=\"alt_proceed\"];\n" +
-                "\tSTEP3[label=\"STEP3\\n[Step3]\"];\n" +
-                "\tSTEP3 -> END[label=\"AUTO\"];\n" +
-                "\tException [label=\"Exception\" shape=\"box\"];\n" +
-                "\tException -> END[label=\"ON_EXCEPTION\"];\n" +
-                "}" , graphviz);
+        assertEquals( expected , graphviz);
     }
 
 }
