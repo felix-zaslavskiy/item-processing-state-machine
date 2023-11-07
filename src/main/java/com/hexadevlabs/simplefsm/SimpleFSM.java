@@ -469,6 +469,11 @@ public class SimpleFSM {
                 throw new IllegalArgumentException("A state with the name '" + joinToState + "' must already be declared before using join() call.");
             }
             this.nfsmBuilder.simpleFSM.getState(joinToState).makeJoiningState();
+
+            String eventName = name + "_TO_" + joinToState;
+            // Add a Transition to the joinToState
+            this.nfsmBuilder.simpleFSM.getState(name).addTransition(eventName, joinToState, false);
+
             return this;
         }
 

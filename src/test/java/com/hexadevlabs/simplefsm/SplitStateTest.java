@@ -45,10 +45,12 @@ public class SplitStateTest {
                 labelloc="t";
                 label=<<B>Test FSM</B>>;
                 	SPLIT2[label="SPLIT2\\n[Split2]"];
+                	SPLIT2 -> END[label="SPLIT2_TO_END"];
                 	START[label="START\\n[Step1]"];
                 	START -> STEP_SPLIT[label="AUTO"];
                 	END[label="END\\n[Step4]\\n<final>"];
                 	SPLIT1[label="SPLIT1\\n[Split1]"];
+                	SPLIT1 -> END[label="SPLIT1_TO_END"];
                 	STEP_SPLIT[label="STEP_SPLIT\\n[StepSplit]"];
                 	STEP_SPLIT -> SPLIT2[label="SPLIT_SPLIT2"];
                 	STEP_SPLIT -> SPLIT1[label="SPLIT_SPLIT1"];
