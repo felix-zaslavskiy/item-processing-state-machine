@@ -15,6 +15,10 @@ public class SimpleFSM {
     private ExecutionHooks executionHooks;
     private boolean onExecutionHookExceptionTerminate;
     private boolean started;
+
+    private final List<String> completedSplitStates;
+
+    private SplitHandler splitHandler;
     String name;
 
 
@@ -23,6 +27,7 @@ public class SimpleFSM {
         trace = new Trace();
         started = false;
         finalStates = new HashSet<>();
+        completedSplitStates = new ArrayList<>();
     }
 
     public void setTraceMode(boolean traceMode) {
@@ -85,6 +90,49 @@ public class SimpleFSM {
     }
 
     /**
+     * Should be called by SplitHandler to initiate work on multiple states
+     * of the State machine in parallel.
+     *
+     * @param splitStateTransition Name of transition for split state
+     * @param data
+     */
+    public void continueOnSplitState(String splitStateTransition, ProcessingData data) {
+
+        if (!started) {
+            throw new IllegalStateException("State machine not started.");
+        }
+
+        // Start work on Split state...
+        State state = states.get(currentState);
+
+        if(!state.getSplitTransitions().contains(splitStateTransition)){
+            throw new IllegalStateException("Not a valid splitState transition for this state machine: " + splitStateTransition);
+        }
+
+        // Process work on the state...
+        String nextStateName = state.getNextState(splitStateTransition);
+        State nextState = states.get(nextStateName);
+
+        ExceptionInfo exceptionInfo;
+        exceptionInfo = nextState.execute(data, trace , executionHooks);
+
+        // TODO: handle exception
+
+        // At the end of the work we need to check for state machine status and update it about the work done.
+        SplitHandler.GetStateResult result = splitHandler.getStateAndUpdateWorkState(this);
+
+        // Merge data and persist the data.
+        splitHandler.mergeDataAndSave(data, result.otherSavedProcessingData);
+
+        // If all the work is done continue with normal processing.
+        if(result.completedOtherWork){
+
+            // TODO: setup to continue processing.
+        }
+
+    }
+
+    /**
      * Paused means FSM is waiting on an event
      */
     public boolean isPaused() {
@@ -122,6 +170,9 @@ public class SimpleFSM {
         this.finalStates.add(finalState);
     }
 
+    public void addSplitHandler(SplitHandler handleSplit) {
+        this.splitHandler = handleSplit;
+    }
 
     /**
      * State machine processing loop.
@@ -204,6 +255,16 @@ public class SimpleFSM {
             // From here we figure out what the next State to transition to needs to be.
             // It can be directed by the Processor via data, be an auto transition,
             // or there is only one possibly transition available.
+
+            // If there is a split transition from this state we can handle them.
+            // For now if Split is happened we have to save state and pause State machine.
+            Collection<String> splitTransitions = state.getSplitTransitions();
+            if(!splitTransitions.isEmpty()){
+                // Pause state machine.
+                // currentState will what it was.
+                splitHandler.handleSplit(this, data, splitTransitions);
+                break;
+            }
 
             String nextState = data.getNextState();
             if (nextState == null) {
@@ -295,6 +356,7 @@ public class SimpleFSM {
         ObjectMapper objectMapper = new ObjectMapper();
         FSMState fsmState = new FSMState();
         fsmState.setCurrentState(currentState);
+        fsmState.completedSplitStates(completedSplitStates);
         fsmState.setTrace(trace);
         fsmState.setStarted(started);
         fsmState.setName(name);
@@ -352,7 +414,6 @@ public class SimpleFSM {
 
         return states.get(currentState);
     }
-
 
 
 
@@ -455,7 +516,13 @@ public class SimpleFSM {
             return simpleFSM;
         }
 
+        public Builder splitHander(SplitHandler handleSplit) {
+            simpleFSM.addSplitHandler(handleSplit);
+            return this;
+        }
     }
+
+
 
     public static class StateBuilder {
         private final String name;

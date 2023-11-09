@@ -73,6 +73,8 @@ public class State {
         return transitions.entrySet();
     }
 
+    Collection<String> getSplitTransitions() { return splitTransitions; }
+
     String getNextState(String event) {
         return transitions.get(event);
     }

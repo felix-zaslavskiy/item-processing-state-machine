@@ -32,6 +32,7 @@ public class SplitStateTest {
             .and()
             .onExceptionGoTo("END")
             .withName("Test FSM")
+                .splitHander(new HandleSplit())
             .build();
     }
 
