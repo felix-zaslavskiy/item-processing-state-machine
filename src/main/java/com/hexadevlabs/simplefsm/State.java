@@ -13,8 +13,14 @@ import java.util.*;
 public class State {
     private final String name;
 
+    // Transition name -> State name... Other states that can be
+    // transitioned from this State
     private final Map<String, String> transitions;
+
+    // List of Transition that are part of a split.
     private final ArrayList<String> splitTransitions;
+
+    // If this State is part of a join from Split transitions
     private boolean joiningState;
     private ProcessingStep processingStep;
     private final boolean waitForEventBeforeTransition;

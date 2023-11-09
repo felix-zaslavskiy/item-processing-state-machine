@@ -123,7 +123,19 @@ public class SimpleFSM {
     }
 
 
+    /**
+     * State machine processing loop.
+     * The currentState variable tracks the current state the machine is in.
+     * <p>
+     * Called from either start() in which case currentState is set to starting state
+     * or from triggerEvent() in which case currentState is preset to the next state that
+     * that event is supposed to transition to.
+     *
+     * @param data
+     */
     private void process(ProcessingData data) {
+        // We get the current state object since we know what state
+        // to execute as the loop starts.
         State state = states.get(currentState);
         while (state != null) {
 
@@ -189,6 +201,10 @@ public class SimpleFSM {
                 break;
             }
 
+            // From here we figure out what the next State to transition to needs to be.
+            // It can be directed by the Processor via data, be an auto transition,
+            // or there is only one possibly transition available.
+
             String nextState = data.getNextState();
             if (nextState == null) {
                 nextState = state.getNextState(TransitionAutoEvent.NAME);
@@ -208,7 +224,11 @@ public class SimpleFSM {
             }
 
             if(nextState != null){
+                // State is updated to the nextState since we know the next state for next iteration of loop will be.
                 state = states.get(nextState);
+                // currentState is updates to the nextState so the state machine has moved to be in the next
+                // state now. currentState is mostly used to introspect the state machine
+                // while it si not running.
                 currentState = nextState;
             }else {
                 // Either in finalState or no other transition available.
