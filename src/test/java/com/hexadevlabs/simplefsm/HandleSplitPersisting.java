@@ -11,6 +11,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * The persistence will be stored to an H2 DB using transactions.
@@ -20,11 +22,14 @@ public class HandleSplitPersisting implements SplitHandler{
 
     Connection conn;
 
+    boolean parallel = false;
+
     static ObjectMapper mapper = new ObjectMapper().setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
             .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 
-    public HandleSplitPersisting(Connection conn) {
+    public HandleSplitPersisting(Connection conn, boolean parallel) {
         this.conn = conn;
+        this.parallel = parallel;
     }
 
     @Override
@@ -39,11 +44,22 @@ public class HandleSplitPersisting implements SplitHandler{
             throw new RuntimeException(e);
         }
 
-        // Trigger processing of all the split states.
-        for(String splitState: splitTransitions){
-            simpleFSM.continueOnSplitState(splitState, data);
-        }
+        if(parallel) {
+            ExecutorService executor = Executors.newFixedThreadPool(2); // adjust the thread pool size as needed
 
+            // Trigger processing of all the split states.
+            for (String splitState : splitTransitions) {
+                executor.submit(() -> {
+                    simpleFSM.continueOnSplitState(splitState, data);
+                });
+            }
+
+            executor.shutdown();
+        } else {
+            for (String splitState : splitTransitions) {
+                    simpleFSM.continueOnSplitState(splitState, data);
+            }
+        }
     }
 
     @Override

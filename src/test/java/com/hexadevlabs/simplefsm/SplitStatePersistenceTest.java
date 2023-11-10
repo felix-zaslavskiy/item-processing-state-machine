@@ -57,14 +57,14 @@ public class SplitStatePersistenceTest {
             .and()
             .onExceptionGoTo("END")
             .withName("Test FSM")
-                .splitHander(new HandleSplitPersisting(conn))
+                .splitHander(new HandleSplitPersisting(conn, false))
             .withTrace()
             .build();
     }
 
 
     @Test
-    public void runSimpleSplittingStateMachine(){
+    public void runSimpleSplittingStateMachine() throws InterruptedException {
         ProcessingData data = new ProcessingData();
         simpleFSM.start("START", data);
         assertTrue(simpleFSM.isFinished());
