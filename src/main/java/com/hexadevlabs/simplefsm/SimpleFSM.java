@@ -17,7 +17,7 @@ public class SimpleFSM {
     private boolean started;
 
     // Tracking the split states that have been completed so far.
-    private final List<String> completedSplitStates;
+    private List<String> completedSplitStates;
 
     private SplitHandler splitHandler;
     String name;
@@ -402,6 +402,7 @@ public class SimpleFSM {
         trace = fsmState.getTrace();
         started = fsmState.isStarted();
         name = fsmState.getName();
+        completedSplitStates = fsmState.getCompletedSplitStates();
     }
 
     /**
