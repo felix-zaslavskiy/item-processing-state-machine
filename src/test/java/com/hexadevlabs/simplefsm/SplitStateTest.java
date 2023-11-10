@@ -22,7 +22,7 @@ public class SplitStateTest {
                 .split().goTo("SPLIT1" )
                 .split().goTo("SPLIT2" )
             .and()
-            .finalState("END", new Step4())
+            .finalState("END", new SplitEnd())
             .state("SPLIT1", new Split1() )
                 .join( "END" )
             .and()
@@ -35,7 +35,6 @@ public class SplitStateTest {
             .withTrace()
             .build();
     }
-
 
     @Test
     public void graphTest() {
@@ -71,6 +70,8 @@ public class SplitStateTest {
         assertFalse(simpleFSM.wasTerminated());
         assertNotNull(simpleFSM.getFinalState());
         assertEquals("END", simpleFSM.getFinalState().getName());
+        Integer result = (Integer) data.get("value_sum");
+        assertEquals(5, result);
         simpleFSM.getTrace().print();
     }
 
