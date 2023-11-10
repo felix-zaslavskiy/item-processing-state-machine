@@ -3,8 +3,7 @@ package com.hexadevlabs.simplefsm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SplitStateTest {
     private SimpleFSM simpleFSM;
@@ -16,7 +15,7 @@ public class SplitStateTest {
 
     private SimpleFSM buildNew(){
         return new SimpleFSM.Builder()
-            .state("START", new Step1())
+            .state("START", new NoopStep())
                 .auto().goTo("STEP_SPLIT")
             .and()
             .state( "STEP_SPLIT", new StepSplit() )
@@ -32,7 +31,8 @@ public class SplitStateTest {
             .and()
             .onExceptionGoTo("END")
             .withName("Test FSM")
-                .splitHander(new HandleSplit())
+                .splitHander(new HandleSplitPlaceholder())
+            .withTrace()
             .build();
     }
 
@@ -47,7 +47,7 @@ public class SplitStateTest {
                 label=<<B>Test FSM</B>>;
                 	SPLIT2[label="SPLIT2\\n[Split2]"];
                 	SPLIT2 -> END[label="SPLIT2_TO_END"];
-                	START[label="START\\n[Step1]"];
+                	START[label="START\\n[NoopStep]"];
                 	START -> STEP_SPLIT[label="AUTO"];
                 	END[label="END\\n[Step4]\\n<final>"];
                 	SPLIT1[label="SPLIT1\\n[Split1]"];
@@ -60,6 +60,18 @@ public class SplitStateTest {
                 }""";
         // a bit brittle but ok for now.
         assertEquals( expected , graphviz);
+    }
+
+
+    @Test
+    public void runSimpleSplittingStateMachine(){
+        ProcessingData data = new ProcessingData();
+        simpleFSM.start("START", data);
+        assertTrue(simpleFSM.isFinished());
+        assertFalse(simpleFSM.wasTerminated());
+        assertNotNull(simpleFSM.getFinalState());
+        assertEquals("END", simpleFSM.getFinalState().getName());
+        simpleFSM.getTrace().print();
     }
 
 }

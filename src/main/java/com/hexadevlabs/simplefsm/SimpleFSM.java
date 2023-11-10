@@ -16,6 +16,7 @@ public class SimpleFSM {
     private boolean onExecutionHookExceptionTerminate;
     private boolean started;
 
+    // Tracking the split states that have been completed so far.
     private final List<String> completedSplitStates;
 
     private SplitHandler splitHandler;
@@ -119,15 +120,24 @@ public class SimpleFSM {
         // TODO: handle exception
 
         // At the end of the work we need to check for state machine status and update it about the work done.
-        SplitHandler.GetStateResult result = splitHandler.getStateAndUpdateWorkState(this);
+        SplitHandler.GetStateResult result = splitHandler.getStateAndUpdateWorkState(this, currentState, nextStateName);
 
         // Merge data and persist the data.
-        splitHandler.mergeDataAndSave(data, result.otherSavedProcessingData);
+        data = splitHandler.mergeDataAndSave(this, data, result.otherSavedProcessingData);
 
         // If all the work is done continue with normal processing.
         if(result.completedOtherWork){
 
-            // TODO: setup to continue processing.
+            String nextStateTransition;
+            Collection<String> transitions =  nextState.getTransitions();
+            if(transitions.size() == 1){
+                nextStateTransition = transitions.iterator().next();
+            } else {
+                throw new IllegalStateException("Expected on transition to joined state");
+            }
+            currentState = nextStateTransition;
+
+            process(data);
         }
 
     }
@@ -172,6 +182,14 @@ public class SimpleFSM {
 
     public void addSplitHandler(SplitHandler handleSplit) {
         this.splitHandler = handleSplit;
+    }
+
+    protected void recordCompletionSplitState(String completedSplitState) {
+        this.completedSplitStates.add(completedSplitState);
+    }
+
+    protected Collection<String> getCompletionSplitStates(){
+        return this.completedSplitStates;
     }
 
     /**
@@ -414,6 +432,7 @@ public class SimpleFSM {
 
         return states.get(currentState);
     }
+
 
 
 

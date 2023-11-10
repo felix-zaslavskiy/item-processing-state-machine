@@ -1,8 +1,8 @@
 package com.hexadevlabs.simplefsm;
 
-public class Split1 extends ProcessingStep {
+public class NoopStep extends ProcessingStep {
     @Override
     protected void process(ProcessingData data) {
-        log("Step1");
+        log("Noop step");
     }
 }

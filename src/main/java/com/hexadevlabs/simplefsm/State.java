@@ -1,6 +1,5 @@
 package com.hexadevlabs.simplefsm;
 
-import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.*;
 
@@ -65,18 +64,31 @@ public class State {
         this.joiningState = true;
     }
 
+    /**
+     * Returns a collections of Events that this state can transition to
+     * @return
+     */
     Collection<String> getTransitions() {
         return transitions.values();
     }
 
+    /**
+     * Returns a set of entries with Transition Name -> Target Event name.
+     * @return
+     */
     Set<Map.Entry<String, String>> getTransitionEntries() {
         return transitions.entrySet();
     }
 
     Collection<String> getSplitTransitions() { return splitTransitions; }
 
-    String getNextState(String event) {
-        return transitions.get(event);
+    /**
+     * Get the Next state by following Transition name to name of next State.
+     * @param transitionName
+     * @return
+     */
+    String getNextState(String transitionName) {
+        return transitions.get(transitionName);
     }
 
     /**
