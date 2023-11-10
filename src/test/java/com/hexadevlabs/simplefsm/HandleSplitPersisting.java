@@ -49,7 +49,19 @@ public class HandleSplitPersisting implements SplitHandler{
     @Override
     public ProcessingData mergeDataAndSave( SimpleFSM simpleFSM, ProcessingData fromCurrentStep, ProcessingData fromSharedData) {
         // Don't do anything for now.
+        fromCurrentStep.mergeTo(fromSharedData);
+
+        // Save to db
+        try (Statement st = conn.createStatement()) {
+            conn.setAutoCommit(true);
+            String processingData = getJsonFromProcessingData(fromCurrentStep);
+            st.executeUpdate("UPDATE store SET data = '" + processingData + "'");
+        }catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
         return fromCurrentStep;
+
     }
 
     @Override

@@ -65,4 +65,16 @@ public class ProcessingData implements Serializable {
     void setExceptionInfo(ExceptionInfo exceptionInfo){
         this.exceptionInfo = exceptionInfo;
     }
+
+    /**
+     * Simple merge operation. Keys from data will be merged
+     * to this object. If data has same key the values will
+     * override what is in current data object.
+     *
+     * @param data
+     */
+    public void mergeTo(ProcessingData data) {
+        this.dataMap.putAll(data.dataMap);
+    }
+
 }
