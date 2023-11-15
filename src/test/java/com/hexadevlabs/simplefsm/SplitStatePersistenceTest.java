@@ -58,6 +58,13 @@ public class SplitStatePersistenceTest {
     }
 
     protected static SimpleFSM buildNew(Supplier<Connection> connectionSupplier){
+        HandleSplitPersisting handleSplitPersisting;
+        if(connectionSupplier==null){
+            handleSplitPersisting = new HandleSplitPersisting(null, false);
+        } else {
+            handleSplitPersisting = new HandleSplitPersisting(connectionSupplier, true);
+        }
+
         return new SimpleFSM.Builder()
             .state("START", new NoopStep())
                 .auto().goTo("STEP_SPLIT")
@@ -75,25 +82,25 @@ public class SplitStatePersistenceTest {
             .and()
             .onExceptionGoTo("END")
             .withName("Test FSM")
-                .splitHander(new HandleSplitPersisting(connectionSupplier, true))
+                .splitHander(handleSplitPersisting)
             .withTrace()
             .build();
     }
-
 
     @Test
     public void runSimpleSplittingStateMachine() throws InterruptedException {
         ProcessingData data = new ProcessingData();
         simpleFSM.start("START", data);
         Thread.sleep(1000);
-        simpleFSM.getTrace().print();
+
         assertTrue(simpleFSM.isFinished());
         assertFalse(simpleFSM.wasTerminated());
         assertNotNull(simpleFSM.getFinalState());
         assertEquals("END", simpleFSM.getFinalState().getName());
         Integer result = (Integer) data.get("value_sum");
         assertEquals(5, result);
-        //simpleFSM.getTrace().print();
+
+        simpleFSM.getTrace().print();
     }
 
 }

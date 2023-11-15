@@ -366,6 +366,23 @@ public class SimpleFSM {
     }
 
     /**
+     * Helper method to easily build a equivalent
+     * state machine object without any state object as
+     * if it came out by making it with static build() method.
+     */
+    public SimpleFSM buildEmptyCopy(){
+        SimpleFSM result = new SimpleFSM();
+        // Copy all the declarative properties of the State machine.
+        result.states.putAll(states);
+        result.onExceptionState = onExceptionState;
+        result.finalStates.addAll(finalStates);
+        result.executionHooks = executionHooks;
+        result.onExecutionHookExceptionTerminate = onExecutionHookExceptionTerminate;
+        result.splitHandler = splitHandler;
+        return result;
+    }
+
+    /**
      * Exports the current state of the FSM as a JSON string.
      *
      * @return A JSON string representing the current state of the FSM.

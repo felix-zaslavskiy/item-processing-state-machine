@@ -48,7 +48,7 @@ public class SplitStateTest {
                 	SPLIT2 -> END[label="SPLIT2_TO_END"];
                 	START[label="START\\n[NoopStep]"];
                 	START -> STEP_SPLIT[label="AUTO"];
-                	END[label="END\\n[Step4]\\n<final>"];
+                	END[label="END\\n[SplitEnd]\\n<final>"];
                 	SPLIT1[label="SPLIT1\\n[Split1]"];
                 	SPLIT1 -> END[label="SPLIT1_TO_END"];
                 	STEP_SPLIT[label="STEP_SPLIT\\n[StepSplit]"];

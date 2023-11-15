@@ -67,7 +67,7 @@ public class HandleSplitPersisting implements SplitHandler{
 
     @Override
     public ProcessingData mergeDataAndSave( SimpleFSM simpleFSM, ProcessingData fromCurrentStep, ProcessingData fromSharedData) {
-        // Don't do anything for now.
+
         fromCurrentStep.mergeTo(fromSharedData);
 
         // Save to db
@@ -110,8 +110,7 @@ public class HandleSplitPersisting implements SplitHandler{
                     data = rs.getString("data");
                 }
 
-                // TODO: coupling
-                SimpleFSM sm = SplitStatePersistenceTest.buildNew(connectionSupplier);
+                SimpleFSM sm = simpleFSM.buildEmptyCopy();
                 sm.importState(state);
 
                 // Update the work state of State machine
