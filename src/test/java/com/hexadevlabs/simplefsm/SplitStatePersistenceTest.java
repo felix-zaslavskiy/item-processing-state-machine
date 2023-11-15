@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,28 +19,45 @@ public class SplitStatePersistenceTest {
 
 
     private SimpleFSM simpleFSM;
-    private Connection conn;
+
 
     @BeforeEach
-    public void setUp() throws ClassNotFoundException, SQLException {
+    public void setUp() throws  SQLException {
 
-        Class.forName("org.h2.Driver");
-        conn = DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;", "sa", "");
+        Connection conn = makeNewConnection();
         try (Statement st = conn.createStatement()) {
+
             st.execute("CREATE TABLE store (state TEXT, data TEXT)");
         }
-        simpleFSM = buildNew(conn);
+        conn.close();
+        simpleFSM = buildNew(this::makeNewConnection);
+    }
+
+
+
+    private Connection makeNewConnection()  {
+        try {
+            Class.forName("org.h2.Driver");
+            Connection conn = DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;", "sa", "");
+//             Class.forName("com.mysql.cj.jdbc.Driver");
+//            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "password");
+            return conn;
+        }catch(Exception e){
+            System.err.println("Could not open connection to H2");
+            throw new RuntimeException(e);
+        }
     }
 
     @AfterEach
     public void tearDown() throws Exception {
+        Connection conn = makeNewConnection();
         try (Statement st = conn.createStatement()) {
             st.execute("DROP TABLE store");
         }
         conn.close();
     }
 
-    protected static SimpleFSM buildNew(Connection conn){
+    protected static SimpleFSM buildNew(Supplier<Connection> connectionSupplier){
         return new SimpleFSM.Builder()
             .state("START", new NoopStep())
                 .auto().goTo("STEP_SPLIT")
@@ -57,7 +75,7 @@ public class SplitStatePersistenceTest {
             .and()
             .onExceptionGoTo("END")
             .withName("Test FSM")
-                .splitHander(new HandleSplitPersisting(conn, false))
+                .splitHander(new HandleSplitPersisting(connectionSupplier, true))
             .withTrace()
             .build();
     }
@@ -67,13 +85,15 @@ public class SplitStatePersistenceTest {
     public void runSimpleSplittingStateMachine() throws InterruptedException {
         ProcessingData data = new ProcessingData();
         simpleFSM.start("START", data);
+        Thread.sleep(1000);
+        simpleFSM.getTrace().print();
         assertTrue(simpleFSM.isFinished());
         assertFalse(simpleFSM.wasTerminated());
         assertNotNull(simpleFSM.getFinalState());
         assertEquals("END", simpleFSM.getFinalState().getName());
         Integer result = (Integer) data.get("value_sum");
         assertEquals(5, result);
-        simpleFSM.getTrace().print();
+        //simpleFSM.getTrace().print();
     }
 
 }

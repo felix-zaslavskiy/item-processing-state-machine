@@ -13,6 +13,7 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Supplier;
 
 /**
  * The persistence will be stored to an H2 DB using transactions.
@@ -20,27 +21,29 @@ import java.util.concurrent.Executors;
  */
 public class HandleSplitPersisting implements SplitHandler{
 
-    Connection conn;
+    Supplier<Connection> connectionSupplier;
 
     boolean parallel = false;
 
     static ObjectMapper mapper = new ObjectMapper().setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
             .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 
-    public HandleSplitPersisting(Connection conn, boolean parallel) {
-        this.conn = conn;
+    public HandleSplitPersisting(Supplier<Connection> connectionSupplier, boolean parallel) {
+        this.connectionSupplier = connectionSupplier;
         this.parallel = parallel;
     }
 
     @Override
     public void handleSplit(SimpleFSM simpleFSM, ProcessingData data, Collection<String> splitTransitions) {
-        // Normally persist State machine and data.
-        try (Statement st = conn.createStatement()) {
-            conn.setAutoCommit(true); // Start transaction on this connection.
-            String state = simpleFSM.exportState();
-            String jsonData = getJsonFromProcessingData(data);
-            st.execute("INSERT INTO store (state, data ) values ('" + state + "', '" + jsonData + "')");
-        }catch (SQLException e) {
+        try(Connection conn = connectionSupplier.get()) {
+            // Normally persist State machine and data.
+            try (Statement st = conn.createStatement()) {
+                conn.setAutoCommit(true); // Start transaction on this connection.
+                String state = simpleFSM.exportState();
+                String jsonData = getJsonFromProcessingData(data);
+                st.execute("INSERT INTO store (state, data ) values ('" + state + "', '" + jsonData + "')");
+            }
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
@@ -68,10 +71,12 @@ public class HandleSplitPersisting implements SplitHandler{
         fromCurrentStep.mergeTo(fromSharedData);
 
         // Save to db
-        try (Statement st = conn.createStatement()) {
-            conn.setAutoCommit(true);
-            String processingData = getJsonFromProcessingData(fromCurrentStep);
-            st.executeUpdate("UPDATE store SET data = '" + processingData + "'");
+        try(Connection conn = connectionSupplier.get()) {
+            try (Statement st = conn.createStatement()) {
+                conn.setAutoCommit(true);
+                String processingData = getJsonFromProcessingData(fromCurrentStep);
+                st.executeUpdate("UPDATE store SET data = '" + processingData + "'");
+            }
         }catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -83,42 +88,53 @@ public class HandleSplitPersisting implements SplitHandler{
     @Override
     public GetStateResult getStateAndUpdateWorkState(SimpleFSM simpleFSM, String splitSourceState, String completedSplitState) {
 
-        try (Statement st = conn.createStatement()) {
-
+        try(Connection conn = connectionSupplier.get()) {
             conn.setAutoCommit(false); // Start transaction on this connection.
 
-            String state;
-            String data;
-            try(ResultSet rs = st.executeQuery("SELECT state, data FROM store")) {
-                rs.next();
-                state = rs.getString("state");
-                data = rs.getString("data");
+            try (Statement st = conn.createStatement()) {
+
+                // Mysql Default is Repeatable Read isolation level. The "For Update" will lock the
+                // select read here until another transaction has committed.
+                // The lock is not indefinite and can result in ERROR 1205 (HY000): Lock wait timeout exceeded; try restarting transaction
+                // Change isolation level: st.execute("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE");
+
+                // H2 default isolation level is Read committed but can be changed like this:
+                // H2 st.execute("SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL SERIALIZABLE");
+
+
+                String state;
+                String data;
+                try (ResultSet rs = st.executeQuery("SELECT state, data FROM store FOR UPDATE WAIT 1000")) {
+                    rs.next();
+                    state = rs.getString("state");
+                    data = rs.getString("data");
+                }
+
+                // TODO: coupling
+                SimpleFSM sm = SplitStatePersistenceTest.buildNew(connectionSupplier);
+                sm.importState(state);
+
+                // Update the work state of State machine
+                sm.recordCompletionSplitState(completedSplitState);
+                int totalSplitStatesCompleted = sm.getCompletionSplitStates().size();
+
+                // Get the expected # of
+                State source = sm.getState(splitSourceState);
+                int totalSplitTransitionsExpected = source.getSplitTransitions().size();
+
+                GetStateResult result = new GetStateResult();
+                result.completedOtherWork = totalSplitStatesCompleted == totalSplitTransitionsExpected;
+
+
+                // Write the updated State machine to Persistence
+                String newState = sm.exportState();
+                st.executeUpdate("UPDATE store SET state = '" + newState + "'");
+
+                conn.commit();
+
+                result.otherSavedProcessingData = getProcessingDataFromJson(data);
+                return result;
             }
-
-            SimpleFSM sm = SplitStatePersistenceTest.buildNew(conn);
-            sm.importState(state);
-
-            // Update the work state of State machine
-            sm.recordCompletionSplitState(completedSplitState);
-            int totalSplitStatesCompleted = sm.getCompletionSplitStates().size();
-
-            // Get the expected # of
-            State source = sm.getState(splitSourceState);
-            int totalSplitTransitionsExpected = source.getSplitTransitions().size();
-
-            GetStateResult result = new GetStateResult();
-            result.completedOtherWork = totalSplitStatesCompleted == totalSplitTransitionsExpected;
-
-
-            // Write the updated State machine to Persistence
-            String newState = sm.exportState();
-            st.executeUpdate("UPDATE store SET state = '" + newState + "'");
-
-            conn.commit();
-
-            result.otherSavedProcessingData = getProcessingDataFromJson(data);
-            return result;
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
