@@ -80,7 +80,7 @@ public class State {
         return transitions.entrySet();
     }
 
-    Collection<String> getSplitTransitions() { return splitTransitions; }
+    public Collection<String> getSplitTransitions() { return splitTransitions; }
 
     /**
      * Get the Next state by following Transition name to name of next State.

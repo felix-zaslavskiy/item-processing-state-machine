@@ -184,11 +184,11 @@ public class SimpleFSM {
         this.splitHandler = handleSplit;
     }
 
-    protected void recordCompletionSplitState(String completedSplitState) {
+    public void recordCompletionSplitState(String completedSplitState) {
         this.completedSplitStates.add(completedSplitState);
     }
 
-    protected Collection<String> getCompletionSplitStates(){
+    public Collection<String> getCompletionSplitStates(){
         return this.completedSplitStates;
     }
 

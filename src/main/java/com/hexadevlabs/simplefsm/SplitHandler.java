@@ -5,8 +5,8 @@ import java.util.Collection;
 public interface SplitHandler {
 
     public static class GetStateResult {
-        boolean completedOtherWork;
-        ProcessingData otherSavedProcessingData;
+        public boolean completedOtherWork;
+        public ProcessingData otherSavedProcessingData;
     }
 
     void handleSplit(SimpleFSM simpleFSM, ProcessingData data, Collection<String> splitTransitions);

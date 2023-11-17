@@ -96,6 +96,11 @@ We welcome contributions to SimpleFSM! If you'd like to contribute, please fork 
 ## Version history
 * 1.0.1 Make ProcessingData Serializable
 * 1.0.2 Add setProcessingStep() to State class.
+* 1.1.0 Add Parallel processing of states. Split handler.
+
+## TODO 
+* Exception handling in split processing.
+* More formal guarantees what state the state machine may be in at any one time.
 
 ## License
 SimpleFSM is released under the **Apache Version 2.0**
