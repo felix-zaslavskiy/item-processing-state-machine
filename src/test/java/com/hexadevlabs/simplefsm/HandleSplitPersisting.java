@@ -35,11 +35,12 @@ public class HandleSplitPersisting implements SplitHandler{
 
     @Override
     public void handleSplit(SimpleFSM simpleFSM, ProcessingData data, Collection<String> splitTransitions) {
+        String state = simpleFSM.exportState();
         try(Connection conn = connectionSupplier.get()) {
             // Normally persist State machine and data.
             try (Statement st = conn.createStatement()) {
                 conn.setAutoCommit(true); // Start transaction on this connection.
-                String state = simpleFSM.exportState();
+
                 String jsonData = getJsonFromProcessingData(data);
                 st.execute("INSERT INTO store (state, data ) values ('" + state + "', '" + jsonData + "')");
             }
@@ -53,7 +54,25 @@ public class HandleSplitPersisting implements SplitHandler{
             // Trigger processing of all the split states.
             for (String splitState : splitTransitions) {
                 executor.submit(() -> {
-                    simpleFSM.continueOnSplitState(splitState, data);
+                    // Load from DB.
+                    ProcessingData d = new ProcessingData();
+                    d.mergeTo(data);
+                    SimpleFSM sm = simpleFSM.buildEmptyCopy();
+                    sm.importState(state);
+                    sm.continueOnSplitState(splitState, d);
+
+                    try(Connection conn = connectionSupplier.get()) {
+                        // Normally persist State machine and data.
+                        try (Statement st = conn.createStatement()) {
+                            conn.setAutoCommit(true); // Start transaction on this connection.
+
+                            String jsonData = getJsonFromProcessingData(d);
+                            st.executeUpdate("UPDATE store SET data = '" + jsonData + "' , state = '" +sm.exportState() + "'");
+
+                        }
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
                 });
             }
 
@@ -140,7 +159,7 @@ public class HandleSplitPersisting implements SplitHandler{
 
     }
 
-    private ProcessingData getProcessingDataFromJson(String data) {
+    protected static ProcessingData getProcessingDataFromJson(String data) {
         try {
             return mapper.readValue(data, ProcessingData.class);
         } catch (JsonProcessingException e) {
@@ -149,7 +168,7 @@ public class HandleSplitPersisting implements SplitHandler{
         }
     }
 
-    private  String getJsonFromProcessingData(ProcessingData data)  {
+    protected static String getJsonFromProcessingData(ProcessingData data)  {
         try {
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(data);
         } catch (JsonProcessingException e) {

@@ -4,10 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -93,14 +90,43 @@ public class SplitStatePersistenceTest {
         simpleFSM.start("START", data);
         Thread.sleep(1000);
 
-        assertTrue(simpleFSM.isFinished());
-        assertFalse(simpleFSM.wasTerminated());
-        assertNotNull(simpleFSM.getFinalState());
-        assertEquals("END", simpleFSM.getFinalState().getName());
-        Integer result = (Integer) data.get("value_sum");
-        assertEquals(5, result);
+        String stateAfter;
+        String dataAfter;
+        try(Connection conn = makeNewConnection()) {
 
-        simpleFSM.getTrace().print();
+            conn.setAutoCommit(false); // Start transaction on this connection.
+
+            try (Statement st = conn.createStatement()) {
+                // Read from DB.
+
+                try (ResultSet rs = st.executeQuery("SELECT state, data FROM store ")) {
+                    rs.next();
+                    stateAfter = rs.getString("state");
+                    dataAfter = rs.getString("data");
+
+                    SimpleFSM resultFSM = simpleFSM.buildEmptyCopy();
+                    resultFSM.importState(stateAfter);
+
+                    resultFSM.getTrace().print();
+
+                    assertTrue(resultFSM.isFinished());
+                    assertFalse(resultFSM.wasTerminated());
+                    assertNotNull(resultFSM.getFinalState());
+                    assertEquals("END", resultFSM.getFinalState().getName());
+                    ProcessingData afterData = HandleSplitPersisting.getProcessingDataFromJson(dataAfter);
+                    Integer result = (Integer) afterData.get("value_sum");
+                    assertEquals(5, result);
+
+
+                }
+
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+
     }
 
 }
