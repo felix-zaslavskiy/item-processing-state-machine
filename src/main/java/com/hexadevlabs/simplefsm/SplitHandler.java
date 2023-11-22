@@ -12,14 +12,6 @@ public interface SplitHandler {
     void handleSplit(SimpleFSM simpleFSM, ProcessingData data, Collection<String> splitTransitions);
 
     /**
-     * Return the merged ProcessingData
-     * @param fromCurrentStep
-     * @param fromSharedData
-     * @return ProcessingData
-     */
-    ProcessingData mergeDataAndSave( SimpleFSM simpleFSM,  ProcessingData fromCurrentStep, ProcessingData fromSharedData);
-
-    /**
      * Should be transactional. As a transaction it should read the
      * work state of Machine from persistence and update it with
      * state of current work completion.
@@ -27,7 +19,7 @@ public interface SplitHandler {
      * @return If the complete work of split is complete.
      * @param simpleFSM
      */
-    GetStateResult getStateAndUpdateWorkState(SimpleFSM simpleFSM, String splitSourceState, String completedSplitState);
+    boolean getAndUpdateStateAndData(SimpleFSM simpleFSM, ProcessingData otherData, String splitSourceState, String completedSplitState);
 
 
 }

@@ -77,4 +77,15 @@ public class ProcessingData implements Serializable {
         this.dataMap.putAll(data.dataMap);
     }
 
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, Object> entry : dataMap.entrySet()) {
+            sb.append(entry.getKey())
+                    .append("->")
+                    .append(entry.getValue())
+                    .append(", ");
+        }
+        return sb.toString();
+    }
+
 }

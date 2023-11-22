@@ -88,28 +88,9 @@ public class HandleSplitPersisting implements SplitHandler{
         }
     }
 
-    @Override
-    public ProcessingData mergeDataAndSave( SimpleFSM simpleFSM, ProcessingData fromCurrentStep, ProcessingData fromSharedData) {
-
-        fromCurrentStep.mergeTo(fromSharedData);
-
-        // Save to db
-        try(Connection conn = connectionSupplier.get()) {
-            try (Statement st = conn.createStatement()) {
-                conn.setAutoCommit(true);
-                String processingData = getJsonFromProcessingData(fromCurrentStep);
-                st.executeUpdate("UPDATE store SET data = '" + processingData + "'");
-            }
-        }catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        return fromCurrentStep;
-
-    }
 
     @Override
-    public GetStateResult getStateAndUpdateWorkState(SimpleFSM simpleFSM, String splitSourceState, String completedSplitState) {
+    public boolean getAndUpdateStateAndData(SimpleFSM simpleFSM, ProcessingData currentData, String splitSourceState, String completedSplitState) {
 
         try(Connection conn = connectionSupplier.get()) {
             conn.setAutoCommit(false); // Start transaction on this connection.
@@ -126,11 +107,11 @@ public class HandleSplitPersisting implements SplitHandler{
 
 
                 String state;
-                String data;
+                String otherData;
                 try (ResultSet rs = st.executeQuery("SELECT state, data FROM store FOR UPDATE WAIT 1000")) {
                     rs.next();
                     state = rs.getString("state");
-                    data = rs.getString("data");
+                    otherData = rs.getString("data");
                 }
 
                 SimpleFSM sm = simpleFSM.buildEmptyCopy();
@@ -144,18 +125,20 @@ public class HandleSplitPersisting implements SplitHandler{
                 State source = sm.getState(splitSourceState);
                 int totalSplitTransitionsExpected = source.getSplitTransitions().size();
 
-                GetStateResult result = new GetStateResult();
-                result.completedOtherWork = totalSplitStatesCompleted == totalSplitTransitionsExpected;
-
+                boolean completedOtherWork = totalSplitStatesCompleted == totalSplitTransitionsExpected;
 
                 // Write the updated State machine to Persistence
                 String newState = sm.exportState();
-                st.executeUpdate("UPDATE store SET state = '" + newState + "'");
+
+                ProcessingData otherSavedProcessingData = getProcessingDataFromJson(otherData);
+                // Merge the other Data to currentData.
+                currentData.mergeTo(otherSavedProcessingData);
+
+                st.executeUpdate("UPDATE store SET state = '" + newState + "', data ='" + getJsonFromProcessingData(currentData) + "'");
 
                 conn.commit();
 
-                result.otherSavedProcessingData = getProcessingDataFromJson(data);
-                return result;
+                return completedOtherWork;
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

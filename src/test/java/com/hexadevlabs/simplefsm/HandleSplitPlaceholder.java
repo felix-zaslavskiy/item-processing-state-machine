@@ -24,13 +24,7 @@ public class HandleSplitPlaceholder implements SplitHandler{
     }
 
     @Override
-    public ProcessingData mergeDataAndSave( SimpleFSM simpleFSM, ProcessingData fromCurrentStep, ProcessingData fromSharedData) {
-        // Don't do anything for now.
-        return fromCurrentStep;
-    }
-
-    @Override
-    public GetStateResult getStateAndUpdateWorkState(SimpleFSM simpleFSM, String splitSourceState, String completedSplitState) {
+    public boolean getAndUpdateStateAndData(SimpleFSM simpleFSM, ProcessingData currentData, String splitSourceState, String completedSplitState) {
 
         simpleFSM.recordCompletionSplitState(completedSplitState);
         int totalSplitStatesCompleted = simpleFSM.getCompletionSplitStates().size();
@@ -39,10 +33,7 @@ public class HandleSplitPlaceholder implements SplitHandler{
         State source = simpleFSM.getState(splitSourceState);
         int totalSplitTransitionsExpected = source.getSplitTransitions().size();
 
-        GetStateResult result = new GetStateResult();
-        result.completedOtherWork = totalSplitStatesCompleted == totalSplitTransitionsExpected;
-        result.otherSavedProcessingData = HandleSplitPlaceholder.data;
-        return result;
+        return  totalSplitStatesCompleted == totalSplitTransitionsExpected;
 
     }
 

@@ -122,13 +122,10 @@ public class SimpleFSM {
         // TODO: handle exception
 
         // At the end of the work we need to check for state machine status and update it about the work done.
-        SplitHandler.GetStateResult result = splitHandler.getStateAndUpdateWorkState(this, currentState, nextStateName);
-
-        // Merge data and persist the data.
-        data = splitHandler.mergeDataAndSave(this, data, result.otherSavedProcessingData);
+        boolean completedOtherWork = splitHandler.getAndUpdateStateAndData(this, data, currentState, nextStateName);
 
         // If all the work is done continue with normal processing.
-        if(result.completedOtherWork){
+        if(completedOtherWork){
 
             String nextStateTransition;
             Collection<String> transitions =  nextState.getTransitions();
