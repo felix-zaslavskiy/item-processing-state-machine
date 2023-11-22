@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -61,17 +61,21 @@ public class HandleSplitPersisting implements SplitHandler{
                     sm.importState(state);
                     sm.continueOnSplitState(splitState, d);
 
-                    try(Connection conn = connectionSupplier.get()) {
-                        // Normally persist State machine and data.
-                        try (Statement st = conn.createStatement()) {
-                            conn.setAutoCommit(true); // Start transaction on this connection.
+                    // Only if state machine is finished do we want to save it to DB
+                    // Will be read by Test case to verify.
+                    if(sm.isFinished()) {
+                        try (Connection conn = connectionSupplier.get()) {
+                            // Normally persist State machine and data.
+                            try (Statement st = conn.createStatement()) {
+                                conn.setAutoCommit(true); // Start transaction on this connection.
 
-                            String jsonData = getJsonFromProcessingData(d);
-                            st.executeUpdate("UPDATE store SET data = '" + jsonData + "' , state = '" +sm.exportState() + "'");
+                                String jsonData = getJsonFromProcessingData(d);
+                                st.executeUpdate("UPDATE store SET data = '" + jsonData + "' , state = '" + sm.exportState() + "'");
 
+                            }
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
                         }
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
                     }
                 });
             }

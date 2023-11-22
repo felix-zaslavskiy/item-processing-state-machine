@@ -28,4 +28,6 @@ public interface SplitHandler {
      * @param simpleFSM
      */
     GetStateResult getStateAndUpdateWorkState(SimpleFSM simpleFSM, String splitSourceState, String completedSplitState);
+
+
 }

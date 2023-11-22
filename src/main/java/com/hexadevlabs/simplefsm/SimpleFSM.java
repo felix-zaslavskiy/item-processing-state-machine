@@ -2,6 +2,8 @@ package com.hexadevlabs.simplefsm;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.text.StringEscapeUtils;
 
 import java.util.*;
@@ -95,7 +97,7 @@ public class SimpleFSM {
      * of the State machine in parallel.
      *
      * @param splitStateTransition Name of transition for split state
-     * @param data
+     * @param data The data as it comes from step just before the split state needs to execute. Data is not merged with anything other parallel processing states may have done.
      */
     public void continueOnSplitState(String splitStateTransition, ProcessingData data) {
 
@@ -200,7 +202,7 @@ public class SimpleFSM {
      * or from triggerEvent() in which case currentState is preset to the next state that
      * that event is supposed to transition to.
      *
-     * @param data
+     * @param data The data as it was from the previous step that is being transitioned to into this step
      */
     private void process(ProcessingData data) {
         // We get the current state object since we know what state
@@ -307,7 +309,7 @@ public class SimpleFSM {
                 state = states.get(nextState);
                 // currentState is updates to the nextState so the state machine has moved to be in the next
                 // state now. currentState is mostly used to introspect the state machine
-                // while it si not running.
+                // while it is not running.
                 currentState = nextState;
             }else {
                 // Either in finalState or no other transition available.
@@ -366,7 +368,7 @@ public class SimpleFSM {
     }
 
     /**
-     * Helper method to easily build a equivalent
+     * Helper method to easily build an equivalent
      * state machine object without any state object as
      * if it came out by making it with static build() method.
      */
@@ -408,7 +410,10 @@ public class SimpleFSM {
      * @param json The JSON string representing the state to be imported.
      */
     public void importState(String json)  {
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper =  JsonMapper.builder()
+                .addModule(new JavaTimeModule())
+                .build();
+
         FSMState fsmState;
         try {
             fsmState = objectMapper.readValue(json, FSMState.class);
@@ -553,7 +558,7 @@ public class SimpleFSM {
             return simpleFSM;
         }
 
-        public Builder splitHander(SplitHandler handleSplit) {
+        public Builder splitHandler(SplitHandler handleSplit) {
             simpleFSM.addSplitHandler(handleSplit);
             return this;
         }
@@ -586,7 +591,7 @@ public class SimpleFSM {
          * For events that are split one needs to tell
          * how to join to a common state.
          * @param joinToState The state that this split state joins to.
-         * @return
+         * @return StateBuilder
          */
         public StateBuilder join(String joinToState) {
             if(!this.nfsmBuilder.simpleFSM.states.containsKey(joinToState)){

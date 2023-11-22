@@ -31,7 +31,7 @@ public class SplitStateTest {
             .and()
             .onExceptionGoTo("END")
             .withName("Test FSM")
-                .splitHander(new HandleSplitPlaceholder())
+                .splitHandler(new HandleSplitPlaceholder())
             .withTrace()
             .build();
     }

@@ -79,7 +79,7 @@ public class SplitStatePersistenceTest {
             .and()
             .onExceptionGoTo("END")
             .withName("Test FSM")
-                .splitHander(handleSplitPersisting)
+                .splitHandler(handleSplitPersisting)
             .withTrace()
             .build();
     }
@@ -88,7 +88,7 @@ public class SplitStatePersistenceTest {
     public void runSimpleSplittingStateMachine() throws InterruptedException {
         ProcessingData data = new ProcessingData();
         simpleFSM.start("START", data);
-        Thread.sleep(1000);
+        Thread.sleep(2000);
 
         String stateAfter;
         String dataAfter;
