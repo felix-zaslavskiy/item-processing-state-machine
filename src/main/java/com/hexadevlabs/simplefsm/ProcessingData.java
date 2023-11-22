@@ -1,5 +1,10 @@
 package com.hexadevlabs.simplefsm;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +16,10 @@ import java.util.Map;
  * information, if any.
  */
 public class ProcessingData implements Serializable {
+
+    static ObjectMapper mapper = new ObjectMapper().setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
+            .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+
     private final Map<String, Object> dataMap;
     private String nextState;
 
@@ -86,6 +95,24 @@ public class ProcessingData implements Serializable {
                     .append(", ");
         }
         return sb.toString();
+    }
+
+    public String toJson(){
+        try {
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            System.out.println("Got json exception" + e.getMessage());
+            return "";
+        }
+    }
+
+    public static ProcessingData fromJson(String json){
+        try {
+            return mapper.readValue(json, ProcessingData.class);
+        } catch (JsonProcessingException e) {
+            System.out.println("Got json exception" + e.getMessage());
+            return new ProcessingData();
+        }
     }
 
 }

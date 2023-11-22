@@ -107,13 +107,16 @@ public class SplitStatePersistenceTest {
                     SimpleFSM resultFSM = simpleFSM.buildEmptyCopy();
                     resultFSM.importState(stateAfter);
 
+                    // Print Trace
                     resultFSM.getTrace().print();
+                    System.out.println(resultFSM.exportState());
+                    System.out.println(dataAfter);
 
                     assertTrue(resultFSM.isFinished());
                     assertFalse(resultFSM.wasTerminated());
                     assertNotNull(resultFSM.getFinalState());
                     assertEquals("END", resultFSM.getFinalState().getName());
-                    ProcessingData afterData = HandleSplitPersisting.getProcessingDataFromJson(dataAfter);
+                    ProcessingData afterData = ProcessingData.fromJson(dataAfter);
                     Integer result = (Integer) afterData.get("value_sum");
                     assertEquals(5, result);
 

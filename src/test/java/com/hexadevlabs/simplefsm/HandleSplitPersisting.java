@@ -25,8 +25,7 @@ public class HandleSplitPersisting implements SplitHandler{
 
     boolean parallel = false;
 
-    static ObjectMapper mapper = new ObjectMapper().setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
-            .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+
 
     public HandleSplitPersisting(Supplier<Connection> connectionSupplier, boolean parallel) {
         this.connectionSupplier = connectionSupplier;
@@ -41,7 +40,7 @@ public class HandleSplitPersisting implements SplitHandler{
             try (Statement st = conn.createStatement()) {
                 conn.setAutoCommit(true); // Start transaction on this connection.
 
-                String jsonData = getJsonFromProcessingData(data);
+                String jsonData = data.toJson();
                 st.execute("INSERT INTO store (state, data ) values ('" + state + "', '" + jsonData + "')");
             }
         } catch (SQLException e) {
@@ -69,7 +68,7 @@ public class HandleSplitPersisting implements SplitHandler{
                             try (Statement st = conn.createStatement()) {
                                 conn.setAutoCommit(true); // Start transaction on this connection.
 
-                                String jsonData = getJsonFromProcessingData(d);
+                                String jsonData = d.toJson();
                                 st.executeUpdate("UPDATE store SET data = '" + jsonData + "' , state = '" + sm.exportState() + "'");
 
                             }
@@ -133,13 +132,13 @@ public class HandleSplitPersisting implements SplitHandler{
                 // Write the updated State machine to Persistence
                 String newState = sm.exportState();
 
-                ProcessingData otherSavedProcessingData = getProcessingDataFromJson(otherData);
+                ProcessingData otherSavedProcessingData = ProcessingData.fromJson(otherData);
                 // Merge the other Data to currentData.
                 currentData.mergeTo(otherSavedProcessingData);
                 // Merge the state machine from other state so it can continue with full state.
                 simpleFSM.mergeTrace(sm);
 
-                st.executeUpdate("UPDATE store SET state = '" + newState + "', data ='" + getJsonFromProcessingData(currentData) + "'");
+                st.executeUpdate("UPDATE store SET state = '" + newState + "', data ='" + currentData.toJson() + "'");
 
                 conn.commit();
 
@@ -151,23 +150,7 @@ public class HandleSplitPersisting implements SplitHandler{
 
     }
 
-    protected static ProcessingData getProcessingDataFromJson(String data) {
-        try {
-            return mapper.readValue(data, ProcessingData.class);
-        } catch (JsonProcessingException e) {
-            System.out.println("Got json exception" + e.getMessage());
-            return new ProcessingData();
-        }
-    }
 
-    protected static String getJsonFromProcessingData(ProcessingData data)  {
-        try {
-            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(data);
-        } catch (JsonProcessingException e) {
-            System.out.println("Got json exception" + e.getMessage());
-            return "";
-        }
-    }
 
 
 }
