@@ -100,6 +100,7 @@ We welcome contributions to SimpleFSM! If you'd like to contribute, please fork 
 
 ## TODO 
 * Exception handling in split processing.
+* Enforce the structure of the Split processing. Don't allow invalid transitions.
 * More formal guarantees what state the state machine may be in at any one time.
 
 ## License
