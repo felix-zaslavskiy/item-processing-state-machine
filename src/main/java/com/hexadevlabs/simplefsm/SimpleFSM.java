@@ -453,8 +453,14 @@ public class SimpleFSM {
         return states.get(currentState);
     }
 
-
-
+    /**
+     * Merge trace data from another SimpleFSM
+     *
+     * @param fromFSM
+     */
+    public void mergeTrace(SimpleFSM fromFSM) {
+        trace.merge(fromFSM.trace);
+    }
 
     public static class Builder {
         private final SimpleFSM simpleFSM;

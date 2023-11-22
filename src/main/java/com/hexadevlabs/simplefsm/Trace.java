@@ -44,4 +44,8 @@ public class Trace {
         if(logs!=null)
             this.logs.putAll(logs);
     }
+
+    public void merge(Trace trace) {
+        this.logs.putAll(trace.logs);
+    }
 }
