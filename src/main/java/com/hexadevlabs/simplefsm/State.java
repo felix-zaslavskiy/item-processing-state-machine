@@ -1,9 +1,7 @@
 package com.hexadevlabs.simplefsm;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+
+import java.util.*;
 
 /**
  * The State class represents a state in a finite state machine (FSM). Each state has a name,
@@ -13,7 +11,16 @@ import java.util.Set;
  */
 public class State {
     private final String name;
+
+    // Transition name -> State name... Other states that can be
+    // transitioned from this State
     private final Map<String, String> transitions;
+
+    // List of Transition that are part of a split.
+    private final ArrayList<String> splitTransitions;
+
+    // If this State is part of a join from Split transitions
+    private boolean joiningState;
     private ProcessingStep processingStep;
     private final boolean waitForEventBeforeTransition;
 
@@ -30,33 +37,58 @@ public class State {
         this.name = name;
         this.processingStep = processingStep;
         this.transitions = new HashMap<>();
+        this.splitTransitions = new ArrayList<>();
+        this.joiningState = false; // Initially False until some Join calls will update it.
         this.waitForEventBeforeTransition = waitForEventBeforeTransition;
     }
 
     /**
      * Adds a transition to the state with the given event name and next state.
      *
-     * @param eventName The name of the event that triggers the transition.
-     * @param nextState The name of the next state to transition to.
+     * @param eventName   The name of the event that triggers the transition.
+     * @param nextState   The name of the next state to transition to.
+     * @param partOfSplit If true this transition is part of split with other transitions.
      * @throws IllegalArgumentException If a transition with the same event name already exists.
      */
-    public void addTransition(String eventName, String nextState) {
+    public void addTransition(String eventName, String nextState, boolean partOfSplit) {
         if (transitions.containsKey(eventName)) {
             throw new IllegalArgumentException("A transition with the event name '" + eventName + "' already exists in the state '" + name + "'.");
         }
         transitions.put(eventName, nextState);
+
+        if(partOfSplit)
+            splitTransitions.add(eventName);
     }
 
+    public void makeJoiningState(){
+        this.joiningState = true;
+    }
+
+    /**
+     * Returns a collections of Events that this state can transition to
+     * @return
+     */
     Collection<String> getTransitions() {
         return transitions.values();
     }
 
+    /**
+     * Returns a set of entries with Transition Name -> Target Event name.
+     * @return
+     */
     Set<Map.Entry<String, String>> getTransitionEntries() {
         return transitions.entrySet();
     }
 
-    String getNextState(String event) {
-        return transitions.get(event);
+    public Collection<String> getSplitTransitions() { return splitTransitions; }
+
+    /**
+     * Get the Next state by following Transition name to name of next State.
+     * @param transitionName
+     * @return
+     */
+    String getNextState(String transitionName) {
+        return transitions.get(transitionName);
     }
 
     /**
