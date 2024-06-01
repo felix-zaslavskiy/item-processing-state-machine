@@ -1,8 +1,9 @@
 package com.hexadevlabs.simplefsm;
 
+
 import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The ProcessingStep class represents an abstract processing step that needs to be executed
@@ -13,7 +14,7 @@ import java.util.Map;
 public abstract class ProcessingStep {
 
     // Collects log entries during step execution.
-    Map<LocalDateTime, String> logs;
+    List<LogEntry> logs;
 
     /**
      * The main processing method that must be implemented by concrete subclasses.
@@ -57,9 +58,9 @@ public abstract class ProcessingStep {
      */
     protected void log(String log){
         if(logs == null){
-            logs = new LinkedHashMap<>();
+            logs = new ArrayList<>();
         }
-        logs.put(LocalDateTime.now(), log);
+        logs.add(new LogEntry(LocalDateTime.now(), log));
     }
 
 }

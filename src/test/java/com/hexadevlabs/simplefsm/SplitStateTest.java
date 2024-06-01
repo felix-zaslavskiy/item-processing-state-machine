@@ -75,4 +75,16 @@ public class SplitStateTest {
         simpleFSM.getTrace().print();
     }
 
+    @Test
+    public void withException(){
+        simpleFSM.getState("SPLIT1").setProcessingStep(new Split1WithException());
+        String graphviz = simpleFSM.toGraphviz();
+        System.out.println(graphviz);
+        ProcessingData data = new ProcessingData();
+        simpleFSM.start("START", data);
+
+        System.out.println(data.toJson());
+        simpleFSM.getTrace().print();
+    }
+
 }
