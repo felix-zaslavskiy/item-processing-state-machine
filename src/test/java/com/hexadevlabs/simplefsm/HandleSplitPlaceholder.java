@@ -4,7 +4,7 @@ import java.util.Collection;
 
 /**
  * Used as a placeholder.
- * The persistence will be stored to a statis member variable.
+ * The persistence will be stored to a static member variable.
  * This is essentially the simplest possible working Split Handler we can make for testing.
  */
 public class HandleSplitPlaceholder implements SplitHandler{
@@ -29,7 +29,7 @@ public class HandleSplitPlaceholder implements SplitHandler{
         simpleFSM.recordCompletionSplitState(completedSplitState);
         int totalSplitStatesCompleted = simpleFSM.getCompletionSplitStates().size();
 
-        // Get the expected # of
+        // Get the expected # of total transitions
         State source = simpleFSM.getState(splitSourceState);
         int totalSplitTransitionsExpected = source.getSplitTransitions().size();
 

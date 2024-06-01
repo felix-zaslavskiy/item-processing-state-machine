@@ -387,7 +387,9 @@ public class SimpleFSM {
      * @return A JSON string representing the current state of the FSM.
      */
     public String exportState() {
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = JsonMapper.builder()
+                .addModule(new JavaTimeModule())
+                .build();
         FSMState fsmState = new FSMState();
         fsmState.setCurrentState(currentState);
         fsmState.completedSplitStates(completedSplitStates);
