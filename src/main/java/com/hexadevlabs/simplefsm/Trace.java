@@ -4,14 +4,30 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Trace {
 
     @JsonProperty("logs")
-    private final Map<LocalDateTime, String> logs;
+    private final List<LogEntry> logs;
+
+    private static class LogEntry {
+        LocalDateTime timestamp;
+        String message;
+
+        public LogEntry(LocalDateTime timestamp, String message) {
+            this.timestamp = timestamp;
+            this.message = message;
+        }
+
+        @Override
+        public String toString() {
+            return timestamp + ": " + message;
+        }
+    }
 
     public boolean isTraceMode() {
         return traceMode;
@@ -25,7 +41,7 @@ public class Trace {
     private boolean traceMode = false;
 
     public Trace() {
-        logs = new LinkedHashMap<>();
+        logs = new ArrayList<>();
     }
 
     public void add(String message) {
