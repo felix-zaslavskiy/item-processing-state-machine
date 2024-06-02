@@ -22,12 +22,15 @@ public class SplitStateTest {
                 .split().goTo("SPLIT1" )
                 .split().goTo("SPLIT2" )
             .and()
-            .finalState("END", new SplitEnd())
+            .state("SPLIT_END", new SplitEnd())
+                .auto().goTo("END")
+            .and()
+            .finalState("END", new NoopStep())
             .state("SPLIT1", new Split1() )
-                .join( "END" )
+                .join( "SPLIT_END" )
             .and()
             .state("SPLIT2", new Split2() )
-                .join( "END" )
+                .join( "SPLIT_END" )
             .and()
             .onExceptionGoTo("END")
             .withName("Test FSM")
@@ -44,13 +47,15 @@ public class SplitStateTest {
                 digraph G {
                 labelloc="t";
                 label=<<B>Test FSM</B>>;
+                	SPLIT_END[label="SPLIT_END\\n[SplitEnd]"];
+                	SPLIT_END -> END[label="AUTO"];
                 	SPLIT2[label="SPLIT2\\n[Split2]"];
-                	SPLIT2 -> END[label="SPLIT2_TO_END"];
+                	SPLIT2 -> SPLIT_END[label="SPLIT2_TO_SPLIT_END"];
                 	START[label="START\\n[NoopStep]"];
                 	START -> STEP_SPLIT[label="AUTO"];
-                	END[label="END\\n[SplitEnd]\\n<final>"];
+                	END[label="END\\n[NoopStep]\\n<final>"];
                 	SPLIT1[label="SPLIT1\\n[Split1]"];
-                	SPLIT1 -> END[label="SPLIT1_TO_END"];
+                	SPLIT1 -> SPLIT_END[label="SPLIT1_TO_SPLIT_END"];
                 	STEP_SPLIT[label="STEP_SPLIT\\n[StepSplit]"];
                 	STEP_SPLIT -> SPLIT2[label="SPLIT_SPLIT2"];
                 	STEP_SPLIT -> SPLIT1[label="SPLIT_SPLIT1"];
@@ -82,6 +87,12 @@ public class SplitStateTest {
         System.out.println(graphviz);
         ProcessingData data = new ProcessingData();
         simpleFSM.start("START", data);
+
+        assertTrue(data.hadException());
+
+        // Step 1 had exception so should go to End without executing Split_end state.
+        // This means the values of value1 and value2 could not be added.
+        assertNull(data.get("value_sum"));
 
         System.out.println(data.toJson());
         simpleFSM.getTrace().print();
