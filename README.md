@@ -97,6 +97,7 @@ We welcome contributions to SimpleFSM! If you'd like to contribute, please fork 
 * 1.0.1 Make ProcessingData Serializable
 * 1.0.2 Add setProcessingStep() to State class.
 * 1.1.0 Add Parallel processing of states. Split handler.
+* 1.1.1 Fix ProcessingLog structure. ProcessingData added JavaTime module to mapper.
 
 ## TODO 
 * Exception handling in split processing.

@@ -6,7 +6,7 @@
 
     <groupId>com.hexadevlabs</groupId>
     <artifactId>simple-finite-state-machine</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
