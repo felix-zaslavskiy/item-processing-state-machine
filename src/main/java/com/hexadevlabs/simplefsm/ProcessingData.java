@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -17,8 +19,12 @@ import java.util.Map;
  */
 public class ProcessingData implements Serializable {
 
-    static ObjectMapper mapper = new ObjectMapper().setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
+    static ObjectMapper mapper = JsonMapper.builder()
+            .addModules(new JavaTimeModule())
+            .build()
+            .setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
             .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+
 
     private final Map<String, Object> dataMap;
     private String nextState;
