@@ -219,7 +219,7 @@ public class SimpleFSM {
 
             if(exceptionInfo.hadException()){
                 // Have a transition for on Exception event
-                data.setExceptionInfo(exceptionInfo);
+                data.addException(exceptionInfo);
                 if(this.onExceptionState != null){
                     // If exception handler thrown exception itself.
                     if(this.onExceptionState.equals(currentState)){

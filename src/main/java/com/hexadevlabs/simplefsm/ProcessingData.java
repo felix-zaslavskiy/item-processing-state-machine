@@ -8,7 +8,9 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,8 +31,21 @@ public class ProcessingData implements Serializable {
     private final Map<String, Object> dataMap;
     private String nextState;
 
-    // If state machine has exception info.
-    private ExceptionInfo exceptionInfo;
+    // Other properties remain unchanged.
+    private List<ExceptionInfo> exceptions = new ArrayList<>();
+
+    public void addException(ExceptionInfo exceptionInfo) {
+        exceptions.add(exceptionInfo);
+    }
+
+    public List<ExceptionInfo> getExceptions() {
+        return exceptions;
+    }
+
+    public boolean hasExceptions() {
+        return !exceptions.isEmpty();
+    }
+
 
     public ProcessingData() {
         this.dataMap = new HashMap<>();
@@ -62,11 +77,13 @@ public class ProcessingData implements Serializable {
         return dataMap.containsKey(key);
     }
 
+    // These methods assume no Split state are used so
+    // only a single exception is possible.
     public boolean hadException(){
-        return exceptionInfo != null;
+        return !exceptions.isEmpty();
     }
     public Exception getException(){
-        return exceptionInfo.exception;
+        return exceptions.get(0).exception;
     }
 
     String getNextState() {
@@ -77,9 +94,7 @@ public class ProcessingData implements Serializable {
         this.nextState = nextState;
     }
 
-    void setExceptionInfo(ExceptionInfo exceptionInfo){
-        this.exceptionInfo = exceptionInfo;
-    }
+
 
     /**
      * Simple merge operation. Keys from data will be merged
