@@ -98,9 +98,10 @@ We welcome contributions to SimpleFSM! If you'd like to contribute, please fork 
 * 1.0.2 Add setProcessingStep() to State class.
 * 1.1.0 Add Parallel processing of states. Split handler.
 * 1.1.1 Fix ProcessingLog structure. ProcessingData added JavaTime module to mapper.
+* 1.1.2 Handle exceptions in Split state
 
 ## TODO 
-* Exception handling in split processing.
+* More tests for exceptions in Split, Test with persisting split handler.
 * Enforce the structure of the Split processing. Don't allow invalid transitions.
 * More formal guarantees what state the state machine may be in at any one time.
 

@@ -16,9 +16,9 @@ import java.util.function.Supplier;
  */
 public class HandleSplitPersisting implements SplitHandler{
 
-    Supplier<Connection> connectionSupplier;
+    final Supplier<Connection> connectionSupplier;
 
-    boolean parallel = false;
+    boolean parallel;
 
 
 
@@ -118,7 +118,6 @@ public class HandleSplitPersisting implements SplitHandler{
                 sm.recordCompletionSplitState(completedSplitState);
                 int totalSplitStatesCompleted = sm.getCompletionSplitStates().size();
 
-                // Get the expected # of
                 State source = sm.getState(splitSourceState);
                 int totalSplitTransitionsExpected = source.getSplitTransitions().size();
 
@@ -130,7 +129,7 @@ public class HandleSplitPersisting implements SplitHandler{
                 ProcessingData otherSavedProcessingData = ProcessingData.fromJson(otherData);
                 // Merge the other Data to currentData.
                 currentData.mergeTo(otherSavedProcessingData);
-                // Merge the state machine from other state so it can continue with full state.
+                // Merge the state machine from other state, so it can continue with full state.
                 simpleFSM.mergeTrace(sm);
 
                 st.executeUpdate("UPDATE store SET state = '" + newState + "', data ='" + currentData.toJson() + "'");

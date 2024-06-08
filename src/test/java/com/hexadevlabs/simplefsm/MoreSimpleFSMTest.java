@@ -5,18 +5,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MyCustomEvent implements NamedEntity {
-    private final String name;
-
-    public MyCustomEvent(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
+record MyCustomEvent(String name) implements NamedEntity {
 }
+
 public class MoreSimpleFSMTest {
     private SimpleFSM simpleFSM;
     private ProcessingData data;

@@ -35,10 +35,9 @@ public class SplitStatePersistenceTest {
     private Connection makeNewConnection()  {
         try {
             Class.forName("org.h2.Driver");
-            Connection conn = DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;", "sa", "");
-//             Class.forName("com.mysql.cj.jdbc.Driver");
+            //             Class.forName("com.mysql.cj.jdbc.Driver");
 //            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "password");
-            return conn;
+            return DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;", "sa", "");
         }catch(Exception e){
             System.err.println("Could not open connection to H2");
             throw new RuntimeException(e);

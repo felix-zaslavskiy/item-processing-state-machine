@@ -1,7 +1,6 @@
 package com.hexadevlabs.simplefsm;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -82,8 +81,6 @@ public class SplitStateTest {
     }
 
     @Test
-    @Disabled
-    // TODO: Disabled for now. once implemented the test will pass.
     public void withException(){
         simpleFSM.getState("SPLIT1").setProcessingStep(new Split1WithException());
         String graphviz = simpleFSM.toGraphviz();

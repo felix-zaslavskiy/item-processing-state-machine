@@ -41,7 +41,7 @@ public abstract class ProcessingStep {
      * @param nextState The NamedEntity representing the next state.
      */
     protected void nextState(ProcessingData data, NamedEntity nextState){
-        nextState(data, nextState.getName());
+        nextState(data, nextState.name());
     }
 
     String getClassName() {

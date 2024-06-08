@@ -3,7 +3,7 @@ package com.hexadevlabs.simplefsm;
 public class TransitionSplitEvent  implements NamedEntity {
 
     @Override
-    public String getName() {
+    public String name() {
         return TransitionAutoEvent.NAME;
     }
 

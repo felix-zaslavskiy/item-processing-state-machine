@@ -4,10 +4,12 @@ import java.util.Collection;
 
 public interface SplitHandler {
 
-    public static class GetStateResult {
+    /*
+    class GetStateResult {
         public boolean completedOtherWork;
         public ProcessingData otherSavedProcessingData;
     }
+     */
 
     void handleSplit(SimpleFSM simpleFSM, ProcessingData data, Collection<String> splitTransitions);
 
@@ -17,9 +19,8 @@ public interface SplitHandler {
      * state of current work completion.
      *
      * @return If the complete work of split is complete.
-     * @param simpleFSM
      */
-    boolean getAndUpdateStateAndData(SimpleFSM simpleFSM, ProcessingData otherData, String splitSourceState, String completedSplitState);
+    boolean getAndUpdateStateAndData(SimpleFSM simpleFSM, ProcessingData currentData, String splitSourceState, String completedSplitState);
 
 
 }

@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public class ProcessingData implements Serializable {
 
-    static ObjectMapper mapper = JsonMapper.builder()
+    final static ObjectMapper mapper = JsonMapper.builder()
             .addModules(new JavaTimeModule())
             .build()
             .setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
@@ -32,7 +32,7 @@ public class ProcessingData implements Serializable {
     private String nextState;
 
     // Other properties remain unchanged.
-    private List<ExceptionInfo> exceptions = new ArrayList<>();
+    private final List<ExceptionInfo> exceptions = new ArrayList<>();
 
     public void addException(ExceptionInfo exceptionInfo) {
         exceptions.add(exceptionInfo);
@@ -100,11 +100,10 @@ public class ProcessingData implements Serializable {
      * Simple merge operation. Keys from data will be merged
      * to this object. If data has same key the values will
      * override what is in current data object.
-     *
-     * @param data
      */
     public void mergeTo(ProcessingData data) {
         this.dataMap.putAll(data.dataMap);
+        this.exceptions.addAll(data.exceptions);
     }
 
     public String toString(){

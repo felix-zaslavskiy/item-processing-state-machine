@@ -10,10 +10,10 @@ import java.time.LocalDateTime;
 public class LogEntry {
 
     @JsonProperty("timestamp")
-    LocalDateTime timestamp;
+    final LocalDateTime timestamp;
 
     @JsonProperty("message")
-    String message;
+    final String message;
 
     @JsonCreator
     public LogEntry(@JsonProperty("timestamp") LocalDateTime timestamp,

@@ -66,7 +66,6 @@ public class State {
 
     /**
      * Returns a collections of Events that this state can transition to
-     * @return
      */
     Collection<String> getTransitions() {
         return transitions.values();
@@ -74,7 +73,6 @@ public class State {
 
     /**
      * Returns a set of entries with Transition Name -> Target Event name.
-     * @return
      */
     Set<Map.Entry<String, String>> getTransitionEntries() {
         return transitions.entrySet();
@@ -84,8 +82,6 @@ public class State {
 
     /**
      * Get the Next state by following Transition name to name of next State.
-     * @param transitionName
-     * @return
      */
     String getNextState(String transitionName) {
         return transitions.get(transitionName);

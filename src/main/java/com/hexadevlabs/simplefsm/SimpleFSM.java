@@ -68,11 +68,11 @@ public class SimpleFSM {
     }
 
     public void start(NamedEntity startingState, ProcessingData data){
-        start(startingState.getName(), data);
+        start(startingState.name(), data);
     }
 
     public void triggerEvent(NamedEntity event, ProcessingData data) {
-        triggerEvent(event.getName(), data);
+        triggerEvent(event.name(), data);
     }
 
     public void triggerEvent(String eventName, ProcessingData data) {
@@ -116,10 +116,11 @@ public class SimpleFSM {
         String nextStateName = state.getNextState(splitStateTransition);
         State nextState = states.get(nextStateName);
 
-        ExceptionInfo exceptionInfo;
-        exceptionInfo = nextState.execute(data, trace , executionHooks);
+        ExceptionInfo exceptionInfo = nextState.execute(data, trace , executionHooks);
 
-        // TODO: handle exception
+        // Add exception to list of exceptions if an exception happened.
+        if(exceptionInfo.hadException())
+            data.addException(exceptionInfo);
 
         // At the end of the work we need to check for state machine status and update it about the work done.
         boolean completedOtherWork = splitHandler.getAndUpdateStateAndData(this, data, currentState, nextStateName);
@@ -127,16 +128,37 @@ public class SimpleFSM {
         // If all the work is done continue with normal processing.
         if(completedOtherWork){
 
-            String nextStateTransition;
-            Collection<String> transitions =  nextState.getTransitions();
-            if(transitions.size() == 1){
-                nextStateTransition = transitions.iterator().next();
-            } else {
-                throw new IllegalStateException("Expected on transition to joined state");
-            }
-            currentState = nextStateTransition;
+            // If there is an exception somewhere in one of the split states.
+            if(data.hasExceptions()) {
+                if (this.onExceptionState != null) {
 
-            process(data);
+                    if (trace.isTraceMode()) {
+                        trace.add("Due to exception after split transitioning to state " + this.onExceptionState);
+                    }
+
+                    currentState = this.onExceptionState;
+                    process(data);
+
+                } else {
+                    // Don't have a transition for Exception event.
+                    if (trace.isTraceMode()) {
+                        trace.add("Stopping because of exception and no onExceptionState transition defined, after split");
+                        trace.add("Had " + data.getExceptions().size() + " exceptions after split");
+                    }
+                    currentState = null;
+                }
+            } else {
+                String nextStateTransition;
+                Collection<String> transitions = nextState.getTransitions();
+                if (transitions.size() == 1) {
+                    nextStateTransition = transitions.iterator().next();
+                } else {
+                    throw new IllegalStateException("Expected on transition to joined state");
+                }
+                currentState = nextStateTransition;
+
+                process(data);
+            }
         }
 
     }
@@ -153,7 +175,7 @@ public class SimpleFSM {
     }
 
     /**
-     * FSM is has been started.
+     * FSM has been started.
      */
     public boolean isStarted() {
         return started;
@@ -220,6 +242,7 @@ public class SimpleFSM {
             if(exceptionInfo.hadException()){
                 // Have a transition for on Exception event
                 data.addException(exceptionInfo);
+
                 if(this.onExceptionState != null){
                     // If exception handler thrown exception itself.
                     if(this.onExceptionState.equals(currentState)){
@@ -262,6 +285,7 @@ public class SimpleFSM {
                     currentState=null;
                     break;
                 }
+
             } else if(state.shouldWaitForEventBeforeTransition()){
                 if (trace.isTraceMode()) {
                     trace.add("Processed state " + state.getName() + ". Pausing because " + state.getName() + " requires a wait after completion");
@@ -457,8 +481,6 @@ public class SimpleFSM {
 
     /**
      * Merge trace data from another SimpleFSM
-     *
-     * @param fromFSM
      */
     public void mergeTrace(SimpleFSM fromFSM) {
         trace.merge(fromFSM.trace);
@@ -472,7 +494,7 @@ public class SimpleFSM {
         }
 
         public StateBuilder state(NamedEntity name, ProcessingStep processingStep) {
-            return state(name.getName(), processingStep);
+            return state(name.name(), processingStep);
         }
 
         public StateBuilder state(String name, ProcessingStep processingStep) {
@@ -480,7 +502,7 @@ public class SimpleFSM {
         }
 
         public StateBuilder state(NamedEntity name, ProcessingStep processingStep, boolean waitForEventBeforeTransition) {
-            return state(name.getName(), processingStep, waitForEventBeforeTransition);
+            return state(name.name(), processingStep, waitForEventBeforeTransition);
         }
 
         public StateBuilder state(String name, ProcessingStep processingStep, boolean waitForEventBeforeTransition) {
@@ -493,7 +515,7 @@ public class SimpleFSM {
 
 
         public Builder finalState(NamedEntity name, ProcessingStep processingStep){
-            return finalState(name.getName(), processingStep);
+            return finalState(name.name(), processingStep);
         }
 
         public Builder finalState(String name, ProcessingStep processingStep) {
@@ -508,7 +530,7 @@ public class SimpleFSM {
          * @param state The name of the state to transition to.
          */
         public Builder onExceptionGoTo(NamedEntity state) {
-            return onExceptionGoTo(state.getName());
+            return onExceptionGoTo(state.name());
         }
 
         /**
@@ -585,7 +607,7 @@ public class SimpleFSM {
         }
 
         public TransitionBuilder on(NamedEntity event){
-            return new TransitionBuilder(event.getName(), this);
+            return new TransitionBuilder(event.name(), this);
         }
 
         public TransitionBuilder split(){
@@ -647,7 +669,7 @@ public class SimpleFSM {
         }
 
         public StateBuilder goTo(NamedEntity nextState){
-            return goTo(nextState.getName());
+            return goTo(nextState.name());
         }
 
         public StateBuilder goTo(String nextState) {
