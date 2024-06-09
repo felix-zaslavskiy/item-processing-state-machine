@@ -35,8 +35,8 @@ public class SplitStatePersistenceTest {
     private Connection makeNewConnection()  {
         try {
             Class.forName("org.h2.Driver");
-            //             Class.forName("com.mysql.cj.jdbc.Driver");
-//            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "password");
+            //  Class.forName("com.mysql.cj.jdbc.Driver");
+            //  Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "password");
             return DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;", "sa", "");
         }catch(Exception e){
             System.err.println("Could not open connection to H2");
@@ -131,7 +131,6 @@ public class SplitStatePersistenceTest {
             throw new RuntimeException(e);
         }
 
-
     }
 
 
@@ -190,5 +189,55 @@ public class SplitStatePersistenceTest {
         }
 
     }
+
+    @Test
+    public void runSimpleSplittingStateMachineLongProcessing() throws InterruptedException {
+        simpleFSM.getState("SPLIT1").setProcessingStep(new Step1WithLongPause());
+
+        ProcessingData data = new ProcessingData();
+        simpleFSM.start("START", data);
+        Thread.sleep(3000);
+
+        String stateAfter;
+        String dataAfter;
+        try(Connection conn = makeNewConnection()) {
+
+            conn.setAutoCommit(false); // Start transaction on this connection.
+
+            try (Statement st = conn.createStatement()) {
+                // Read from DB.
+
+                try (ResultSet rs = st.executeQuery("SELECT state, data FROM store ")) {
+                    rs.next();
+                    stateAfter = rs.getString("state");
+                    dataAfter = rs.getString("data");
+
+                    SimpleFSM resultFSM = simpleFSM.buildEmptyCopy();
+                    resultFSM.importState(stateAfter);
+
+                    // Print Trace
+                    resultFSM.getTrace().print();
+                    System.out.println(resultFSM.exportState());
+                    System.out.println(dataAfter);
+
+                    assertTrue(resultFSM.isFinished());
+                    assertFalse(resultFSM.wasTerminated());
+                    assertNotNull(resultFSM.getFinalState());
+                    assertEquals("END", resultFSM.getFinalState().getName());
+                    ProcessingData afterData = ProcessingData.fromJson(dataAfter);
+                    Integer result = (Integer) afterData.get("value_sum");
+                    assertEquals(5, result);
+
+
+                }
+
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
 
 }
