@@ -134,4 +134,61 @@ public class SplitStatePersistenceTest {
 
     }
 
+
+    @Test
+    public void withException() throws InterruptedException {
+        simpleFSM.getState("SPLIT1").setProcessingStep(new Split1WithException());
+
+        ProcessingData data = new ProcessingData();
+        simpleFSM.start("START", data);
+
+
+        Thread.sleep(2000);
+
+        String stateAfter;
+        String dataAfter;
+        try(Connection conn = makeNewConnection()) {
+
+            conn.setAutoCommit(false); // Start transaction on this connection.
+
+            try (Statement st = conn.createStatement()) {
+                // Read from DB.
+
+                try (ResultSet rs = st.executeQuery("SELECT state, data FROM store ")) {
+                    rs.next();
+                    stateAfter = rs.getString("state");
+                    dataAfter = rs.getString("data");
+
+                    SimpleFSM resultFSM = simpleFSM.buildEmptyCopy();
+                    resultFSM.importState(stateAfter);
+
+                    // Print Trace
+                    resultFSM.getTrace().print();
+                    System.out.println(resultFSM.exportState());
+                    System.out.println(dataAfter);
+
+
+                    assertTrue(resultFSM.isFinished());
+                    assertFalse(resultFSM.wasTerminated());
+                    assertNotNull(resultFSM.getFinalState());
+                    assertEquals("END", resultFSM.getFinalState().getName());
+                    ProcessingData afterData = ProcessingData.fromJson(dataAfter);
+
+                    assertTrue(afterData.hadException());
+
+                    // Step 1 had exception so should go to End without executing Split_end state.
+                    // This means the values of value1 and value2 could not be added.
+                    assertNull(afterData.get("value_sum"));
+
+
+                }
+
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
 }
