@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+// this class uses HandleSplitPlaceholder which is trivial split handling
+// without parallelism or persistence of the state machine.
 public class SplitStateTest {
     private SimpleFSM simpleFSM;
 
