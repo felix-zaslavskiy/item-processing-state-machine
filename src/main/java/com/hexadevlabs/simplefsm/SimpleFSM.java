@@ -482,7 +482,7 @@ public class SimpleFSM {
     /**
      * Merge trace data from another SimpleFSM
      */
-    public void mergeTrace(SimpleFSM fromFSM) {
+    public void mergeTraceFrom(SimpleFSM fromFSM) {
         trace.merge(fromFSM.trace);
     }
 

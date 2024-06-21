@@ -101,7 +101,7 @@ public class ProcessingData implements Serializable {
      * to this object. If data has same key the values will
      * override what is in current data object.
      */
-    public void mergeTo(ProcessingData data) {
+    public void mergeFrom(ProcessingData data) {
         this.dataMap.putAll(data.dataMap);
         this.exceptions.addAll(data.exceptions);
     }

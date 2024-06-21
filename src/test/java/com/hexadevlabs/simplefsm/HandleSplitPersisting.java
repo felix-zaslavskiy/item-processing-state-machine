@@ -50,7 +50,7 @@ public class HandleSplitPersisting implements SplitHandler{
                 executor.submit(() -> {
                     // Load from DB.
                     ProcessingData d = new ProcessingData();
-                    d.mergeTo(data);
+                    d.mergeFrom(data);
                     SimpleFSM sm = simpleFSM.buildEmptyCopy();
                     sm.importState(state);
                     sm.continueOnSplitState(splitState, d);
@@ -112,7 +112,7 @@ public class HandleSplitPersisting implements SplitHandler{
                 sm.importState(state);
 
                 // merge the traces.
-                sm.mergeTrace(simpleFSM);
+                sm.mergeTraceFrom(simpleFSM);
 
                 // Update the work state of State machine
                 sm.recordCompletionSplitState(completedSplitState);
@@ -128,9 +128,9 @@ public class HandleSplitPersisting implements SplitHandler{
 
                 ProcessingData otherSavedProcessingData = ProcessingData.fromJson(otherData);
                 // Merge the other Data to currentData.
-                currentData.mergeTo(otherSavedProcessingData);
+                currentData.mergeFrom(otherSavedProcessingData);
                 // Merge the state machine from other state, so it can continue with full state.
-                simpleFSM.mergeTrace(sm);
+                simpleFSM.mergeTraceFrom(sm);
 
                 st.executeUpdate("UPDATE store SET state = '" + newState + "', data ='" + currentData.toJson() + "'");
 
