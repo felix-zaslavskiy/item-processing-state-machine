@@ -35,4 +35,22 @@ public class LogEntry {
     public String toString() {
         return timestamp + ": " + message;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        LogEntry logEntry = (LogEntry) o;
+
+        if (!timestamp.equals(logEntry.timestamp)) return false;
+        return message.equals(logEntry.message);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = timestamp.hashCode();
+        result = 31 * result + message.hashCode();
+        return result;
+    }
 }
