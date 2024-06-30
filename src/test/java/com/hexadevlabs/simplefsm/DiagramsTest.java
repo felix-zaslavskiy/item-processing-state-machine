@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class DiagramsTest {
     private SimpleFSM simpleFSM;
-    private final NamedEntity proceedEvent = new MyCustomEvent("proceed");
+
     @BeforeEach
     public void setUp() {
         simpleFSM = buildNew();
@@ -25,7 +25,7 @@ public class DiagramsTest {
                     .conditional().goTo("STEP3")
                 .newState()
                 .state("STEP2", new Step2(), true)
-                    .on(proceedEvent).goTo("END")
+                    .on("proceed").goTo("END")
                     .on("alt_proceed").goTo("EXCEPTION")
                 .newState()
                     .state("STEP3", new Step3())

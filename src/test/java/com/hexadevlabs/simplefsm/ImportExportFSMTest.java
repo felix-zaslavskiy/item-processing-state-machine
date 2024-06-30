@@ -18,7 +18,7 @@ class ExceptionState extends ProcessingStep {
 public class ImportExportFSMTest {
 
     private SimpleFSM simpleFSM;
-    private final NamedEntity proceedEvent = new MyCustomEvent("proceed");
+
     @BeforeEach
     public void setUp() {
         simpleFSM = buildNew();
@@ -31,7 +31,7 @@ public class ImportExportFSMTest {
                     .conditional().goTo("STEP3")
                 .newState()
                 .state("STEP2", new Step2(), true)
-                    .on(proceedEvent).goTo("END")
+                    .on("proceed").goTo("END")
                     .on("alt_proceed").goTo("EXCEPTION")
                 .newState()
                 .state("STEP3", new Step3())

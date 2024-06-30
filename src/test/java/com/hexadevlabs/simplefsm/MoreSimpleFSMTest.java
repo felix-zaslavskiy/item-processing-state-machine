@@ -9,13 +9,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-record MyCustomEvent(String name) implements NamedEntity {
-}
 
 public class MoreSimpleFSMTest {
     private SimpleFSM simpleFSM;
     private ProcessingData data;
-    private final NamedEntity proceedEvent = new MyCustomEvent("proceed");
 
     @BeforeEach
     public void setup() {
@@ -23,11 +20,9 @@ public class MoreSimpleFSMTest {
                 .state("START", new Step1())
                     .conditional().goTo("STEP2")
                     .conditional().goTo("STEP3")
-                .newState()
                 .state("STEP2", new Step2(), true)
-                    .on(proceedEvent).goTo("end")
+                    .on("proceed").goTo("end")
                     .on("alt_proceed").goTo("STEP3")
-                .newState()
                 .state("STEP3", new Step3())
                     .auto().goTo("end")
                 .newState()
@@ -73,7 +68,7 @@ public class MoreSimpleFSMTest {
     public void testStep2Processing() {
         data.set("value", 4);// will go step 2 and wait for
         simpleFSM.start("START", data);
-        simpleFSM.triggerEvent(proceedEvent, data);
+        simpleFSM.triggerEvent("proceed", data);
         Integer value = (Integer) data.get("value");
         assertEquals(Integer.valueOf(8), value);
     }
@@ -82,7 +77,7 @@ public class MoreSimpleFSMTest {
     public void testIsFinished() {
         data.set("value", 4); // will go step 2 and wait for
         simpleFSM.start("START", data);
-        simpleFSM.triggerEvent(proceedEvent, data);
+        simpleFSM.triggerEvent("proceed", data);
         assertTrue(simpleFSM.isConcluded());
     }
 

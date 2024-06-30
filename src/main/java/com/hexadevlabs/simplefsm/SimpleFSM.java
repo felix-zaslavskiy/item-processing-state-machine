@@ -67,13 +67,6 @@ public class SimpleFSM {
         process(data);
     }
 
-    public void start(NamedEntity startingState, ProcessingData data){
-        start(startingState.name(), data);
-    }
-
-    public void triggerEvent(NamedEntity event, ProcessingData data) {
-        triggerEvent(event.name(), data);
-    }
 
     public void triggerEvent(String eventName, ProcessingData data) {
         if (!started) {
@@ -323,7 +316,7 @@ public class SimpleFSM {
 
             String nextState = data.getNextState();
             if (nextState == null) {
-                nextState = state.getNextState(TransitionAutoEvent.NAME);
+                nextState = state.getNextState("AUTO");
             }
 
             if (nextState == null) {
@@ -507,16 +500,8 @@ public class SimpleFSM {
             this.simpleFSM = new SimpleFSM();
         }
 
-        public StateBuilder state(NamedEntity name, ProcessingStep processingStep) {
-            return state(name.name(), processingStep);
-        }
-
         public StateBuilder state(String name, ProcessingStep processingStep) {
             return state(name, processingStep, false);
-        }
-
-        public StateBuilder state(NamedEntity name, ProcessingStep processingStep, boolean waitForEventBeforeTransition) {
-            return state(name.name(), processingStep, waitForEventBeforeTransition);
         }
 
         public StateBuilder state(String name, ProcessingStep processingStep, boolean waitForEventBeforeTransition) {
@@ -528,23 +513,10 @@ public class SimpleFSM {
         }
 
 
-        public Builder finalState(NamedEntity name, ProcessingStep processingStep){
-            return finalState(name.name(), processingStep);
-        }
-
         public Builder finalState(String name, ProcessingStep processingStep) {
             state(name, processingStep, false);
             this.simpleFSM.addFinalState(name);
             return this;
-        }
-
-        /**
-         * Sets the name of the state to transition to in case of an exception.
-         *
-         * @param state The name of the state to transition to.
-         */
-        public Builder onExceptionGoTo(NamedEntity state) {
-            return onExceptionGoTo(state.name());
         }
 
         /**
@@ -620,12 +592,10 @@ public class SimpleFSM {
             return new TransitionBuilder(eventName, this);
         }
 
-        public TransitionBuilder on(NamedEntity event){
-            return new TransitionBuilder(event.name(), this);
-        }
+
 
         public TransitionBuilder split(){
-            return on(TransitionSplitEvent.NAME);
+            return on("SPLIT");
         }
 
         /**
@@ -648,7 +618,7 @@ public class SimpleFSM {
         }
 
         public TransitionBuilder auto() {
-            return on(TransitionAutoEvent.NAME);
+            return on("AUTO");
         }
 
         public TransitionBuilder conditional() {
@@ -661,6 +631,24 @@ public class SimpleFSM {
         }
         public Builder endStates() {
             return parentBuilder;
+        }
+
+        // Delegations to Builder class below.
+
+        public StateBuilder state(String name, ProcessingStep processingStep) {
+            return parentBuilder.state(name, processingStep);
+        }
+        public StateBuilder state(String name, ProcessingStep processingStep, boolean waitForEventBeforeTransition) {
+            return parentBuilder.state(name, processingStep, waitForEventBeforeTransition);
+        }
+
+
+        public Builder onExceptionGoTo(String state) {
+            return parentBuilder.onExceptionGoTo(state);
+        }
+
+        public SimpleFSM build() {
+            return parentBuilder.build();
         }
 
     }
@@ -682,16 +670,12 @@ public class SimpleFSM {
             this.isConditional = isConditional;
         }
 
-        public StateBuilder goTo(NamedEntity nextState){
-            return goTo(nextState.name());
-        }
-
         public StateBuilder goTo(String nextState) {
             if (isConditional) {
                 eventName += nextState;
             }
             boolean partOfSplit = false;
-            if(eventName.equals(TransitionSplitEvent.NAME)){
+            if(eventName.equals("SPLIT")){
                 eventName += '_' + nextState;
                 partOfSplit = true;
             }

@@ -34,16 +34,6 @@ public abstract class ProcessingStep {
         data.setNextState(nextState);
     }
 
-    /**
-     * Sets the next state for the FSM to transition to after the completion of the current step.
-     *
-     * @param data      The ProcessingData instance containing data relevant to the current state.
-     * @param nextState The NamedEntity representing the next state.
-     */
-    protected void nextState(ProcessingData data, NamedEntity nextState){
-        nextState(data, nextState.name());
-    }
-
     String getClassName() {
         String name = this.getClass().getSimpleName();
         return name.isEmpty() ? this.getClass().getName() : name;
