@@ -2,10 +2,7 @@ package com.hexadevlabs.simplefsm;
 
 
 import com.hexadevlabs.simplefsm.supporting.ExceptionHandler;
-import com.hexadevlabs.simplefsm.testSteps.Step1;
-import com.hexadevlabs.simplefsm.testSteps.Step2;
-import com.hexadevlabs.simplefsm.testSteps.Step3;
-import com.hexadevlabs.simplefsm.testSteps.Step4;
+import com.hexadevlabs.simplefsm.testSteps.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -145,6 +142,36 @@ public class SimpleFSMTest {
 
         assertTrue(data.hadException());
         assertTrue(simpleFSM.isConcluded());
+
+    }
+
+    @Test
+    public void noFinalStateAndNoExceptions(){
+        // This is good example where there is no finalState but the FSM
+        // can continue running indefinitely as long as triggering event
+        // is happening periodically.
+        SimpleFSM simpleFSM = new SimpleFSM.Builder()
+                .state("START", new NoopStep())
+                    .auto().goTo("STEP2")
+                .and()
+                .state("STEP2", new NoopStep(), true)
+                    .on("transition").goTo("START")
+                .end()
+                .build();
+
+        simpleFSM.setTraceMode(true);
+        ProcessingData data = new ProcessingData();
+        data.set("value", 4);
+        simpleFSM.start("START", data);
+
+        assertFalse(simpleFSM.isConcluded());
+        assertTrue(simpleFSM.isPaused());
+
+        // Trigger event to transition back to START and stop on STEP2 again
+        simpleFSM.triggerEvent("transition", data);
+
+        assertFalse(simpleFSM.isConcluded());
+        assertTrue(simpleFSM.isPaused());
 
     }
 }
