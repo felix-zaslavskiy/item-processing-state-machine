@@ -105,4 +105,46 @@ public class SplitStateTest {
         simpleFSM.getTrace().print();
     }
 
+    @Test
+    public void noExceptionHandler(){
+        // No onExceptionGoTo so FSM will terminate.
+        SimpleFSM special =new SimpleFSM.Builder()
+            .state("START", new NoopStep())
+                .auto().goTo("STEP_SPLIT")
+            .and()
+            .state( "STEP_SPLIT", new StepSplit() )
+                .split().goTo("SPLIT1" )
+                .split().goTo("SPLIT2" )
+            .and()
+            .state("SPLIT_END", new SplitEnd())
+                .auto().goTo("END")
+            .and()
+            .finalState("END", new NoopStep())
+            .state("SPLIT1", new Split1WithException() )
+                .join( "SPLIT_END" )
+            .and()
+            .state("SPLIT2", new Split2() )
+                .join( "SPLIT_END" )
+            .and()
+            .withName("Test FSM")
+                .splitHandler(new HandleSplitPlaceholder())
+            .withTrace()
+            .build();
+
+        ProcessingData data = new ProcessingData();
+        special.start("START", data);
+
+        assertTrue(data.hadException());
+        assertTrue(special.isConcluded());
+        assertTrue(special.wasTerminated());
+        assertFalse(special.hasReachedFinalState());
+
+        // Step 1 had exception so should go to End without executing Split_end state.
+        // This means the values of value1 and value2 could not be added.
+        assertNull(data.get("value_sum"));
+
+        System.out.println(data.toJson());
+        special.getTrace().print();
+    }
+
 }
