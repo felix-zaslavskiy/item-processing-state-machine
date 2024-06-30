@@ -18,9 +18,7 @@ public class BuilderErrorsTest {
         assertThrows( IllegalArgumentException.class,
                 () -> new SimpleFSM.Builder()
                         .state("STATE1", new Step1())
-                        .newState()
                         .state("STATE1", new Step1())
-                        .endStates()
                         .build()
         );
 
@@ -30,9 +28,7 @@ public class BuilderErrorsTest {
                         .state("STATE1", new Step1())
                         .on("EVENT1").goTo("STATE2")
                         .on("EVENT1").goTo("STATE2")
-                        .newState()
                         .state("STATE2", new Step2())
-                        .endStates()
                         .build()
         );
 
@@ -41,9 +37,7 @@ public class BuilderErrorsTest {
                         .state("STATE1", new Step1())
                         .auto().goTo("STATE2")
                         .auto().goTo("STATE2")
-                        .newState()
                         .state("STATE2", new Step2())
-                        .endStates()
                         .build()
         );
     }

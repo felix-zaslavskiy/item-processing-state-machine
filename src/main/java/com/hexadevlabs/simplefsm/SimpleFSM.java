@@ -592,8 +592,6 @@ public class SimpleFSM {
             return new TransitionBuilder(eventName, this);
         }
 
-
-
         public TransitionBuilder split(){
             return on("SPLIT");
         }
@@ -626,13 +624,6 @@ public class SimpleFSM {
             return new TransitionBuilder(nextState, this, true);
         }
 
-        public Builder newState() {
-            return parentBuilder;
-        }
-        public Builder endStates() {
-            return parentBuilder;
-        }
-
         // Delegations to Builder class below.
 
         public StateBuilder state(String name, ProcessingStep processingStep) {
@@ -642,6 +633,9 @@ public class SimpleFSM {
             return parentBuilder.state(name, processingStep, waitForEventBeforeTransition);
         }
 
+        public Builder finalState(String name, ProcessingStep processingStep) {
+            return parentBuilder.finalState(name, processingStep);
+        }
 
         public Builder onExceptionGoTo(String state) {
             return parentBuilder.onExceptionGoTo(state);
@@ -651,6 +645,23 @@ public class SimpleFSM {
             return parentBuilder.build();
         }
 
+        public Builder withName(String name){
+            return parentBuilder.withName(name);
+        }
+        public Builder withExecutionHook(ExecutionHooks hook){
+            return parentBuilder.withExecutionHook(hook);
+        }
+        public Builder onExecutionHookExceptionTerminate() {
+            return parentBuilder.onExecutionHookExceptionTerminate();
+        }
+
+        public Builder withTrace(){
+            return parentBuilder.withTrace();
+        }
+
+        public Builder splitHandler(SplitHandler handleSplit) {
+            return parentBuilder.splitHandler(handleSplit);
+        }
     }
 
     public static class TransitionBuilder {

@@ -24,7 +24,7 @@ Include dependency. For example in maven pom.
 <dependency>
     <groupId>com.hexadevlabs</groupId>
     <artifactId>simple-finite-state-machine</artifactId>
-    <version>1.0.0</version>
+    <version>1.2.0</version>
 </dependency>
 ```
 
@@ -50,12 +50,10 @@ public class MyFSM {
         // Create a new SimpleFSM instance
         SimpleFSM fsm = new SimpleFSM.Builder()
                 .state("state1", new ProcessingStep1())
-                .conditional().goTo("state2")
-                .conditional().goTo("state3")
-                .newState()
+                    .conditional().goTo("state2")
+                    .conditional().goTo("state3")
                 .state("state2", new ProcessingStep2(), true) // Pause after step
-                .on("event2").goTo("state3")
-                .endStates()
+                    .on("event2").goTo("state3")
                 .finalState("state3", new ProcessingStep3())
                 .build();
 

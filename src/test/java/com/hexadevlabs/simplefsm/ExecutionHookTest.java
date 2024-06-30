@@ -42,7 +42,6 @@ public class ExecutionHookTest {
         SimpleFSM simpleFSM = new SimpleFSM.Builder()
                     .state("STEP2", new Step2())
                     .auto().goTo("END")
-                    .newState()
                     .finalState("END", new Step4())
                     .withExecutionHook(new Hooks1())
                     .build();
@@ -60,7 +59,6 @@ public class ExecutionHookTest {
         SimpleFSM simpleFSM = new SimpleFSM.Builder()
                 .state("STEP2", new Step2())
                 .auto().goTo("END")
-                .newState()
                 .finalState("END", new Step4())
                 .withExecutionHook(new Hooks2())
                 .onExecutionHookExceptionTerminate()
@@ -82,7 +80,6 @@ public class ExecutionHookTest {
         SimpleFSM simpleFSM = new SimpleFSM.Builder()
                 .state("STEP2", new Step2())
                 .auto().goTo("END")
-                .newState()
                 .finalState("END", new Step4())
                 .withExecutionHook(new Hooks2())
                 .onExecutionHookExceptionTerminate()
@@ -102,7 +99,6 @@ public class ExecutionHookTest {
         SimpleFSM simpleFSM = new SimpleFSM.Builder()
                 .state("STEP2", new Step2())
                 .auto().goTo("END")
-                .newState()
                 .finalState("END", new Step4())
                 .withExecutionHook(new ExecutionHooks() {
                     @Override
@@ -133,7 +129,6 @@ public class ExecutionHookTest {
         SimpleFSM simpleFSM = new SimpleFSM.Builder()
                 .state("STEP2", new Step2())
                 .auto().goTo("END")
-                .newState()
                 .finalState("END", new Step4())
                 .withExecutionHook(new ExecutionHooks() {
                     @Override
@@ -162,7 +157,6 @@ public class ExecutionHookTest {
         SimpleFSM simpleFSM = new SimpleFSM.Builder()
                 .state("STEP2", new Step2())
                 .auto().goTo("END")
-                .newState()
                 .finalState("END", new Step4())
                 .withExecutionHook(new ExecutionHooks() {
                     @Override
@@ -197,7 +191,6 @@ public class ExecutionHookTest {
                     }
                 })
                 .auto().goTo("END")
-                .newState()
                 .finalState("END", new Step4())
                 .onExceptionGoTo("END")
                 .withTrace()
@@ -222,7 +215,6 @@ public class ExecutionHookTest {
                     }
                 })
                 .auto().goTo("END")
-                .newState()
                 .finalState("END", new ProcessingStep() {
                     @Override
                     protected void process(ProcessingData data) {

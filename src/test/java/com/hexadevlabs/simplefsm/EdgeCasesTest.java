@@ -18,15 +18,12 @@ public class EdgeCasesTest {
 
                     }
                 })
-                .conditional().goTo("STEP2")
-                .conditional().goTo("STEP3")
-                .newState()
+                    .conditional().goTo("STEP2")
+                    .conditional().goTo("STEP3")
                 .state("STEP2", new Step2(), true)
-                .on("alt_proceed").goTo("STEP3")
-                .newState()
+                    .on("alt_proceed").goTo("STEP3")
                 .state("STEP3", new Step3())
-                .auto().goTo("end")
-                .newState()
+                    .auto().goTo("end")
                 .finalState("end", new Step4())
                 .build();
         ProcessingData data = new ProcessingData();
@@ -45,13 +42,10 @@ public class EdgeCasesTest {
                     }
                 })
                 .auto().goTo("STEP3")
-                .newState()
                 .state("STEP2", new Step2(), true)
                 .on("alt_proceed").goTo("STEP3")
-                .newState()
                 .state("STEP3", new Step3())
                 .auto().goTo("end")
-                .newState()
                 .finalState("end", new Step4())
                 .build();
         ProcessingData data = new ProcessingData();
@@ -70,14 +64,11 @@ public class EdgeCasesTest {
 
                     }
                 })
-                .conditional().goTo("STEP3")
-                .newState()
+                    .conditional().goTo("STEP3")
                 .state("STEP2", new Step2(), true)
-                .on("alt_proceed").goTo("STEP3")
-                .newState()
+                    .on("alt_proceed").goTo("STEP3")
                 .state("STEP3", new Step3())
-                .auto().goTo("end")
-                .newState()
+                    .auto().goTo("end")
                 .finalState("end", new Step4())
                 .build();
         ProcessingData data = new ProcessingData();

@@ -25,8 +25,7 @@ public class MoreSimpleFSMTest {
                     .on("alt_proceed").goTo("STEP3")
                 .state("STEP3", new Step3())
                     .auto().goTo("end")
-                .newState()
-                    .finalState("end", new Step4())
+                .finalState("end", new Step4())
                 .build();
 
         data = new ProcessingData();
