@@ -29,6 +29,7 @@ Include dependency. For example in maven pom.
 ```
 
 Sample Java code:
+
 ```java
 import com.hexadevlabs.simplefsm.ProcessingData;
 import com.hexadevlabs.simplefsm.ProcessingStep;
@@ -66,7 +67,7 @@ public class MyFSM {
         fsm.triggerEvent("event2", data);
 
         // Check if the FSM has reached a final state
-        if (fsm.isFinished()) {
+        if (fsm.isConcluded()) {
             System.out.println("FSM has reached a final state: " + fsm.getFinalState().getName());
         }
     }
@@ -99,6 +100,8 @@ We welcome contributions to SimpleFSM! If you'd like to contribute, please fork 
 * 1.1.0 Add Parallel processing of states. Split handler.
 * 1.1.1 Fix ProcessingLog structure. ProcessingData added JavaTime module to mapper.
 * 1.1.2 Handle exceptions in Split state
+* 1.1.3 Fix issue with Trace not correctly merged.
+* 1.2.0 Rename state methods isFinished->isConcluded, add hasReachedFinalState
 
 ## TODO 
 * More tests for exceptions in Split, Test with persisting split handler.

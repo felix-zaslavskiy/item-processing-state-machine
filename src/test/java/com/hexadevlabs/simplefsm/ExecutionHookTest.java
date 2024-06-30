@@ -48,7 +48,7 @@ public class ExecutionHookTest {
         data.set("value", 5);
         simpleFSM.start("STEP2", data);
 
-        assertTrue(simpleFSM.isFinished());
+        assertTrue(simpleFSM.isConcluded());
         assertEquals("END", simpleFSM.getFinalState().getName());
 
     }
@@ -69,8 +69,9 @@ public class ExecutionHookTest {
         simpleFSM.start("STEP2", data);
         assertTrue(simpleFSM.isStarted());
         assertFalse(simpleFSM.isPaused());
-        assertTrue(simpleFSM.isFinished());
+        assertTrue(simpleFSM.isConcluded());
         assertTrue(simpleFSM.wasTerminated());
+        assertFalse(simpleFSM.hasReachedFinalState());
     }
 
     @Test
@@ -91,7 +92,7 @@ public class ExecutionHookTest {
         simpleFSM.start("STEP2", data);
         assertTrue(simpleFSM.isStarted());
         assertFalse(simpleFSM.isPaused());
-        assertTrue(simpleFSM.isFinished());
+        assertTrue(simpleFSM.isConcluded());
         assertTrue(simpleFSM.wasTerminated());
     }
     @Test
@@ -119,7 +120,7 @@ public class ExecutionHookTest {
         data.set("value", 5);
         simpleFSM.start("STEP2", data);
         assertTrue(simpleFSM.isStarted());
-        assertTrue(simpleFSM.isFinished());
+        assertTrue(simpleFSM.isConcluded());
         assertTrue(simpleFSM.wasTerminated());
     }
 
@@ -149,7 +150,7 @@ public class ExecutionHookTest {
         data.set("value", 5);
         simpleFSM.start("STEP2", data);
         assertTrue(simpleFSM.isStarted());
-        assertTrue(simpleFSM.isFinished());
+        assertTrue(simpleFSM.isConcluded());
         assertTrue(simpleFSM.wasTerminated());
     }
 
@@ -180,7 +181,7 @@ public class ExecutionHookTest {
         data.set("value", 5);
         simpleFSM.start("STEP2", data);
         assertTrue(simpleFSM.isStarted());
-        assertTrue(simpleFSM.isFinished());
+        assertTrue(simpleFSM.isConcluded());
         assertFalse(simpleFSM.wasTerminated());
         assertEquals("END", simpleFSM.getFinalState().getName());
     }
@@ -203,7 +204,7 @@ public class ExecutionHookTest {
         data.set("value", 5);
         simpleFSM.start("STEP2", data);
         assertTrue(simpleFSM.isStarted());
-        assertTrue(simpleFSM.isFinished());
+        assertTrue(simpleFSM.isConcluded());
         assertEquals("END", simpleFSM.getFinalState().getName());
     }
 
@@ -233,7 +234,7 @@ public class ExecutionHookTest {
         data.set("value", 5);
         simpleFSM.start("STEP2", data);
         assertTrue(simpleFSM.isStarted());
-        assertTrue(simpleFSM.isFinished());
+        assertTrue(simpleFSM.isConcluded());
         assertTrue(simpleFSM.wasTerminated());
 
     }

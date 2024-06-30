@@ -182,16 +182,30 @@ public class SimpleFSM {
     }
 
     /**
-     * FSM has finished processing one of the finalStates,
-     * or it has terminated due to exception without a finalState.
+     * Determines whether the FSM has concluded its process either by reaching one of the final states
+     * or being terminated due to an exception.
+     * <p>
+     * If no final state is defined, the FSM will only conclude upon termination.     *
      */
-    public boolean isFinished() {
-        return started && ( (!finalStates.isEmpty() && finalStates.contains(currentState))
-                || currentState == null );
+    public boolean isConcluded() {
+        return hasReachedFinalState() || wasTerminated();
     }
 
     /**
-     * If the state machine was terminated due to an exception without having finished to a finalState
+     * Checks if the FSM has reached one of its designated final states.
+     * <p>
+     * If no final state is defined, this method will consistently return false for an active FSM,
+     * indicating that reaching a "final state" requires explicit designation of such states.
+     */
+    public boolean hasReachedFinalState(){
+        return started && finalStates.contains(currentState);
+    }
+
+    /**
+     * Checks if the FSM was terminated due to an exception, preventing it from continuing.
+     * <p>
+     * This condition is met when the FSM is started and an unhandled exception leads to setting the
+     * current state to null, effectively stopping the FSM.
      */
     public boolean wasTerminated() {
         return started && currentState == null;
@@ -457,7 +471,7 @@ public class SimpleFSM {
      * @throws IllegalStateException If the FSM is finished.
      */
     public State getPausedOnState(){
-        if(isFinished())
+        if(isConcluded())
             throw new IllegalStateException("State machine must not have finished to return Paused on state");
 
         return states.get(currentState);
@@ -470,7 +484,7 @@ public class SimpleFSM {
      * @throws IllegalStateException If the FSM is not finished or is terminated.
      */
     public State getFinalState() {
-        if(!isFinished())
+        if(!isConcluded())
             throw new IllegalStateException("State machine must finish to have final state");
 
         if(currentState==null)

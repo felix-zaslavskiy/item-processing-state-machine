@@ -54,7 +54,7 @@ public class EdgeCasesTest {
         ProcessingData data = new ProcessingData();
         data.set("value", 5);
         simpleFSM.start("START", data);
-        assertTrue(simpleFSM.isFinished());
+        assertTrue(simpleFSM.isConcluded());
         assertEquals("end", simpleFSM.getFinalState().getName());
     }
 
@@ -80,7 +80,7 @@ public class EdgeCasesTest {
         ProcessingData data = new ProcessingData();
         data.set("value", 5);
         simpleFSM.start("START", data);
-        assertTrue(simpleFSM.isFinished());
+        assertTrue(simpleFSM.isConcluded());
         assertEquals("end", simpleFSM.getFinalState().getName());
     }
 }

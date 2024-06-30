@@ -90,7 +90,7 @@ public class SplitTestWithNestedSplitStates {
         // TODO: this does not function correctly.
         ProcessingData data = new ProcessingData();
         simpleFSM.start("START", data);
-        assertTrue(simpleFSM.isFinished());
+        assertTrue(simpleFSM.isConcluded());
         assertFalse(simpleFSM.wasTerminated());
         assertNotNull(simpleFSM.getFinalState());
         assertEquals("END", simpleFSM.getFinalState().getName());

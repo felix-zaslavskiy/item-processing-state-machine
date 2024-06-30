@@ -44,7 +44,8 @@ public class MoreSimpleFSMTest {
     @Test
     public void testAutoTransition() {
         simpleFSM.start("STEP3", data);
-        assertTrue(simpleFSM.isFinished());
+        assertTrue(simpleFSM.isConcluded());
+        assertTrue(simpleFSM.hasReachedFinalState());
         State finalState = simpleFSM.getFinalState();
         assertEquals("end", finalState.getName());
     }
@@ -58,7 +59,7 @@ public class MoreSimpleFSMTest {
         assertThrows(IllegalStateException.class, () -> simpleFSM.getFinalState());
 
         simpleFSM.triggerEvent("alt_proceed", data); // trigger alt_proceed event, will go to step 3
-        assertTrue(simpleFSM.isFinished());
+        assertTrue(simpleFSM.isConcluded());
         assertThrows(IllegalStateException.class, () -> simpleFSM.getPausedOnState());
         assertEquals("end", simpleFSM.getFinalState().getName());
     }
@@ -78,13 +79,13 @@ public class MoreSimpleFSMTest {
         data.set("value", 4); // will go step 2 and wait for
         simpleFSM.start("START", data);
         simpleFSM.triggerEvent(proceedEvent, data);
-        assertTrue(simpleFSM.isFinished());
+        assertTrue(simpleFSM.isConcluded());
     }
 
     @Test
     public void notStarted(){
         assertFalse(simpleFSM.isStarted());
-        assertFalse(simpleFSM.isFinished());
+        assertFalse(simpleFSM.isConcluded());
         assertFalse(simpleFSM.wasTerminated());
         assertFalse(simpleFSM.isPaused());
         assertThrows(IllegalStateException.class, () -> simpleFSM.triggerEvent("alt_proceed", data));
@@ -100,7 +101,7 @@ public class MoreSimpleFSMTest {
     @Test
     public void testToString(){
         simpleFSM.start("STEP3", data);
-        assertTrue(simpleFSM.isFinished());
+        assertTrue(simpleFSM.isConcluded());
         assertNotNull(simpleFSM.toString());
         assertTrue(simpleFSM.toString().length() > 1);
     }

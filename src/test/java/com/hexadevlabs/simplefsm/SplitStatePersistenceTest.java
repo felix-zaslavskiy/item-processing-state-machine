@@ -114,7 +114,7 @@ public class SplitStatePersistenceTest {
                     System.out.println(resultFSM.exportState());
                     System.out.println(dataAfter);
 
-                    assertTrue(resultFSM.isFinished());
+                    assertTrue(resultFSM.isConcluded());
                     assertFalse(resultFSM.wasTerminated());
                     assertNotNull(resultFSM.getFinalState());
                     assertEquals("END", resultFSM.getFinalState().getName());
@@ -167,7 +167,7 @@ public class SplitStatePersistenceTest {
                     System.out.println(dataAfter);
 
 
-                    assertTrue(resultFSM.isFinished());
+                    assertTrue(resultFSM.isConcluded());
                     assertFalse(resultFSM.wasTerminated());
                     assertNotNull(resultFSM.getFinalState());
                     assertEquals("END", resultFSM.getFinalState().getName());
@@ -220,7 +220,7 @@ public class SplitStatePersistenceTest {
                     System.out.println(resultFSM.exportState());
                     System.out.println(dataAfter);
 
-                    assertTrue(resultFSM.isFinished());
+                    assertTrue(resultFSM.isConcluded());
                     assertFalse(resultFSM.wasTerminated());
                     assertNotNull(resultFSM.getFinalState());
                     assertEquals("END", resultFSM.getFinalState().getName());

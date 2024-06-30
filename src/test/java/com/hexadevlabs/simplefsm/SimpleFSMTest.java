@@ -51,10 +51,12 @@ public class SimpleFSMTest {
         data.set("value", 4);
         simpleFSM.start("START", data);
 
+        assertTrue(simpleFSM.isPaused());
+
         simpleFSM.triggerEvent("PROCEED", data);
 
         simpleFSM.getTrace().print();
-        assertTrue(simpleFSM.isFinished());
+        assertTrue(simpleFSM.isConcluded());
         assertEquals(8, data.get("value"));
     }
 
@@ -112,7 +114,7 @@ public class SimpleFSMTest {
         assertNotNull(data.get("error"));
         assertTrue(data.hadException());
         assertEquals("Test", data.getException().getMessage());
-        assertTrue(simpleFSM.isFinished());
+        assertTrue(simpleFSM.isConcluded());
 
     }
 
@@ -137,7 +139,7 @@ public class SimpleFSMTest {
         simpleFSM.start("START", data);
 
         assertTrue(data.hadException());
-        assertTrue(simpleFSM.isFinished());
+        assertTrue(simpleFSM.isConcluded());
 
     }
 }

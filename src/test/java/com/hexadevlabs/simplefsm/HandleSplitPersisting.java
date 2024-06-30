@@ -57,7 +57,7 @@ public class HandleSplitPersisting implements SplitHandler{
 
                     // Only if state machine is finished do we want to save it to DB
                     // Will be read by Test case to verify.
-                    if(sm.isFinished()) {
+                    if(sm.isConcluded()) {
                         try (Connection conn = connectionSupplier.get()) {
                             // Normally persist State machine and data.
                             try (Statement st = conn.createStatement()) {

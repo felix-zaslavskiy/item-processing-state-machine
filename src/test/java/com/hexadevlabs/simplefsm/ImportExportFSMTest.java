@@ -51,13 +51,13 @@ public class ImportExportFSMTest {
         String exportState = simpleFSM.exportState();
 
         assertEquals("END", simpleFSM.getFinalState().getName());
-        assertTrue( simpleFSM.isFinished());
+        assertTrue( simpleFSM.isConcluded());
 
         SimpleFSM importedFSM = buildNew();
         importedFSM.importState(exportState);
 
         assertEquals("END", importedFSM.getFinalState().getName());
-        assertTrue( importedFSM.isFinished());
+        assertTrue( importedFSM.isConcluded());
 
         assertEquals("name", importedFSM.getName());
 
@@ -74,14 +74,14 @@ public class ImportExportFSMTest {
 
         // Wait after Step2
         assertTrue( simpleFSM.isStarted());
-        assertFalse( simpleFSM.isFinished());
+        assertFalse( simpleFSM.isConcluded());
         assertEquals("STEP2", simpleFSM.getPausedOnState().getName());
 
         SimpleFSM importedFSM = buildNew();
         importedFSM.importState(exportState);
 
         assertTrue( importedFSM.isStarted());
-        assertFalse( importedFSM.isFinished());
+        assertFalse( importedFSM.isConcluded());
         assertEquals("STEP2", importedFSM.getPausedOnState().getName());
 
     }
@@ -91,7 +91,7 @@ public class ImportExportFSMTest {
         String exportState = simpleFSM.exportState();
         assertFalse(simpleFSM.isStarted());
         assertFalse(simpleFSM.isPaused());
-        assertFalse(simpleFSM.isFinished());
+        assertFalse(simpleFSM.isConcluded());
 
 
         SimpleFSM importedFSM = buildNew();
@@ -99,7 +99,7 @@ public class ImportExportFSMTest {
 
         assertFalse(importedFSM.isStarted());
         assertFalse(importedFSM.isPaused());
-        assertFalse(importedFSM.isFinished());
+        assertFalse(importedFSM.isConcluded());
     }
 
     @Test
@@ -113,14 +113,14 @@ public class ImportExportFSMTest {
         simpleFSM.triggerEvent("alt_proceed", data);
         String exportState = simpleFSM.exportState();
         assertTrue(simpleFSM.isStarted());
-        assertTrue(simpleFSM.isFinished());
+        assertTrue(simpleFSM.isConcluded());
         assertThrows(IllegalStateException.class, simpleFSM::getFinalState);
 
         SimpleFSM newStateMachine = new SimpleFSM();
         newStateMachine.importState(exportState);
 
         assertTrue(newStateMachine.isStarted());
-        assertTrue(newStateMachine.isFinished());
+        assertTrue(newStateMachine.isConcluded());
         assertThrows(IllegalStateException.class, newStateMachine::getFinalState);
     }
 
@@ -131,7 +131,7 @@ public class ImportExportFSMTest {
         simpleFSM.setTraceMode(true);
         simpleFSM.start("START", data); // Optional event parameter
 
-        assertTrue(simpleFSM.isFinished());
+        assertTrue(simpleFSM.isConcluded());
         String trace = simpleFSM.getTrace().toString();
 
         String exportState = simpleFSM.exportState();

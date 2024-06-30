@@ -73,7 +73,8 @@ public class SplitStateTest {
     public void runSimpleSplittingStateMachine(){
         ProcessingData data = new ProcessingData();
         simpleFSM.start("START", data);
-        assertTrue(simpleFSM.isFinished());
+        assertTrue(simpleFSM.isConcluded());
+        assertTrue(simpleFSM.hasReachedFinalState());
         assertFalse(simpleFSM.wasTerminated());
         assertNotNull(simpleFSM.getFinalState());
         assertEquals("END", simpleFSM.getFinalState().getName());
@@ -90,6 +91,9 @@ public class SplitStateTest {
         simpleFSM.start("START", data);
 
         assertTrue(data.hadException());
+        assertTrue(simpleFSM.isConcluded());
+        assertFalse(simpleFSM.wasTerminated());
+        assertTrue(simpleFSM.hasReachedFinalState());
 
         // Step 1 had exception so should go to End without executing Split_end state.
         // This means the values of value1 and value2 could not be added.
