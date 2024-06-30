@@ -609,11 +609,11 @@ public class SimpleFSM {
 
     public static class StateBuilder {
         private final String name;
-        private final Builder nfsmBuilder;
+        private final Builder parentBuilder;
 
-        public StateBuilder(String name, Builder nfsmBuilder) {
+        public StateBuilder(String name, Builder parentBuilder) {
             this.name = name;
-            this.nfsmBuilder = nfsmBuilder;
+            this.parentBuilder = parentBuilder;
         }
 
         public TransitionBuilder on(String eventName) {
@@ -635,14 +635,14 @@ public class SimpleFSM {
          * @return StateBuilder
          */
         public StateBuilder join(String joinToState) {
-            if(!this.nfsmBuilder.simpleFSM.states.containsKey(joinToState)){
+            if(!this.parentBuilder.simpleFSM.states.containsKey(joinToState)){
                 throw new IllegalArgumentException("A state with the name '" + joinToState + "' must already be declared before using join() call.");
             }
-            this.nfsmBuilder.simpleFSM.getState(joinToState).makeJoiningState();
+            this.parentBuilder.simpleFSM.getState(joinToState).makeJoiningState();
 
             String eventName = name + "_TO_" + joinToState;
             // Add a Transition to the joinToState
-            this.nfsmBuilder.simpleFSM.getState(name).addTransition(eventName, joinToState, false);
+            this.parentBuilder.simpleFSM.getState(name).addTransition(eventName, joinToState, false);
 
             return this;
         }
@@ -657,10 +657,10 @@ public class SimpleFSM {
         }
 
         public Builder and() {
-            return nfsmBuilder;
+            return parentBuilder;
         }
         public Builder end() {
-            return nfsmBuilder;
+            return parentBuilder;
         }
 
     }
@@ -695,7 +695,7 @@ public class SimpleFSM {
                 eventName += '_' + nextState;
                 partOfSplit = true;
             }
-            stateBuilder.nfsmBuilder.simpleFSM.states.get(stateBuilder.name).addTransition(eventName, nextState, partOfSplit);
+            stateBuilder.parentBuilder.simpleFSM.states.get(stateBuilder.name).addTransition(eventName, nextState, partOfSplit);
             return stateBuilder;
         }
     }
