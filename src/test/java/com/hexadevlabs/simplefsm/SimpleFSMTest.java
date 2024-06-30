@@ -93,16 +93,16 @@ public class SimpleFSMTest {
         SimpleFSM simpleFSM = new SimpleFSM.Builder()
                 .state("START", new Step1())
                 .auto().goTo("STEP2")
-                .and()
+                .newState()
                 .state("STEP2", new ProcessingStep() {
                     @Override
                     protected void process(ProcessingData data) {
                         throw new RuntimeException("Test");
                     }
                 })
-                .and()
+                .newState()
                 .state("exception", new ExceptionHandler())
-                .end()
+                .endStates()
                 .onExceptionGoTo("exception")
                 .withTrace()
                 .build();
@@ -125,14 +125,14 @@ public class SimpleFSMTest {
         SimpleFSM simpleFSM = new SimpleFSM.Builder()
                 .state("START", new Step1())
                 .auto().goTo("STEP2")
-                .and()
+                .newState()
                 .state("STEP2", new ProcessingStep() {
                     @Override
                     protected void process(ProcessingData data) {
                         throw new RuntimeException("Test");
                     }
                 })
-                .end()
+                .endStates()
                 .build();
 
         simpleFSM.setTraceMode(true);
@@ -153,10 +153,10 @@ public class SimpleFSMTest {
         SimpleFSM simpleFSM = new SimpleFSM.Builder()
                 .state("START", new NoopStep())
                     .auto().goTo("STEP2")
-                .and()
+                .newState()
                 .state("STEP2", new NoopStep(), true)
                     .on("transition").goTo("START")
-                .end()
+                .endStates()
                 .build();
 
         simpleFSM.setTraceMode(true);

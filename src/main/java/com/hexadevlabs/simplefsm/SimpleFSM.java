@@ -656,10 +656,10 @@ public class SimpleFSM {
             return new TransitionBuilder(nextState, this, true);
         }
 
-        public Builder and() {
+        public Builder newState() {
             return parentBuilder;
         }
-        public Builder end() {
+        public Builder endStates() {
             return parentBuilder;
         }
 

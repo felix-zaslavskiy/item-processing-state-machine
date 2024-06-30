@@ -52,10 +52,10 @@ public class MyFSM {
                 .state("state1", new ProcessingStep1())
                 .conditional().goTo("state2")
                 .conditional().goTo("state3")
-                .and()
+                .newState()
                 .state("state2", new ProcessingStep2(), true) // Pause after step
                 .on("event2").goTo("state3")
-                .end()
+                .endStates()
                 .finalState("state3", new ProcessingStep3())
                 .build();
 
