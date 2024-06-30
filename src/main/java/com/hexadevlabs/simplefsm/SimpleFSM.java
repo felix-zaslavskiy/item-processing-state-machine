@@ -603,10 +603,6 @@ public class SimpleFSM {
          * @return StateBuilder
          */
         public StateBuilder join(String joinToState) {
-            if(!this.parentBuilder.simpleFSM.states.containsKey(joinToState)){
-                throw new IllegalArgumentException("A state with the name '" + joinToState + "' must already be declared before using join() call.");
-            }
-            this.parentBuilder.simpleFSM.getState(joinToState).makeJoiningState();
 
             String eventName = name + "_TO_" + joinToState;
             // Add a Transition to the joinToState

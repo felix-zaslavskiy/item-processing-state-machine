@@ -19,8 +19,6 @@ public class State {
     // List of Transition that are part of a split.
     private final ArrayList<String> splitTransitions;
 
-    // If this State is part of a join from Split transitions
-    private boolean joiningState;
     private ProcessingStep processingStep;
     private final boolean waitForEventBeforeTransition;
 
@@ -38,7 +36,6 @@ public class State {
         this.processingStep = processingStep;
         this.transitions = new HashMap<>();
         this.splitTransitions = new ArrayList<>();
-        this.joiningState = false; // Initially False until some Join calls will update it.
         this.waitForEventBeforeTransition = waitForEventBeforeTransition;
     }
 
@@ -58,10 +55,6 @@ public class State {
 
         if(partOfSplit)
             splitTransitions.add(eventName);
-    }
-
-    public void makeJoiningState(){
-        this.joiningState = true;
     }
 
     /**

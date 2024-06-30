@@ -24,13 +24,13 @@ public class SplitStateTest {
             .state( "STEP_SPLIT", new StepSplit() )
                 .split().goTo("SPLIT1" )
                 .split().goTo("SPLIT2" )
-            .state("SPLIT_END", new SplitEnd())
-                .auto().goTo("END")
-            .finalState("END", new NoopStep())
             .state("SPLIT1", new Split1() )
                 .join( "SPLIT_END" )
             .state("SPLIT2", new Split2() )
                 .join( "SPLIT_END" )
+            .state("SPLIT_END", new SplitEnd())
+                .auto().goTo("END")
+            .finalState("END", new NoopStep())
             .onExceptionGoTo("END")
             .withName("Test FSM")
                 .splitHandler(new HandleSplitPlaceholder())
@@ -52,9 +52,9 @@ public class SplitStateTest {
                 	SPLIT2 -> SPLIT_END[label="SPLIT2_TO_SPLIT_END"];
                 	START[label="START\\n[NoopStep]"];
                 	START -> STEP_SPLIT[label="AUTO"];
-                	END[label="END\\n[NoopStep]\\n<final>"];
                 	SPLIT1[label="SPLIT1\\n[Split1]"];
                 	SPLIT1 -> SPLIT_END[label="SPLIT1_TO_SPLIT_END"];
+                	END[label="END\\n[NoopStep]\\n<final>"];               	
                 	STEP_SPLIT[label="STEP_SPLIT\\n[StepSplit]"];
                 	STEP_SPLIT -> SPLIT2[label="SPLIT_SPLIT2"];
                 	STEP_SPLIT -> SPLIT1[label="SPLIT_SPLIT1"];
@@ -109,13 +109,13 @@ public class SplitStateTest {
             .state( "STEP_SPLIT", new StepSplit() )
                 .split().goTo("SPLIT1" )
                 .split().goTo("SPLIT2" )
-            .state("SPLIT_END", new SplitEnd())
-                .auto().goTo("END")
-            .finalState("END", new NoopStep())
             .state("SPLIT1", new Split1WithException() )
                 .join( "SPLIT_END" )
             .state("SPLIT2", new Split2() )
                 .join( "SPLIT_END" )
+            .state("SPLIT_END", new SplitEnd())
+                .auto().goTo("END")
+            .finalState("END", new NoopStep())
             .withName("Test FSM")
                 .splitHandler(new HandleSplitPlaceholder())
             .withTrace()
