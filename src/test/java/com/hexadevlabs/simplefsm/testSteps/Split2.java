@@ -1,4 +1,7 @@
-package com.hexadevlabs.simplefsm;
+package com.hexadevlabs.simplefsm.testSteps;
+
+import com.hexadevlabs.simplefsm.ProcessingData;
+import com.hexadevlabs.simplefsm.ProcessingStep;
 
 public class Split2 extends ProcessingStep {
     @Override

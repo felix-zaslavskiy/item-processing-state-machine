@@ -1,6 +1,11 @@
 package com.hexadevlabs.simplefsm;
 
 
+import com.hexadevlabs.simplefsm.supporting.ExceptionHandler;
+import com.hexadevlabs.simplefsm.testSteps.Step1;
+import com.hexadevlabs.simplefsm.testSteps.Step2;
+import com.hexadevlabs.simplefsm.testSteps.Step3;
+import com.hexadevlabs.simplefsm.testSteps.Step4;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

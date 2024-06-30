@@ -1,4 +1,9 @@
-package com.hexadevlabs.simplefsm;
+package com.hexadevlabs.simplefsm.supporting;
+
+import com.hexadevlabs.simplefsm.ProcessingData;
+import com.hexadevlabs.simplefsm.SimpleFSM;
+import com.hexadevlabs.simplefsm.SplitHandler;
+import com.hexadevlabs.simplefsm.State;
 
 import java.util.Collection;
 
@@ -7,7 +12,7 @@ import java.util.Collection;
  * The persistence will be stored to a static member variable.
  * This is essentially the simplest possible working Split Handler we can make for testing.
  */
-public class HandleSplitPlaceholder implements SplitHandler{
+public class HandleSplitPlaceholder implements SplitHandler {
 
 
     @Override

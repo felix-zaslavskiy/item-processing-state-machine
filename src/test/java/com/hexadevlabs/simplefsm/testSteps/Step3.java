@@ -1,6 +1,9 @@
-package com.hexadevlabs.simplefsm;
+package com.hexadevlabs.simplefsm.testSteps;
 
-class Step3 extends ProcessingStep {
+import com.hexadevlabs.simplefsm.ProcessingData;
+import com.hexadevlabs.simplefsm.ProcessingStep;
+
+public class Step3 extends ProcessingStep {
     @Override
     protected void process(ProcessingData data) {
         log("Processing Step 3");

@@ -1,12 +1,14 @@
 package com.hexadevlabs.simplefsm;
 
+import com.hexadevlabs.simplefsm.supporting.HandleSplitPlaceholder;
+import com.hexadevlabs.simplefsm.testSteps.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-public class SplitTestWithNestedSplitStates {
+public class SplitWithNestedSplitStatesTest {
 
     private SimpleFSM simpleFSM;
 

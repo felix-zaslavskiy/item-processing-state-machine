@@ -1,4 +1,7 @@
-package com.hexadevlabs.simplefsm;
+package com.hexadevlabs.simplefsm.supporting;
+
+import com.hexadevlabs.simplefsm.ProcessingData;
+import com.hexadevlabs.simplefsm.ProcessingStep;
 
 public class ExceptionHandler extends ProcessingStep {
     @Override

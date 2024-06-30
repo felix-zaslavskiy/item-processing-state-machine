@@ -1,5 +1,7 @@
 package com.hexadevlabs.simplefsm;
 
+import com.hexadevlabs.simplefsm.testSteps.Step1;
+import com.hexadevlabs.simplefsm.testSteps.Step2;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

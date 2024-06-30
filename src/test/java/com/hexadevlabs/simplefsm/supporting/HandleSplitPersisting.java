@@ -1,5 +1,10 @@
-package com.hexadevlabs.simplefsm;
+package com.hexadevlabs.simplefsm.supporting;
 
+
+import com.hexadevlabs.simplefsm.ProcessingData;
+import com.hexadevlabs.simplefsm.SimpleFSM;
+import com.hexadevlabs.simplefsm.SplitHandler;
+import com.hexadevlabs.simplefsm.State;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -14,7 +19,7 @@ import java.util.function.Supplier;
  * The persistence will be stored to an H2 DB using transactions.
  * This is essentially the simplest possible working Split Handler we can make for testing.
  */
-public class HandleSplitPersisting implements SplitHandler{
+public class HandleSplitPersisting implements SplitHandler {
 
     final Supplier<Connection> connectionSupplier;
 
