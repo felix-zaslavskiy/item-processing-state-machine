@@ -60,6 +60,10 @@ public class MyFSM {
         // Initialize the FSM with a starting state and data
         ProcessingData data = new ProcessingData();
         fsm.start("state1", data);
+        
+        if(fsm.isPaused()){
+            System.out.println("FSM is in a paused state waiting on an event to trigger transition");
+        }
 
         // Trigger events to drive the FSM
         fsm.triggerEvent("event2", data);
