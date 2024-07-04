@@ -3,6 +3,7 @@ package com.hexadevlabs.simplefsm;
 import com.hexadevlabs.simplefsm.supporting.HandleSplitPlaceholder;
 import com.hexadevlabs.simplefsm.testSteps.*;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -135,6 +136,100 @@ public class SplitStateTest {
 
         System.out.println(data.toJson());
         special.getTrace().print();
+    }
+
+    @Test
+    public void missingAJoin(){
+        SimpleFSM fsm = new SimpleFSM.Builder()
+            .state("START", new NoopStep())
+                .auto().goTo("STEP_SPLIT")
+            .state( "STEP_SPLIT", new StepSplit() )
+                .split().goTo("SPLIT1" )
+                .split().goTo("SPLIT2" )
+            .state("SPLIT1", new Split1() )
+                .join( "SPLIT_END" )
+            .state("SPLIT2", new Split2() )
+            .state("SPLIT_END", new SplitEnd())
+                .auto().goTo("END")
+            .finalState("END", new NoopStep())
+            .onExceptionGoTo("END")
+            .withName("Test FSM")
+                .splitHandler(new HandleSplitPlaceholder())
+            .withTrace()
+            .build();
+
+        ProcessingData data = new ProcessingData();
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
+            fsm.start("START", data);
+        });
+
+        // Verify the exception message
+        assertEquals("Expected on transition to joined state", exception.getMessage());
+
+    }
+
+    @Test
+    public void splitStateHasExtraState(){
+        SimpleFSM fsm = new SimpleFSM.Builder()
+            .state("START", new NoopStep())
+                .auto().goTo("STEP_SPLIT")
+            .state( "STEP_SPLIT", new StepSplit() )
+                .split().goTo("SPLIT1" )
+                .split().goTo("SPLIT2" )
+            .state("SPLIT1", new Split1() )
+                .join( "SPLIT_END" )
+            .state("SPLIT2", new Split2() , true )
+                .on("SOME_DELAY").goTo("AFTER2")
+            .state("AFTER2", new NoopStep())
+                .join("SPLIT_END")
+            .state("SPLIT_END", new SplitEnd())
+                .auto().goTo("END")
+            .finalState("END", new NoopStep())
+            .onExceptionGoTo("END")
+            .withName("Test FSM")
+                .splitHandler(new HandleSplitPlaceholder())
+            .withTrace()
+            .build();
+        ProcessingData data = new ProcessingData();
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            fsm.start("START", data);
+        });
+
+        assertEquals("A split state is not allowed to wait for an event", exception.getMessage());
+    }
+
+
+    @Test
+    public void waitForEventAfterSplit(){
+        SimpleFSM fsm= new SimpleFSM.Builder()
+            .state("START", new NoopStep())
+                .auto().goTo("STEP_SPLIT")
+            .state( "STEP_SPLIT", new StepSplit() )
+                .split().goTo("SPLIT1" )
+                .split().goTo("SPLIT2" )
+            .state("SPLIT1", new Split1() )
+                .join( "SPLIT_END" )
+            .state("SPLIT2", new Split2() )
+                .join( "SPLIT_END" )
+            .state("SPLIT_END", new SplitEnd(), true)
+                .on("SPLIT_END_WAIT").goTo("END")
+            .finalState("END", new NoopStep())
+            .onExceptionGoTo("END")
+            .withName("Test FSM")
+                .splitHandler(new HandleSplitPlaceholder())
+            .withTrace()
+            .build();
+        ProcessingData data = new ProcessingData();
+        fsm.start("START", data);
+
+        assertTrue(fsm.isPaused());
+
+        fsm.triggerEvent("SPLIT_END_WAIT", data);
+
+        assertTrue(fsm.isConcluded());
+        assertTrue(fsm.hasReachedFinalState());
+
     }
 
 }

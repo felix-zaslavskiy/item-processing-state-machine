@@ -112,8 +112,11 @@ public class SimpleFSM {
         ExceptionInfo exceptionInfo = nextState.execute(data, trace , executionHooks);
 
         // Add exception to list of exceptions if an exception happened.
-        if(exceptionInfo.hadException())
+        if(exceptionInfo.hadException()) {
             data.addException(exceptionInfo);
+        } else if(nextState.shouldWaitForEventBeforeTransition()){
+            throw new RuntimeException("A split state is not allowed to wait for an event");
+        }
 
         // At the end of the work we need to check for state machine status and update it about the work done.
         boolean completedOtherWork = splitHandler.getAndUpdateStateAndData(this, data, currentState, nextStateName);
