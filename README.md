@@ -9,6 +9,7 @@ Finite state machines (FSMs) are a powerful technique to manage the flow of cont
 
 ## Features
 - Simple and intuitive API for defining states, transitions, and events.
+- Parallel execution of work is possible by use of split transitions.
 - Support for synchronous and asynchronous transitions.
 - Built-in support for conditional transitions and auto-transitions.
 - Configurable exception handling and error states.
@@ -24,7 +25,7 @@ Include dependency. For example in maven pom.
 <dependency>
     <groupId>com.hexadevlabs</groupId>
     <artifactId>simple-finite-state-machine</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
 </dependency>
 ```
 
@@ -39,7 +40,7 @@ import simplefsm.*;
 class ProcessingStep1() extends ProcessingStep {
     @Override
     protected void process(ProcessingData data) {
-        // .. perform relevant processing
+        // ... perform relevant processing
         nextState("state2"); // set conditionally the next step.
     }
 }
@@ -79,6 +80,7 @@ public class MyFSM {
 In this example, we define a simple FSM with three states and one events. 
 Each state has a processing step associated with it, which can be any class that extends [ProcessingStep](src/main/java/com/hexadevlabs/simplefsm/ProcessingStep.java). 
 The processing steps are responsible for performing the required actions in each state and setting the next state, if necessary.
+There is also a way to specify automatic transitions between states.
 For a more in depth demo take a look at [SimpleFSMDemo](https://github.com/felix-zaslavskiy/simple-finite-state-machine-samples/blob/main/src/main/java/demo/SimpleFSMDemo.java).
 
 The [SimpleFSM.Builder](src/main/java/com/hexadevlabs/simplefsm/SimpleFSM.java) class provides a fluent API for defining states, transitions, and other FSM properties, making it easy to build complex state machines in a clean, readable way.
@@ -87,11 +89,7 @@ Using the **SimpleFSM.toGraphviz()** method you can generate a Dot notation grap
 
 <img src="state_machine.png" alt="State Machine Graph" width="400" height="500" />
 
-## Future considerations
-* Consider adding timeout handling for events.(seems complex)
-* Should the state of FSM be represented as graph structure instead of Hashtable. probably needed for high perforce.
-* For a completed FSM draw a graph that shows the path taken by that execution. Seems like nice idea for debugging.
-* For additional features need to see what real world use-cases demand.
+
 
 ## Contributing
 We welcome contributions to SimpleFSM! If you'd like to contribute, please fork the repository, make your changes, and submit a pull request.
@@ -108,7 +106,10 @@ We welcome contributions to SimpleFSM! If you'd like to contribute, please fork 
 ## TODO 
 * More tests for exceptions in Split, Test with persisting split handler.
 * Enforce the structure of the Split processing. Don't allow invalid transitions.
-* More formal guarantees what state the state machine may be in at any one time.
+* Consider adding timeout handling for events.(seems complex)
+* Should the state of FSM be represented as graph structure instead of Hashtable. probably needed for high perforce.
+* For a completed FSM draw a graph that shows the path taken by that execution. Seems like nice idea for debugging.
+* For additional features need to see what real world use-cases demand.
 
 ## License
 SimpleFSM is released under the **Apache Version 2.0**
