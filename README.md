@@ -103,6 +103,7 @@ We welcome contributions to SimpleFSM! If you'd like to contribute, please fork 
 * 1.1.3 Fix issue with Trace not correctly merged.
 * 1.2.0 Rename state methods isFinished->isConcluded, add hasReachedFinalState
 * 1.2.1 Add some error handling for split state processing.
+* 1.2.3 Add Split handler based on Threads
 
 ## TODO 
 * More tests for exceptions in Split, Test with persisting split handler.

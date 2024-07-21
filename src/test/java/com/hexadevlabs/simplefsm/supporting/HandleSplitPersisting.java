@@ -55,6 +55,7 @@ public class HandleSplitPersisting implements SplitHandler {
                 executor.submit(() -> {
                     // Load from DB.
                     ProcessingData d = new ProcessingData();
+                    // Make a copy so the nextState var is not shared
                     d.mergeFrom(data);
                     SimpleFSM sm = simpleFSM.buildEmptyCopy();
                     sm.importState(state);
