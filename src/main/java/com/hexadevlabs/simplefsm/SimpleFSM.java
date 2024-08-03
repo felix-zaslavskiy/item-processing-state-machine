@@ -62,6 +62,7 @@ public class SimpleFSM {
     }
 
     public void start(String startingState, ProcessingData data) {
+        validate();
         currentState = startingState;
         started = true;
         process(data);
@@ -571,8 +572,12 @@ public class SimpleFSM {
                 simpleFSM.addFinalState(simpleFSM.onExceptionState);
             }
 
+            simpleFSM.validate();
+
+
             return simpleFSM;
         }
+
 
         public Builder splitHandler(SplitHandler handleSplit) {
             simpleFSM.addSplitHandler(handleSplit);
@@ -580,6 +585,33 @@ public class SimpleFSM {
         }
     }
 
+    private void validate() {
+        // Make sure final States exist in State map
+        if(!finalStates.stream().allMatch(states::containsKey)){
+            throw new SimpleFSMValidationException("Some final states are not declared. Make sure all states marked as final are added with state() method.");
+        }
+
+        // Make sure the transitions are to states that exist.
+        for (Map.Entry<String, State> stateEntry : states.entrySet()) {
+            String stateName = stateEntry.getKey();
+            State state = stateEntry.getValue();
+            for (String transitionTarget : state.getTransitions()) {
+                if (!states.containsKey(transitionTarget)) {
+                    throw new SimpleFSMValidationException("State '" + stateName + "' has a transition to undefined state '" + transitionTarget + "'.");
+                }
+            }
+        }
+
+        // Validate the onExceptionState if it is set
+        if (onExceptionState != null && !states.containsKey(onExceptionState)) {
+            throw new SimpleFSMValidationException("The onExceptionState '" + onExceptionState + "' is not defined as a state in the FSM.");
+        }
+
+        // If there's a split handler, make sure there's at least one split transition defined
+        if (splitHandler != null && states.values().stream().allMatch(state -> state.getSplitTransitions().isEmpty())) {
+            throw new SimpleFSMValidationException("A split handler is set, but no split transitions are defined.");
+        }
+    }
 
 
     public static class StateBuilder {
