@@ -587,7 +587,7 @@ public class SimpleFSM {
 
     private void validate() {
         // Make sure final States exist in State map
-        if(!finalStates.stream().allMatch(states::containsKey)){
+        if(!finalStates.isEmpty() && !finalStates.stream().allMatch(states::containsKey)){
             throw new SimpleFSMValidationException("Some final states are not declared. Make sure all states marked as final are added with state() method.");
         }
 
@@ -600,11 +600,6 @@ public class SimpleFSM {
                     throw new SimpleFSMValidationException("State '" + stateName + "' has a transition to undefined state '" + transitionTarget + "'.");
                 }
             }
-        }
-
-        // Validate the onExceptionState if it is set
-        if (onExceptionState != null && !states.containsKey(onExceptionState)) {
-            throw new SimpleFSMValidationException("The onExceptionState '" + onExceptionState + "' is not defined as a state in the FSM.");
         }
 
         // If there's a split handler, make sure there's at least one split transition defined

@@ -19,10 +19,10 @@ public class ValidationTest {
                     .conditional().goTo("STEP2")
                     .conditional().goTo("STEP3")
                 .state("STEP2", new Step2(), true)
-                    .on("proceed").goTo("end")
+                    .on("proceed").goTo("STEP3")
                     .on("alt_proceed").goTo("STEP3")
                 .state("STEP3", new Step3())
-                    .auto().goTo("end")
+                    .auto().goTo("START")
                 .build();
         simpleFSM.addFinalState("notexist");
         assertThrows(SimpleFSMValidationException.class, () -> simpleFSM.start("START", null) );
@@ -34,13 +34,13 @@ public class ValidationTest {
         assertThrows(SimpleFSMValidationException.class, () -> {
             SimpleFSM simpleFSM = new SimpleFSM.Builder()
                     .state("START", new Step1())
-                    .conditional().goTo("STEP2")
-                    .conditional().goTo("STEP3")
+                        .conditional().goTo("STEP2")
+                        .conditional().goTo("STEP3")
                     .state("STEP2", new Step2(), true)
-                    .on("proceed").goTo("STEP3")
-                    .on("alt_proceed").goTo("undefinedState") // Invalid transition
+                        .on("proceed").goTo("STEP3")
+                        .on("alt_proceed").goTo("undefinedState") // Invalid transition
                     .state("STEP3", new Step3())
-                    .auto().goTo("START")
+                    .   auto().goTo("START")
                     .build();
         });
 
@@ -51,9 +51,9 @@ public class ValidationTest {
         assertThrows(SimpleFSMValidationException.class, () -> {
             SimpleFSM simpleFSM = new SimpleFSM.Builder()
                     .state("START", new Step1())
-                    .conditional().goTo("STEP2")
+                        .conditional().goTo("STEP2")
                     .state("STEP2", new Step2(), true)
-                    .on("error").goTo("START")
+                        .on("error").goTo("START")
                     .onExceptionGoTo("notDefinedExceptionState") // Invalid exception state
                     .build();
         });
