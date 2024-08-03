@@ -80,7 +80,7 @@ public class MyFSM {
 In this example, we define a simple FSM with three states and one events. 
 Each state has a processing step associated with it, which can be any class that extends [ProcessingStep](src/main/java/com/hexadevlabs/simplefsm/ProcessingStep.java). 
 The processing steps are responsible for performing the required actions in each state and setting the next state, if necessary.
-There is also a way to specify automatic transitions between states.
+There is also a way to specify automatic transitions between states. The build() method will validate the state machine graph before execution.
 For a more in depth demo take a look at [SimpleFSMDemo](https://github.com/felix-zaslavskiy/simple-finite-state-machine-samples/blob/main/src/main/java/demo/SimpleFSMDemo.java).
 
 The [SimpleFSM.Builder](src/main/java/com/hexadevlabs/simplefsm/SimpleFSM.java) class provides a fluent API for defining states, transitions, and other FSM properties, making it easy to build complex state machines in a clean, readable way.
@@ -104,6 +104,7 @@ We welcome contributions to SimpleFSM! If you'd like to contribute, please fork 
 * 1.2.0 Rename state methods isFinished->isConcluded, add hasReachedFinalState
 * 1.2.1 Add some error handling for split state processing.
 * 1.2.3 Add Split handler based on Threads
+* 1.2.4 Add validation of the State machine graph during build and on start
 
 ## TODO 
 * More tests for exceptions in Split, Test with persisting split handler.

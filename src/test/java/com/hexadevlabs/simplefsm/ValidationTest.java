@@ -78,4 +78,16 @@ public class ValidationTest {
         assertThrows(SimpleFSMValidationException.class, () -> simpleFSM.start("START", null));
     }
 
+     @Test
+    public void statesReachedBySplitMustHaveAdditionalTransitions() {
+         assertThrows(SimpleFSMValidationException.class, () -> {
+                     SimpleFSM simpleFSM = new SimpleFSM.Builder()
+                             .state("START", new Step1())
+                                .split().goTo("SPLIT_STATE")
+                             .state("SPLIT_STATE", new Step2(), true)
+                                // No additional transitions defined for SPLIT_STATE
+                             .build();
+                 });
+    }
+
 }

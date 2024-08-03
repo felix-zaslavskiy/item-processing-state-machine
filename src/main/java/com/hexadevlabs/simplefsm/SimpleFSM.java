@@ -606,6 +606,21 @@ public class SimpleFSM {
         if (splitHandler != null && states.values().stream().allMatch(state -> state.getSplitTransitions().isEmpty())) {
             throw new SimpleFSMValidationException("A split handler is set, but no split transitions are defined.");
         }
+
+        // Ensure that states reached by split transitions have additional transitions
+        Set<String> statesWithSplitTransitions = new HashSet<>();
+        for (State state : states.values()) {
+            for (String splitTransition : state.getSplitTransitions()) {
+                statesWithSplitTransitions.add(state.getNextState(splitTransition));
+            }
+        }
+
+        for (String stateName : statesWithSplitTransitions) {
+            State state = states.get(stateName);
+            if (state.getTransitions().isEmpty()) {  // Check if the state has only the incoming split transition
+                throw new SimpleFSMValidationException("State '" + stateName + "' reached by a split transition must have at least one additional transition.");
+            }
+        }
     }
 
 
