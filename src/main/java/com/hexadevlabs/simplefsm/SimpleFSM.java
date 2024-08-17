@@ -312,8 +312,8 @@ public class SimpleFSM {
             // For now if Split is happened we have to save state and pause State machine.
             Collection<String> splitTransitions = state.getSplitTransitions();
             if(!splitTransitions.isEmpty()){
-                // Pause state machine.
-                // currentState will what it was.
+                // Pause state machine loop.
+                // currentState will remain what it was.
                 splitHandler.handleSplit(this, data, splitTransitions);
                 break;
             }

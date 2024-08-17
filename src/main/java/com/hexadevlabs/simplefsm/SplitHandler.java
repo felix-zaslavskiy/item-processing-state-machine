@@ -5,7 +5,7 @@ import java.util.Collection;
 public interface SplitHandler {
 
     /**
-     * The split handler is responsible on how to split up the work across
+     * The split handler is responsible for how to split up the work across
      * the split states. The work on each "split" state is performed in parallel.
      * For example one implementation may decide to split the work across multiple
      * threads and in another work may be sent to different servers for processing.
@@ -18,8 +18,8 @@ public interface SplitHandler {
 
     /**
      * Should be transactional. As a transaction it should read the
-     * work state of Machine from persistence and update it with
-     * state of current work completion.
+     * work state of the state machine from persistence or some other store
+     * and update it with the state of current work just completed by a split state.
      *
      * @param simpleFSM The state machine object that needs a split state recorded.
      * @param currentData The processing data as it is after the current split state just finished processing.
