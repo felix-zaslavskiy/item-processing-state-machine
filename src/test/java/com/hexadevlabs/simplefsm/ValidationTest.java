@@ -4,7 +4,6 @@ import com.hexadevlabs.simplefsm.supporting.HandleSplitPlaceholder;
 import com.hexadevlabs.simplefsm.testSteps.Step1;
 import com.hexadevlabs.simplefsm.testSteps.Step2;
 import com.hexadevlabs.simplefsm.testSteps.Step3;
-import com.hexadevlabs.simplefsm.testSteps.Step4;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -32,7 +31,7 @@ public class ValidationTest {
     public void transitionsMustPointToDefinedStates() {
 
         assertThrows(SimpleFSMValidationException.class, () -> {
-            SimpleFSM simpleFSM = new SimpleFSM.Builder()
+            new SimpleFSM.Builder()
                     .state("START", new Step1())
                         .conditional().goTo("STEP2")
                         .conditional().goTo("STEP3")
@@ -49,7 +48,7 @@ public class ValidationTest {
     @Test
     public void onExceptionStateMustBeDefined() {
         assertThrows(SimpleFSMValidationException.class, () -> {
-            SimpleFSM simpleFSM = new SimpleFSM.Builder()
+            new SimpleFSM.Builder()
                     .state("START", new Step1())
                         .conditional().goTo("STEP2")
                     .state("STEP2", new Step2(), true)
@@ -81,7 +80,7 @@ public class ValidationTest {
      @Test
     public void statesReachedBySplitMustHaveAdditionalTransitions() {
          assertThrows(SimpleFSMValidationException.class, () -> {
-                     SimpleFSM simpleFSM = new SimpleFSM.Builder()
+                     new SimpleFSM.Builder()
                              .state("START", new Step1())
                                 .split().goTo("SPLIT_STATE")
                              .state("SPLIT_STATE", new Step2(), true)

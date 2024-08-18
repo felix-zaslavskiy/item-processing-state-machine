@@ -2,16 +2,14 @@ package com.hexadevlabs.simplefsm;
 
 import com.hexadevlabs.simplefsm.supporting.HandleSplitPlaceholder;
 import com.hexadevlabs.simplefsm.testSteps.*;
-import com.mysql.cj.exceptions.AssertionFailedException;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 // this class uses HandleSplitPlaceholder which is trivial split handling
 // without parallelism or persistence of the state machine.
-public class SplitStateTest {
+public class ThreadBasedSplitStateTest {
     private SimpleFSM simpleFSM;
 
     @BeforeEach
@@ -56,7 +54,7 @@ public class SplitStateTest {
                 	START -> STEP_SPLIT[label="AUTO"];
                 	SPLIT1[label="SPLIT1\\n[Split1]"];
                 	SPLIT1 -> SPLIT_END[label="SPLIT1_TO_SPLIT_END"];
-                	END[label="END\\n[NoopStep]\\n<final>"];               	
+                	END[label="END\\n[NoopStep]\\n<final>"];
                 	STEP_SPLIT[label="STEP_SPLIT\\n[StepSplit]"];
                 	STEP_SPLIT -> SPLIT2[label="SPLIT_SPLIT2"];
                 	STEP_SPLIT -> SPLIT1[label="SPLIT_SPLIT1"];
@@ -139,36 +137,6 @@ public class SplitStateTest {
         special.getTrace().print();
     }
 
-    @Test
-    @Disabled
-    // TODO: This one needs more work to work consistently
-    public void missingAJoin(){
-        SimpleFSM fsm = new SimpleFSM.Builder()
-            .state("START", new NoopStep())
-                .auto().goTo("STEP_SPLIT")
-            .state( "STEP_SPLIT", new StepSplit() )
-                .split().goTo("SPLIT1" )
-                .split().goTo("SPLIT2" )
-            .state("SPLIT1", new Split1() )
-                .join( "SPLIT_END" )
-            .state("SPLIT2", new Split2() )
-            .state("SPLIT_END", new SplitEnd())
-                .auto().goTo("END")
-            .finalState("END", new NoopStep())
-            .onExceptionGoTo("END")
-            .withName("Test FSM")
-                .splitHandler(new ThreadBasedSplitHandler())
-            .withTrace()
-            .build();
-
-        ProcessingData data = new ProcessingData();
-
-        AssertionError exception = assertThrows(AssertionError.class, () -> {
-            fsm.start("START", data);
-        });
-
-
-    }
 
     @Test
     public void splitStateHasExtraState(){
@@ -193,9 +161,7 @@ public class SplitStateTest {
             .withTrace()
             .build();
         ProcessingData data = new ProcessingData();
-        AssertionError exception = assertThrows(AssertionError.class, () -> {
-            fsm.start("START", data);
-        });
+        assertThrows(AssertionError.class, () -> fsm.start("START", data));
 
 
     }
