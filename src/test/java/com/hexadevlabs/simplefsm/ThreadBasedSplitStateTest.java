@@ -161,8 +161,8 @@ public class ThreadBasedSplitStateTest {
             .withTrace()
             .build();
         ProcessingData data = new ProcessingData();
+        // TODO: this should handle Illegal state exception.
         assertThrows(AssertionError.class, () -> fsm.start("START", data));
-
 
     }
 

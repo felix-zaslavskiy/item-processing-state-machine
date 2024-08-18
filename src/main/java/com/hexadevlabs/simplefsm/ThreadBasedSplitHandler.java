@@ -59,6 +59,8 @@ public class ThreadBasedSplitHandler implements SplitHandler {
                     }
                 }catch(Exception e) {
 
+                    // TODO: This is not gracefully.
+
                     System.err.println("Unexpected exception caught " + e.getMessage());
                     e.printStackTrace();
                     return null;
@@ -107,6 +109,7 @@ public class ThreadBasedSplitHandler implements SplitHandler {
         }
 
         // Merge the data on the final data
+        // TODO: This is not gracefull.. this can happen for illegal state exception.
         assert resultData != null;
         data.mergeFrom(resultData);
 

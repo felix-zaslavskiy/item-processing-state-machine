@@ -116,7 +116,7 @@ public class SimpleFSM {
         if(exceptionInfo.hadException()) {
             data.addException(exceptionInfo);
         } else if(nextState.shouldWaitForEventBeforeTransition()){
-            throw new RuntimeException("A split state is not allowed to wait for an event");
+            throw new IllegalStateException("A split state is not allowed to wait for an event");
         }
 
         // At the end of the work we need to check for state machine status and update it about the work done.
